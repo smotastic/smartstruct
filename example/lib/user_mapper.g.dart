@@ -6,8 +6,9 @@ part of 'user_mapper.dart';
 // MapperGenerator
 // **************************************************************************
 
-class Animal {
-  void eat() {
-    print('Yum');
+class UserMapperImpl extends UserMapper {
+  @override
+  User fromModel(UserModel model) {
+    return User(model.id, null, model.name);
   }
 }

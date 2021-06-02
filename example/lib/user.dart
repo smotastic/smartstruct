@@ -1,6 +1,7 @@
 class User {
   final num id;
   final String name;
+  final String unknown;
 
-  User(this.name, this.id);
+  User(this.id, this.unknown, this.name);
 }
