@@ -7,4 +7,10 @@ part 'user_mapper.g.dart';
 @Mapper()
 abstract class UserMapper {
   User fromModel(UserModel model);
+  UserModel fromEntity(User entity);
+}
+
+@Mapper()
+abstract class UserModelMapper {
+  UserModel from(User entity);
 }

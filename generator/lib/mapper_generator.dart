@@ -43,16 +43,13 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
           .addAll(method.parameters.map((e) => _generateParameter(e)))
       ..body = _generateBody(method)
       ..returns = refer(method.returnType.element!.displayName));
-
-    // Method.returnsVoid((b) => b
-    //     ..name = 'eat'
-    //     ..body = const Code("print('Yum');")))
   }
 
   Code _generateBody(MethodElement method) {
     final input = method.parameters.first;
     final outputClass = method.returnType.element as ClassElement;
     final inputClass = input.type.element as ClassElement;
+    final inputReference = refer(input.displayName);
 
     final usedConstructor =
         outputClass.constructors.where((element) => !element.isFactory).first;
@@ -61,12 +58,11 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     inputClass.fields
         .forEach(((e) => inputFields.putIfAbsent(e.name, () => e)));
 
-    final inputReference = refer(input.displayName);
-
     // For Accessing the properties of the input
     // [model.id, model.name,...]
-    final assignments = usedConstructor.parameters.map((field) {
-      // only if the constructor field matches one of the inputfields
+    final positionalArgs =
+        usedConstructor.parameters.where((e) => !e.isNamed).map((field) {
+      // one of the inputfields matches the current constructorfield
       if (inputFields.containsKey(field.name)) {
         return inputReference.property(field.name);
       }
@@ -74,17 +70,19 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       return literal(null);
     });
 
-    var positionalArgs = assignments;
-    var namedArgs = <String, Expression>{}; // TODO
+    var namedArgs = <String, Expression>{};
+    usedConstructor.parameters.where((e) => e.isNamed).forEach((field) {
+      if (inputFields.containsKey(field.name)) {
+        namedArgs.putIfAbsent(
+            field.name, () => inputReference.property(field.name));
+      }
+    });
     final blockBuilder = BlockBuilder()
       ..addExpression(refer(outputClass.displayName)
           .newInstance(positionalArgs, namedArgs)
           .returned);
 
     // final setters = to.fields.where((element) => element.setter != null);
-    // for(final setter in setters) {
-
-    // }
 
     return blockBuilder.build();
   }
