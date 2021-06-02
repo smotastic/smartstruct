@@ -1,5 +1,5 @@
 builders:
-  property_multiply:
+  mapper:
     import: "package:smartstruct/builder.dart"
     builder_factories: ["smartstructBuilder"]
     build_extensions: { ".dart": ["mapper.g.part"] }
