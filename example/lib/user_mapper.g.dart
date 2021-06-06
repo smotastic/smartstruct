@@ -9,18 +9,27 @@ part of 'user_mapper.dart';
 class UserMapperImpl extends UserMapper {
   @override
   User fromModel(UserModel model) {
-    return User(model.id, model.isActivated, null, name: model.name);
+    final user =
+        User(model.id, model.isActivated, model.unknown, name: model.name);
+    user.lastName = model.lastName;
+    return user;
   }
 
   @override
   UserModel fromEntity(User entity) {
-    return UserModel(entity.id, entity.name, entity.isActivated);
+    final usermodel =
+        UserModel(entity.id, entity.name, entity.isActivated, entity.unknown);
+    usermodel.lastName = entity.lastName;
+    return usermodel;
   }
 }
 
 class UserModelMapperImpl extends UserModelMapper {
   @override
   UserModel from(User entity) {
-    return UserModel(entity.id, entity.name, entity.isActivated);
+    final usermodel =
+        UserModel(entity.id, entity.name, entity.isActivated, entity.unknown);
+    usermodel.lastName = entity.lastName;
+    return usermodel;
   }
 }

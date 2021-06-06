@@ -1,3 +1,4 @@
+// import 'package:injectable/injectable.dart';
 import 'package:smartstruct/annotations.dart';
 import 'package:smartstruct_example/user_model.dart';
 import 'package:smartstruct_example/user.dart';

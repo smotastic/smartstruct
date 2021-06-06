@@ -1,3 +1,5 @@
 class Mapper {
-  const Mapper();
+  final bool useInjection;
+
+  const Mapper({this.useInjection = false});
 }
