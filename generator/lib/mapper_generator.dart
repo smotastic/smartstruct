@@ -91,36 +91,37 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     final inputClass = input.type.element as ClassElement;
     final inputReference = refer(input.displayName);
 
-    final inputFields = <String, FieldElement>{};
-    inputClass.fields
-        .forEach(((e) => inputFields.putIfAbsent(e.name, () => e)));
+    final inputFields = {for (var f in inputClass.fields) f.name: f};
 
     final usedConstructor = _chooseConstructor(outputClass, inputClass);
-    // For Accessing the properties of the input
-    // [model.id, model.name,...]
-    final positionalArgs =
-        usedConstructor.parameters.where((e) => !e.isNamed).map((field) {
-      // one of the inputfields matches the current constructorfield
-      if (inputFields.containsKey(field.name)) {
-        inputFields.remove(field.name);
-        return inputReference.property(field.name);
-      }
-      // else we cannot handle and it is unknown to us
-      throw InvalidGenerationSourceError(
-          'Unknown positional Argument ${field.name}',
-          element: field,
-          todo:
-              'Add the field as a positional Argument in the constructor of the output class');
+    final positionalArgs = <Expression>[];
+    usedConstructor.parameters
+        .where((field) => !field.isNamed)
+        // one of the inputfields matches the current constructorfield
+        .where((field) => inputFields.containsKey(field.name))
+        .forEach((field) {
+      // [model.id, model.name,...]
+      positionalArgs.add(inputReference.property(field.name));
+      inputFields.remove(field.name);
     });
 
     final namedArgs = <String, Expression>{};
-    usedConstructor.parameters.where((e) => e.isNamed).forEach((field) {
-      if (inputFields.containsKey(field.name)) {
-        inputFields.remove(field.name);
-        namedArgs.putIfAbsent(
-            field.name, () => inputReference.property(field.name));
-      }
+    usedConstructor.parameters
+        .where((field) => field.isNamed)
+        // one of the inputfields matches the current constructorfield
+        .where((field) => inputFields.containsKey(field.name))
+        .forEach((element) {
+      namedArgs.putIfAbsent(
+          element.name, () => inputReference.property(element.name));
+      inputFields.remove(element.name);
     });
+
+    // inputFields.removeWhere((key, value) => positionalArgs.con)
+//  throw InvalidGenerationSourceError('
+//         'Unknown positional Argument ${field.name}',
+//         element: field,
+//         todo:
+//             'Add the field as a positional Argument in the constructor of the output class');'
 
     var outputName = outputClass.displayName.toLowerCase();
     final blockBuilder = BlockBuilder()
@@ -130,16 +131,13 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
           .assignFinal(outputName));
 
     // non final properties (implicit and explicit setters)
-    final mutableProperties =
-        outputClass.fields.where((element) => !element.isFinal);
-    for (final prop in mutableProperties) {
-      if (inputFields.containsKey(prop.displayName)) {
-        inputFields.remove(prop.displayName);
-        blockBuilder.addExpression(refer(outputName)
-            .property(prop.displayName)
-            .assign(inputReference.property(prop.displayName)));
-      }
-    }
+    outputClass.fields //
+        .where((field) => !field.isFinal) //
+        .where((field) => inputFields.containsKey(field.displayName))
+        .map((field) => refer(outputName)
+            .property(field.displayName)
+            .assign(inputReference.property(field.displayName)))
+        .forEach((expr) => blockBuilder.addExpression(expr));
 
     blockBuilder.addExpression(refer(outputName).returned);
     return blockBuilder.build();
