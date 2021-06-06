@@ -2,7 +2,18 @@ import 'package:smartstruct/annotations.dart';
 
 part 'complete_mapper.g.dart';
 
-class Foo {
+class FooInput {
+  final num someNumber;
+  final String someString;
+  final bool someBool;
+  final String finalNamed;
+  final num? nonFinalSetter;
+  final String? nonFinalProperty;
+  FooInput(this.someNumber, this.someString, this.someBool, this.finalNamed,
+      this.nonFinalSetter, this.nonFinalProperty);
+}
+
+class BarOutput {
   final num someNumber;
   final String someString;
   final bool someBool;
@@ -16,23 +27,12 @@ class Foo {
     _nonFinalSetter = nonFinalSetter;
   }
 
-  Foo(this.someNumber, this.someString, this.someBool, {this.finalNamed = ''});
-}
-
-class Bar {
-  final num someNumber;
-  final String someString;
-  final bool someBool;
-  final String finalNamed;
-  final num? nonFinalSetter;
-  final String? nonFinalProperty;
-
-  Bar(this.someNumber, this.someString, this.someBool, this.finalNamed,
-      this.nonFinalSetter, this.nonFinalProperty);
+  BarOutput(this.someNumber, this.someString, this.someBool,
+      {this.finalNamed = ''});
 }
 
 @Mapper()
-abstract class FooBarMapper {
-  Bar fromFoo(Foo foo);
-  Foo fromBar(Bar bar);
+abstract class ExampleMapper {
+  static ExampleMapper get INSTANCE => ExampleMapperImpl();
+  BarOutput fromFoo(FooInput input);
 }

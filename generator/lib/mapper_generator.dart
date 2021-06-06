@@ -106,7 +106,11 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         return inputReference.property(field.name);
       }
       // else we cannot handle and it is unknown to us
-      return literal(null);
+      throw InvalidGenerationSourceError(
+          'Unknown positional Argument ${field.name}',
+          element: field,
+          todo:
+              'Add the field as a positional Argument in the constructor of the output class');
     });
 
     final namedArgs = <String, Expression>{};
@@ -119,8 +123,8 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     });
 
     var outputName = outputClass.displayName.toLowerCase();
-
     final blockBuilder = BlockBuilder()
+      // final output = Output(positionalArgs, {namedArgs});
       ..addExpression(refer(outputClass.displayName)
           .newInstance(positionalArgs, namedArgs)
           .assignFinal(outputName));

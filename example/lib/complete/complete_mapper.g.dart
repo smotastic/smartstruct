@@ -6,20 +6,14 @@ part of 'complete_mapper.dart';
 // MapperGenerator
 // **************************************************************************
 
-class FooBarMapperImpl extends FooBarMapper {
+class ExampleMapperImpl extends ExampleMapper {
   @override
-  Bar fromFoo(Foo foo) {
-    final bar = Bar(foo.someNumber, foo.someString, foo.someBool,
-        foo.finalNamed, foo.nonFinalSetter, foo.nonFinalProperty);
-    return bar;
-  }
-
-  @override
-  Foo fromBar(Bar bar) {
-    final foo = Foo(bar.someNumber, bar.someString, bar.someBool,
-        finalNamed: bar.finalNamed);
-    foo.nonFinalProperty = bar.nonFinalProperty;
-    foo.nonFinalSetter = bar.nonFinalSetter;
-    return foo;
+  BarOutput fromFoo(FooInput input) {
+    final baroutput = BarOutput(
+        input.someNumber, input.someString, input.someBool,
+        finalNamed: input.finalNamed);
+    baroutput.nonFinalProperty = input.nonFinalProperty;
+    baroutput.nonFinalSetter = input.nonFinalSetter;
+    return baroutput;
   }
 }
