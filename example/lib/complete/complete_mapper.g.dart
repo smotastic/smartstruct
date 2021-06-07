@@ -6,6 +6,7 @@ part of 'complete_mapper.dart';
 // MapperGenerator
 // **************************************************************************
 
+@LazySingleton(as: ExampleMapper)
 class ExampleMapperImpl extends ExampleMapper {
   @override
   BarOutput fromFoo(FooInput input) {

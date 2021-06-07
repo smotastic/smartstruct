@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:smartstruct/annotations.dart';
 
 part 'complete_mapper.g.dart';
@@ -31,7 +32,7 @@ class BarOutput {
       {this.finalNamed = ''});
 }
 
-@Mapper()
+@Mapper(useInjection: true)
 abstract class ExampleMapper {
   static ExampleMapper get INSTANCE => ExampleMapperImpl();
   BarOutput fromFoo(FooInput input);

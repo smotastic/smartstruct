@@ -6,20 +6,6 @@ import 'package:smartstruct/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 class MapperGenerator extends GeneratorForAnnotation<Mapper> {
-  // DartObject getAnnotation(Element element) {
-  //   final annotations =
-  //       TypeChecker.fromRuntime(AnnotationType).annotationsOf(element);
-  //   if (annotations.isEmpty) {
-  //     return null;
-  //   }
-  //   if (annotations.length > 1) {
-  //     throw Exception(
-  //         "You tried to add multiple @$AnnotationType() annotations to the "
-  //         "same element (${element.name}), but that's not possible.");
-  //   }
-  //   return annotations.single;
-  // }
-
   Map<String, dynamic> readConfig(
       ConstantReader annotation, ClassElement mappingClass) {
     var mapper =
@@ -49,7 +35,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
 
     final mapperImpl = Class(
       (b) => b
-        ..annotations.addAll(_generateClassAnnotations(config))
+        ..annotations.addAll(_generateClassAnnotations(config, classElement))
         ..name = '${element.displayName}Impl'
         ..extend = refer('${element.displayName}')
         ..methods.addAll(classElement.methods
@@ -60,11 +46,13 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     return '${mapperImpl.accept(emitter)}';
   }
 
-  Iterable<Expression> _generateClassAnnotations(Map<String, dynamic> config) {
+  Iterable<Expression> _generateClassAnnotations(
+      Map<String, dynamic> config, ClassElement classElement) {
     final ret = <Expression>[];
 
     if (config['useInjection']) {
-      ret.add(refer('lazySingleton').newInstance([]));
+      ret.add(refer('LazySingleton')
+          .newInstance([], {'as': refer(classElement.displayName)}));
     }
     return ret;
   }

@@ -6,6 +6,7 @@ part of 'setter_mapper.dart';
 // MapperGenerator
 // **************************************************************************
 
+@LazySingleton(as: FooBarMapper)
 class FooBarMapperImpl extends FooBarMapper {
   @override
   Bar fromFoo(Foo foo) {

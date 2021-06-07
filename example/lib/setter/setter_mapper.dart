@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:smartstruct/annotations.dart';
 
 part 'setter_mapper.g.dart';
@@ -17,7 +18,7 @@ class Bar {
   Bar(this.fooBar);
 }
 
-@Mapper()
+@Mapper(useInjection: true)
 abstract class FooBarMapper {
   Bar fromFoo(Foo foo);
 }
