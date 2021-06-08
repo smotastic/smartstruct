@@ -2,18 +2,22 @@
 
 Code generator for generating type-safe mappers, inspired by https://mapstruct.org/
 
+- [Installation](#installation)
+- [Setup](#setup)
+- [Examples](#examples)
+
 # Installation
 
 Add smartstruct as a dev dependency.
 
-```
+```yaml
 dev_dependencies:
   smartstruct:
 ```
 
 Run the generator
 
-```
+```console
 dart run build_runner build
 flutter packages pub run build_runner build
 // or watch
@@ -24,7 +28,7 @@ flutter packages pub run build_runner watch
 
 Create your beans.
 
-```
+```dart
 class Dog {
     final String breed;
     final int age;
@@ -33,7 +37,7 @@ class Dog {
 }
 ```
 
-```
+```dart
 class DogModel {
     final String breed;
     final int age;
@@ -61,6 +65,7 @@ dart run build_runner build
 ```dart
 // dog.mapper.g.dart
 class DogMapperImpl extends DogMapper {
+    @override
     Dog fromModel(DogModel model) {
         Dog dog = Dog(model.breed, model.age, model.name);
         return dog;
@@ -93,6 +98,16 @@ class DogMapper {
 
 In this case, the field _dogName_ of _DogModel_ will be mapped to the field _name_ of the resulting _Dog_
 
+```dart
+class DogMapperImpl extends DogMapper {
+    @override
+    Dog fromModel(DogModel model) {
+        Dog dog = Dog(model.dogName);
+        return dog;
+    }
+}
+```
+
 ## Injectable
 
 The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
@@ -110,7 +125,7 @@ abstract class DogMapper {
 class DogMapperImpl extends DogMapper {...}
 ```
 
-# Example
+# Examples
 
 Please refer to the [example](https://github.com/smotastic/smartstruct/tree/master/example) package, for a list of examples and how to use the Mapper Annotation.
 
