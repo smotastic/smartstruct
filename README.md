@@ -6,7 +6,7 @@ The implementation of the generator.
 
 # Example
 
-A base example using a User, and UserModel to map between each other.
+Example usecases showcasing different mappers.
 
 Running the example:
 
