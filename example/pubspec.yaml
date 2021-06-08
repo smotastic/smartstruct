@@ -10,4 +10,5 @@ dependencies:
   injectable: ^1.4.1
 dev_dependencies:
   build_runner: ^2.0.4
-  smartstruct: ^1.0.0
+  smartstruct:
+    path: ../generator

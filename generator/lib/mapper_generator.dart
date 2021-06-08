@@ -3,22 +3,10 @@ import 'package:build/src/builder/build_step.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct/annotations.dart';
+import 'package:smartstruct/mapper_config.dart';
 import 'package:source_gen/source_gen.dart';
 
 class MapperGenerator extends GeneratorForAnnotation<Mapper> {
-  Map<String, dynamic> readConfig(
-      ConstantReader annotation, ClassElement mappingClass) {
-    var mapper =
-        mappingClass.metadata[0].element!.enclosingElement as ClassElement;
-    final config = <String, dynamic>{};
-    mapper.fields.forEach((field) {
-      final configField = annotation.read(field.name).literalValue;
-      config.putIfAbsent(field.name, () => configField);
-    });
-
-    return config;
-  }
-
   @override
   dynamic generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
@@ -29,16 +17,14 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
           todo: 'Add Mapper annotation to a class');
     }
 
-    final classElement = element as ClassElement;
-
-    var config = readConfig(annotation, classElement);
+    var config = MapperConfig.readClassConfig(annotation, element);
 
     final mapperImpl = Class(
       (b) => b
-        ..annotations.addAll(_generateClassAnnotations(config, classElement))
+        ..annotations.addAll(_generateClassAnnotations(config, element))
         ..name = '${element.displayName}Impl'
         ..extend = refer('${element.displayName}')
-        ..methods.addAll(classElement.methods
+        ..methods.addAll(element.methods
             .where((element) => element.isAbstract)
             .map((e) => _generateMapperMethod(e))),
     );
@@ -79,7 +65,15 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     final inputClass = input.type.element as ClassElement;
     final inputReference = refer(input.displayName);
 
+    final mappingConfig = MapperConfig.readMethodConfig(method);
+    // wenn source dann nicht f.name sondern target
     final inputFields = {for (var f in inputClass.fields) f.name: f};
+    mappingConfig.forEach((source, target) {
+      if (inputFields.containsKey(source)) {
+        inputFields.putIfAbsent(
+            target, () => inputFields[source] as FieldElement);
+      }
+    });
 
     final usedConstructor = _chooseConstructor(outputClass, inputClass);
     final positionalArgs = <Expression>[];
@@ -87,6 +81,8 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         .where((field) => !field.isNamed)
         // one of the inputfields matches the current constructorfield
         .where((field) => inputFields.containsKey(field.name))
+        .map((e) => inputFields[e.name]
+            as FieldElement) // explicit cast because of nullsafety
         .forEach((field) {
       // [model.id, model.name,...]
       positionalArgs.add(inputReference.property(field.name));
@@ -98,18 +94,11 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         .where((field) => field.isNamed)
         // one of the inputfields matches the current constructorfield
         .where((field) => inputFields.containsKey(field.name))
-        .forEach((element) {
-      namedArgs.putIfAbsent(
-          element.name, () => inputReference.property(element.name));
-      inputFields.remove(element.name);
+        .forEach((field) {
+      namedArgs.putIfAbsent(field.name,
+          () => inputReference.property(inputFields[field.name]!.name));
+      inputFields.remove(field.name);
     });
-
-    // inputFields.removeWhere((key, value) => positionalArgs.con)
-//  throw InvalidGenerationSourceError('
-//         'Unknown positional Argument ${field.name}',
-//         element: field,
-//         todo:
-//             'Add the field as a positional Argument in the constructor of the output class');'
 
     var outputName = outputClass.displayName.toLowerCase();
     final blockBuilder = BlockBuilder()
@@ -122,9 +111,9 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     outputClass.fields //
         .where((field) => !field.isFinal) //
         .where((field) => inputFields.containsKey(field.displayName))
-        .map((field) => refer(outputName)
-            .property(field.displayName)
-            .assign(inputReference.property(field.displayName)))
+        .map((field) => refer(outputName).property(field.displayName).assign(
+            inputReference
+                .property(inputFields[field.displayName]!.displayName)))
         .forEach((expr) => blockBuilder.addExpression(expr));
 
     blockBuilder.addExpression(refer(outputName).returned);

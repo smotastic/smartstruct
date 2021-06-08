@@ -10,11 +10,12 @@ part of 'complete_mapper.dart';
 class ExampleMapperImpl extends ExampleMapper {
   @override
   BarOutput fromFoo(FooInput input) {
-    final baroutput = BarOutput(
-        input.someNumber, input.someString, input.someBool,
-        finalNamed: input.finalNamed);
-    baroutput.nonFinalProperty = input.nonFinalProperty;
-    baroutput.nonFinalSetter = input.nonFinalSetter;
+    final baroutput = BarOutput(input.number, input.text, input.truthy,
+        named: input.named, namedTwoDiff: input.namedTwo);
+    baroutput.property = input.property;
+    baroutput.propertyTwoDiff = input.propertyTwo;
+    baroutput.setterTextDiff = input.setterText;
+    baroutput.setterNumber = input.setterNumber;
     return baroutput;
   }
 }
