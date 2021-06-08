@@ -1,0 +1,100 @@
+# Smartstruct - Dart bean mappings - the easy nullsafe way!
+
+Code generator for generating type-safe mappers, inspired by https://mapstruct.org/
+
+# Installation
+
+Add smartstruct as a dev dependency.
+
+```
+dev_dependencies:
+  smartstruct:
+```
+
+Run the generator
+
+```
+dart run build_runner build
+flutter packages pub run build_runner build
+// or watch
+flutter packages pub run build_runner watch
+```
+
+# Setup
+
+Create your beans.
+
+```
+class Dog {
+    final String breed;
+    final int age;
+    final String name;
+    Dog(this.breed, this.age, this.name);
+}
+```
+
+```
+class DogModel {
+    final String breed;
+    final int age;
+    final String name;
+    Dog(this.breed, this.age, this.name);
+}
+```
+
+To generate a mapper for these two beans, you need to create a mapper interface.
+
+```dart
+// dog.mapper.dart
+@Mapper()
+abstract class DogMapper {
+    Dog fromModel(DogModel model);
+}
+```
+
+Once you ran the generator, next to your _dog.mapper.dart_ a _dog.mapper.g.dart_ will be generated.
+
+```
+dart run build_runner build
+```
+
+```dart
+// dog.mapper.g.dart
+class DogMapperImpl extends DogMapper {
+    Dog fromModel(DogModel model) {
+        Dog dog = Dog(model.breed, model.age, model.name);
+        return dog;
+    }
+}
+```
+
+The Mapper supports positional arguments, named arguments and property access via implicit and explicit setters.
+
+## Injectable
+
+The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
+In this case you also need to add the injectable dependency, as described here. https://pub.dev/packages/injectable
+
+```dart
+@Mapper(useInjectable = true)
+abstract class DogMapper {
+    Dog fromModel(DogModel model);
+}
+```
+
+```dart
+@LazySingleton(as: DogMapper)
+class DogMapperImpl extends DogMapper {...}
+```
+
+# Example
+
+Please refer to the [example](https://github.com/smotastic/smartstruct/tree/master/example) package, for a list of examples and how to use the Mapper Annotation.
+
+You can always run the examples by navigating to the examples package and executing the generator.
+
+```console
+$ dart pub get
+...
+$ dart run build_runner build
+```
