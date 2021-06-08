@@ -70,6 +70,29 @@ class DogMapperImpl extends DogMapper {
 
 The Mapper supports positional arguments, named arguments and property access via implicit and explicit setters.
 
+## Explicit Field Mapping
+
+If some fields do not match each other, you can add a Mapping Annotation on the method level, to change the behaviour of certain mappings.
+
+```dart
+class Dog {
+    final String name;
+}
+class DogModel {
+    final String dogName;
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+    @Mapping(source: 'dogName', target: 'name')
+    Dog fromModel(DogModel model);
+}
+```
+
+In this case, the field _dogName_ of _DogModel_ will be mapped to the field _name_ of the resulting _Dog_
+
 ## Injectable
 
 The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
