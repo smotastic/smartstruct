@@ -46,7 +46,7 @@ class BarOutput {
 
 @Mapper(useInjection: true)
 abstract class ExampleMapper {
-  // static ExampleMapper get INSTANCE => ExampleMapperImpl();
+  static ExampleMapper get instance => ExampleMapperImpl();
   @Mapping(source: 'number', target: 'numberDiff')
   @Mapping(source: 'namedTwo', target: 'namedTwoDiff')
   @Mapping(source: 'setterText', target: 'setterTextDiff')
