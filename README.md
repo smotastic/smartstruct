@@ -38,7 +38,7 @@ class DogModel {
     final String breed;
     final int age;
     final String name;
-    Dog(this.breed, this.age, this.name);
+    DogModel(this.breed, this.age, this.name);
 }
 ```
 
@@ -46,6 +46,8 @@ To generate a mapper for these two beans, you need to create a mapper interface.
 
 ```dart
 // dog.mapper.dart
+part 'dog.mapper.g.dart';
+
 @Mapper()
 abstract class DogMapper {
     Dog fromModel(DogModel model);
