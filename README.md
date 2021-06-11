@@ -14,7 +14,7 @@ https://pub.dev/packages/smartstruct
 
 ```yaml
 dev_dependencies:
-  smartstruct:
+  smartstruct: [version]
 ```
 
 Run the generator
@@ -86,9 +86,11 @@ If some fields do not match each other, you can add a Mapping Annotation on the 
 ```dart
 class Dog {
     final String name;
+    Dog(this.name);
 }
 class DogModel {
     final String dogName;
+    DogModel(this.dogName);
 }
 ```
 
@@ -119,27 +121,22 @@ Nested beans can be mapped, by defining an additional mapper method for the nest
 ```dart
 // mapper.dart
 class NestedTarget {
-  NestedTarget(this.subNested);
-
   final SubNestedTarget subNested;
+  NestedTarget(this.subNested);
 }
-
 class SubNestedTarget {
-  SubNestedTarget(this.myProperty);
-
   final String myProperty;
+  SubNestedTarget(this.myProperty);
 }
 
 class NestedSource {
-  NestedSource(this.subNested);
-
   final SubNestedSource subNested;
+  NestedSource(this.subNested);
 }
 
 class SubNestedSource {
-  SubNestedSource(this.myProperty);
-
   final String myProperty;
+  SubNestedSource(this.myProperty);
 }
 
 @Mapper()
@@ -176,6 +173,7 @@ The Mapper can be made a lazy injectable singleton, by setting the argument _use
 In this case you also need to add the injectable dependency, as described here. https://pub.dev/packages/injectable
 
 ```dart
+// dog.mapper.dart
 @Mapper(useInjectable = true)
 abstract class DogMapper {
     Dog fromModel(DogModel model);
@@ -183,6 +181,7 @@ abstract class DogMapper {
 ```
 
 ```dart
+// dog.mapper.g.dart
 @LazySingleton(as: DogMapper)
 class DogMapperImpl extends DogMapper {...}
 ```
