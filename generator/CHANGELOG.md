@@ -17,3 +17,7 @@
 # v.1.0.4
 
 - Add support for nested bean mapping
+
+# v1.0.5
+
+- Add support for optional source and target parameters

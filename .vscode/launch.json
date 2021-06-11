@@ -8,13 +8,9 @@
       "name": "example",
       "cwd": "example",
       "request": "launch",
-      "type": "dart"
-    },
-    {
-      "name": "generator",
-      "cwd": "generator",
-      "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "program": "../example/build.dart",
+      "args": ["build"]
     }
   ]
 }
