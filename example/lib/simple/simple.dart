@@ -17,6 +17,6 @@ class Bar {
 /// Mapper showcasing a simple mapping between two fields
 @Mapper()
 abstract class FooBarMapper {
-  Bar fromFoo(Foo foo);
+  Bar? fromFoo(Foo? foo);
   Foo fromBar(Bar bar);
 }

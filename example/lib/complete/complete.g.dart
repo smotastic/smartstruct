@@ -10,19 +10,19 @@ part of 'complete.dart';
 class ExampleMapperImpl extends ExampleMapper {
   @override
   BarTarget fromFoo(FooSource source) {
-    final baroutput = BarTarget(source.number, source.text, source.truthy,
+    final bartarget = BarTarget(source.number, source.text, source.truthy,
         named: source.named, namedTwoDiff: source.namedTwo);
-    baroutput.property = source.property;
-    baroutput.propertyTwoDiff = source.propertyTwo;
-    baroutput.nested = fromFooSub(source.nested);
-    baroutput.setterTextDiff = source.setterText;
-    baroutput.setterNumber = source.setterNumber;
-    return baroutput;
+    bartarget.property = source.property;
+    bartarget.propertyTwoDiff = source.propertyTwo;
+    bartarget.nested = fromFooSub(source.nested);
+    bartarget.setterTextDiff = source.setterText;
+    bartarget.setterNumber = source.setterNumber;
+    return bartarget;
   }
 
   @override
   BarNestedTarget fromFooSub(FooNestedSource source) {
-    final barsuboutput = BarNestedTarget(source.text, source.number);
-    return barsuboutput;
+    final barnestedtarget = BarNestedTarget(source.text, source.number);
+    return barnestedtarget;
   }
 }

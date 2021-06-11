@@ -62,7 +62,8 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       ..requiredParameters
           .addAll(method.parameters.map((e) => _generateParameter(e)))
       ..body = _generateBody(method, classElement)
-      ..returns = refer(method.returnType.element!.displayName));
+      ..returns =
+          refer(method.returnType.getDisplayString(withNullability: true)));
   }
 
   /// Generates the body for the mapping method.
@@ -108,11 +109,16 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     });
 
     var targetVarName = targetClass.displayName.toLowerCase();
-    final blockBuilder = BlockBuilder()
-      // final output = Output(positionalArgs, {namedArgs});
-      ..addExpression(refer(targetClass.displayName)
-          .newInstance(positionalArgs, namedArgs)
-          .assignFinal(targetVarName));
+    final blockBuilder = BlockBuilder();
+    // source.isOptional does not work
+    if (source.type.getDisplayString(withNullability: true).endsWith('?')) {
+      blockBuilder.addExpression(
+          refer('if (${source.displayName} == null) { return null; }'));
+    }
+    // final output = Output(positionalArgs, {namedArgs});
+    blockBuilder.addExpression(refer(targetClass.displayName)
+        .newInstance(positionalArgs, namedArgs)
+        .assignFinal(targetVarName));
 
     // non final properties (implicit and explicit setters)
     targetClass.fields //
@@ -182,6 +188,6 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     }
     return Parameter((b) => b
       ..name = e.name
-      ..type = refer(e.type.element!.displayName));
+      ..type = refer(e.type.getDisplayString(withNullability: true)));
   }
 }

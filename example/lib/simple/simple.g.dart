@@ -8,7 +8,11 @@ part of 'simple.dart';
 
 class FooBarMapperImpl extends FooBarMapper {
   @override
-  Bar fromFoo(Foo foo) {
+  Bar? fromFoo(Foo? foo) {
+    if (foo == null) {
+      return null;
+    }
+    ;
     final bar = Bar(foo.fooBar);
     return bar;
   }
