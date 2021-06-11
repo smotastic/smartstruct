@@ -1,4 +1,4 @@
-import 'package:smartstruct/annotations.dart';
+import 'package:smartstruct/smartstruct.dart';
 
 part 'simple.g.dart';
 

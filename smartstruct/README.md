@@ -14,10 +14,10 @@ https://pub.dev/packages/smartstruct
 
 ```yaml
 dependencies:
-  smartstruct:
+  smartstruct: [version]
 
 dev_dependencies:
-  smartstruct_generator:
+  smartstruct_generator: [version]
   # add build runner if not already added
   build_runner:
 ```

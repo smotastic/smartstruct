@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:smartstruct/annotations.dart';
+import 'package:smartstruct/smartstruct.dart';
 
 part 'complete.g.dart';
 

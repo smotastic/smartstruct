@@ -8,7 +8,9 @@ environment:
 publish_to: none
 dependencies:
   injectable: ^1.4.1
+  smartstruct:
+    path: ../smartstruct
 dev_dependencies:
   build_runner: ^2.0.4
-  smartstruct:
+  smartstruct_generator:
     path: ../generator
