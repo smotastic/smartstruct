@@ -1,3 +1,7 @@
+# v1.1.1
+
+- Hotfix. Forgot to add smartstruct pub dev dependency
+
 # v1.1.0
 
 - Split the code into a generator, and smartstruct library project.
