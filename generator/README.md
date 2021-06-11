@@ -8,14 +8,16 @@ Code generator for generating type-safe mappers, inspired by https://mapstruct.o
 
 # Installation
 
-Add smartstruct as a dev dependency.
+Add smartstruct as a dependency.
 
 https://pub.dev/packages/smartstruct
 
 ```yaml
-dev_dependencies:
+dependencies:
   smartstruct: [version]
 ```
+
+TODO: Add as dev dependency, see https://github.com/smotastic/smartstruct/issues/11
 
 Run the generator
 

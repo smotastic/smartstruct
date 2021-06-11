@@ -95,8 +95,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         // one of the inputfields matches the current constructorfield
         .where((targetField) => targetToSource.containsKey(targetField.name))
         .forEach((targetField) {
-      final sourceField = targetToSource[targetField.name]
-          as FieldElement; // explicit cast for nullsafety
+      final sourceField = targetToSource[targetField.name]!;
       var sourceFieldAssignment = _generateSourceFieldAssignment(
           sourceReference, sourceField, classElement, targetField);
 
