@@ -10,6 +10,8 @@ Code generator for generating type-safe mappers, inspired by https://mapstruct.o
 
 Add smartstruct as a dev dependency.
 
+https://pub.dev/packages/smartstruct
+
 ```yaml
 dev_dependencies:
   smartstruct:
