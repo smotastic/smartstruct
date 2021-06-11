@@ -1,3 +1,7 @@
+# v1.1.2
+
+- Hotfix: Change Builder dependency in build.yaml
+
 # v1.1.1
 
 - Hotfix. Forgot to add smartstruct pub dev dependency
