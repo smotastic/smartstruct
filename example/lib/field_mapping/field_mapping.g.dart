@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'field_mapping_mapper.dart';
+part of 'field_mapping.dart';
 
 // **************************************************************************
 // MapperGenerator

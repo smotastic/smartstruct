@@ -1,6 +1,6 @@
 import 'package:smartstruct/annotations.dart';
 
-part 'simple_mapper.g.dart';
+part 'simple.g.dart';
 
 class Foo {
   final String fooBar;
@@ -14,6 +14,7 @@ class Bar {
   Bar(this.fooBar);
 }
 
+/// Mapper showcasing a simple mapping between two fields
 @Mapper()
 abstract class FooBarMapper {
   Bar fromFoo(Foo foo);

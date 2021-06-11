@@ -1,5 +1,5 @@
 name: smartstruct
-description: A dart bean mapper annotation processor
+description: smartstruct - A dart bean mapper annotation processor - the easy nullsafe way!
 version: 1.0.3
 homepage: https://github.com/smotastic/smartstruct
 environment:

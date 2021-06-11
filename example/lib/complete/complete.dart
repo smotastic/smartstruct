@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:smartstruct/annotations.dart';
 
-part 'complete_mapper.g.dart';
+part 'complete.g.dart';
 
-class FooInput {
+class FooSource {
   final num number;
   final String text;
   final bool truthy;
@@ -13,11 +13,19 @@ class FooInput {
   String propertyTwo;
   num? setterNumber;
   String? setterText;
-  FooInput(this.number, this.text, this.truthy, this.named, this.setterNumber,
+  late FooNestedSource nested;
+  FooSource(this.number, this.text, this.truthy, this.named, this.setterNumber,
       this.property, this.propertyTwo, this.namedTwo);
 }
 
-class BarOutput {
+class FooNestedSource {
+  late String text;
+  final num number;
+
+  FooNestedSource(this.number);
+}
+
+class BarTarget {
   final num numberDiff;
   final String text;
   final bool truthy;
@@ -27,6 +35,7 @@ class BarOutput {
   String? propertyTwoDiff;
   num? _setterNumber;
   String? _setterTextDiff;
+  late BarNestedTarget nested;
 
   String? get setterTextDiff => _setterTextDiff;
 
@@ -40,10 +49,19 @@ class BarOutput {
     _setterNumber = setterNumber;
   }
 
-  BarOutput(this.numberDiff, this.text, this.truthy,
+  BarTarget(this.numberDiff, this.text, this.truthy,
       {required this.named, required this.namedTwoDiff});
 }
 
+class BarNestedTarget {
+  final String text;
+  final num number;
+
+  BarNestedTarget(this.text, this.number);
+}
+
+/// Mapper showcasing every feature,
+/// such as explicit fieldmapping, injection and mapping nested classes
 @Mapper(useInjection: true)
 abstract class ExampleMapper {
   static ExampleMapper get instance => ExampleMapperImpl();
@@ -51,5 +69,7 @@ abstract class ExampleMapper {
   @Mapping(source: 'namedTwo', target: 'namedTwoDiff')
   @Mapping(source: 'setterText', target: 'setterTextDiff')
   @Mapping(source: 'propertyTwo', target: 'propertyTwoDiff')
-  BarOutput fromFoo(FooInput input);
+  BarTarget fromFoo(FooSource source);
+
+  BarNestedTarget fromFooSub(FooNestedSource source);
 }

@@ -25,8 +25,8 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         ..name = '${element.displayName}Impl'
         ..extend = refer('${element.displayName}')
         ..methods.addAll(element.methods
-            .where((element) => element.isAbstract)
-            .map((e) => _generateMapperMethod(e))),
+            .where((method) => method.isAbstract)
+            .map((method) => _generateMapperMethod(method, element))),
     );
     final emitter = DartEmitter();
     return '${mapperImpl.accept(emitter)}';
@@ -48,7 +48,8 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
   }
 
   /// Generates the implemented mapper method by the given abstract [MethodElement].
-  Method _generateMapperMethod(MethodElement method) {
+  Method _generateMapperMethod(
+      MethodElement method, ClassElement classElement) {
     if (method.returnType.element == null) {
       throw InvalidGenerationSourceError(
           '${method.returnType} is not a valid return type',
@@ -60,7 +61,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       ..name = method.displayName
       ..requiredParameters
           .addAll(method.parameters.map((e) => _generateParameter(e)))
-      ..body = _generateBody(method)
+      ..body = _generateBody(method, classElement)
       ..returns = refer(method.returnType.element!.displayName));
   }
 
@@ -68,7 +69,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
   ///
   /// Uses the default constructor of the target mapping class to populate optional and required named and positional parameters.
   /// If the target class has any properties which were not set in the constructor, and are mappable by the source, they will be also mapped after initializing the target instance.
-  Code _generateBody(MethodElement method) {
+  Code _generateBody(MethodElement method, ClassElement classElement) {
     final source = method.parameters.first;
     final targetClass = method.returnType.element as ClassElement;
     final sourceClass = source.type.element as ClassElement;
@@ -94,9 +95,11 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         // one of the inputfields matches the current constructorfield
         .where((targetField) => targetToSource.containsKey(targetField.name))
         .forEach((targetField) {
-      var sourceFieldName = targetToSource[targetField.name]!.name;
-      // [model.id, model.name,...]
-      final sourceFieldAssignment = sourceReference.property(sourceFieldName);
+      final sourceField = targetToSource[targetField.name]
+          as FieldElement; // explicit cast for nullsafety
+      var sourceFieldAssignment = _generateSourceFieldAssignment(
+          sourceReference, sourceField, classElement, targetField);
+
       if (targetField.isNamed) {
         namedArgs.putIfAbsent(targetField.name, () => sourceFieldAssignment);
       } else {
@@ -117,14 +120,50 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         .where((field) => !field.isFinal) //
         .where((targetField) =>
             targetToSource.containsKey(targetField.displayName))
-        .map((targetField) => refer(targetVarName)
-            .property(targetField.displayName)
-            .assign(sourceReference.property(
-                targetToSource[targetField.displayName]!.displayName)))
-        .forEach((expr) => blockBuilder.addExpression(expr));
+        .map((targetField) {
+      var sourceField = targetToSource[targetField.displayName] as FieldElement;
+      var sourceFieldAssignment = _generateSourceFieldAssignment(
+          sourceReference, sourceField, classElement, targetField);
+      return refer(targetVarName)
+          .property(targetField.displayName)
+          .assign(sourceFieldAssignment);
+    }).forEach((expr) => blockBuilder.addExpression(expr));
 
     blockBuilder.addExpression(refer(targetVarName).returned);
     return blockBuilder.build();
+  }
+
+  /// Generates an assignment of a reference to a sourcefield.
+  ///
+  /// The assignment is the property {sourceField} of the given [Reference] {sourceReference}.
+  /// If a method in the given [ClassElement] exists,
+  /// whose returntype matches the type of the targetField, and its first parameter type matches the sourceField type,
+  /// then this method will be used for the assignment instead, and passing the sourceField property of the given [Reference] as the argument of the method.
+  ///
+  /// Returns the Expression of the sourceField assignment, such as:
+  /// ```dart
+  /// model.id;
+  /// fromSub(model.sub);
+  /// ```
+  ///
+  Expression _generateSourceFieldAssignment(
+      Reference sourceReference,
+      FieldElement sourceField,
+      ClassElement classElement,
+      VariableElement targetField) {
+    var sourceFieldAssignment = sourceReference.property(sourceField.name);
+
+    final matchingMappingMethods = classElement.methods.where((met) {
+      return met.returnType == targetField.type &&
+          met.parameters.first.type == sourceField.type;
+    });
+
+    // nested classes can be mapped with their own mapping methods
+    if (matchingMappingMethods.isNotEmpty) {
+      sourceFieldAssignment = refer(matchingMappingMethods.first.name)
+          .call([sourceFieldAssignment]);
+    }
+    return sourceFieldAssignment;
   }
 
   /// Chooses the constructor which will be used to instantiate the target class.

@@ -3,7 +3,7 @@
 Code generator for generating type-safe mappers, inspired by https://mapstruct.org/
 
 - [Installation](#installation)
-- [Setup](#setup)
+- [Usage](#usage)
 - [Examples](#examples)
 
 # Installation
@@ -24,7 +24,7 @@ flutter packages pub run build_runner build
 flutter packages pub run build_runner watch
 ```
 
-# Setup
+# Usage
 
 Create your beans.
 
@@ -108,6 +108,64 @@ class DogMapperImpl extends DogMapper {
         return dog;
     }
 }
+```
+
+## Nested Bean Mapping
+
+Nested beans can be mapped, by defining an additional mapper method for the nested bean.
+
+```dart
+// mapper.dart
+class NestedTarget {
+  NestedTarget(this.subNested);
+
+  final SubNestedTarget subNested;
+}
+
+class SubNestedTarget {
+  SubNestedTarget(this.myProperty);
+
+  final String myProperty;
+}
+
+class NestedSource {
+  NestedSource(this.subNested);
+
+  final SubNestedSource subNested;
+}
+
+class SubNestedSource {
+  SubNestedSource(this.myProperty);
+
+  final String myProperty;
+}
+
+@Mapper()
+abstract class NestedMapper {
+  NestedTarget fromModel(NestedSource model);
+
+  SubNestedTarget fromSubClassModel(SubNestedSource model);
+}
+```
+
+Will generate the mapper
+
+```dart
+// mapper.g.dart
+class NestedMapperImpl extends NestedMapper {
+  @override
+  NestedTarget fromModel(NestedSource model) {
+    final nestedtarget = NestedTarget(fromSubClassModel(model.subNested));
+    return nestedtarget;
+  }
+
+  @override
+  SubNestedTarget fromSubClassModel(SubNestedSource model) {
+    final subnestedtarget = SubNestedTarget(model.myProperty);
+    return subnestedtarget;
+  }
+}
+
 ```
 
 ## Injectable

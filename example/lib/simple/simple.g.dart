@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'simple_mapper.dart';
+part of 'simple.dart';
 
 // **************************************************************************
 // MapperGenerator

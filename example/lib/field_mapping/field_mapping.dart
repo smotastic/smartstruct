@@ -1,5 +1,7 @@
 import 'package:smartstruct/annotations.dart';
-part 'field_mapping_mapper.g.dart';
+part 'field_mapping.g.dart';
+
+// TARGET
 
 class Dog {
   final String name;
@@ -9,6 +11,8 @@ class Dog {
   Dog(this.name, this.breed, this.age);
 }
 
+// SOURCE
+
 class DogModel {
   final String dogName;
   final String breed;
@@ -17,6 +21,7 @@ class DogModel {
   DogModel(this.dogName, this.breed, this.dogAge);
 }
 
+/// Mapper showcasing explicit fieldmapping in case fields do not match their respective fieldnames
 @Mapper()
 abstract class DogMapper {
   @Mapping(source: 'dogName', target: 'name')
