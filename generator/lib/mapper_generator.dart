@@ -17,7 +17,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
           todo: 'Add Mapper annotation to a class');
     }
 
-    var config = MapperConfig.readClassConfig(annotation, element);
+    var config = MapperConfig.readMapperConfig(annotation, element);
 
     final mapperImpl = Class(
       (b) => b
@@ -76,7 +76,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     final sourceClass = source.type.element as ClassElement;
     final sourceReference = refer(source.displayName);
 
-    final mappingConfig = MapperConfig.readMethodConfig(method);
+    final mappingConfig = MapperConfig.readMappingConfig(method);
     final targetToSource = {for (var f in sourceClass.fields) f.name: f};
 
     /// If there are Mapping Annotations on the method, the source attribute of the source mapping class,
