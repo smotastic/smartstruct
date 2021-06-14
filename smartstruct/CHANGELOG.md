@@ -1,3 +1,9 @@
+# v1.1.2+1
+
+- Added tests for the generator (https://github.com/smotastic/smartstruct/issues/8)
+- Added Example
+- Documentation
+
 # v1.1.2
 
 - Hotfix: Change Builder dependency in build.yaml

@@ -5,7 +5,6 @@ Code generator for generating type-safe mappers in dart, inspired by https://map
 - [Installation](#installation)
 - [Usage](#usage)
 - [Examples](#examples)
-- [Motivation](#roadmap)
 - [Roadmap](#roadmap)
 
 # Overview
@@ -212,8 +211,6 @@ $ dart pub get
 ...
 $ dart run build_runner build
 ```
-
-# Motivation
 
 # Roadmap
 
