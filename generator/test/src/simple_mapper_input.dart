@@ -1,29 +1,29 @@
 part of 'mapper_test_input.dart';
 
-class Target {
+class SimpleTarget {
   final String text;
   final num number;
 
-  Target(this.text, this.number);
+  SimpleTarget(this.text, this.number);
 }
 
-class Source {
+class SimpleSource {
   final String text;
   final num number;
 
-  Source(this.text, this.number);
+  SimpleSource(this.text, this.number);
 }
 
 @Mapper()
 @ShouldGenerate(r'''
 class SimpleMapperImpl extends SimpleMapper {
   @override
-  Target fromSource(Source source) {
-    final target = Target(source.text, source.number);
-    return target;
+  SimpleTarget fromSource(SimpleSource source) {
+    final simpletarget = SimpleTarget(source.text, source.number);
+    return simpletarget;
   }
 }
 ''')
 abstract class SimpleMapper {
-  Target fromSource(Source source);
+  SimpleTarget fromSource(SimpleSource source);
 }

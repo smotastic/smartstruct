@@ -1,5 +1,4 @@
 import 'package:smartstruct_generator/mapper_generator.dart';
-import 'package:test/test.dart';
 import 'package:source_gen_test/source_gen_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -19,5 +18,9 @@ Future<void> main() async {
 
 const _expectedAnnotatedTests = {
   'theAnswer',
+  'NoReturnTypeMapper',
   'SimpleMapper',
+  'ExplicitFieldMapper',
+  'NestedMapper',
+  'InjectableMapper',
 };
