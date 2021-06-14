@@ -6,6 +6,7 @@ import 'package:source_gen/source_gen.dart';
 
 import 'mapper_config.dart';
 
+/// Codegenerator to generate implemented mapping classes
 class MapperGenerator extends GeneratorForAnnotation<Mapper> {
   @override
   dynamic generateForAnnotatedElement(

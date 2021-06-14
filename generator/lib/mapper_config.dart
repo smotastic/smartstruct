@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:smartstruct/smartstruct.dart';
 import 'package:source_gen/source_gen.dart';
 
+/// Helper Class to read attributes out of the [Mapper] and [Mapping] Annotations
 class MapperConfig {
   /// Reads the attributes given in the [Mapper] Annotation,
   /// and returns a map, where the key is the attributename, and value the value of the read attribute.

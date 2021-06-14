@@ -1,10 +1,20 @@
 # Smartstruct - Dart bean mappings - the easy nullsafe way!
 
-Code generator for generating type-safe mappers, inspired by https://mapstruct.org/
+Code generator for generating type-safe mappers in dart, inspired by https://mapstruct.org/
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Examples](#examples)
+- [Motivation](#roadmap)
+- [Roadmap](#roadmap)
+
+# Overview
+
+- Add smartstruct as a dependency, and smartstruct_generator as a dev_dependency
+- Create a Mapper class
+- Annotate the class with @mapper
+- Run the build_runner
+- Use the generated Mapper!
 
 # Installation
 
@@ -202,3 +212,11 @@ $ dart pub get
 ...
 $ dart run build_runner build
 ```
+
+# Motivation
+
+# Roadmap
+
+Feel free to open a [Pull Request](https://github.com/smotastic/smartstruct/pulls), if you'd like to contribute.
+
+Or just open an issue, and i do my level best to deliver.
