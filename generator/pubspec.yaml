@@ -14,4 +14,4 @@ dependencies:
   build: ^2.0.2
   source_gen: ^1.0.1
   code_builder: ^4.0.0
-  smartstruct: ^1.1.2
+  smartstruct: ^1.1.2+1
