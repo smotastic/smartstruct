@@ -16,7 +16,7 @@ class SimpleSource {
 
 @Mapper()
 @ShouldGenerate(r'''
-class SimpleMappeImpl extends SimpleMapper {
+class SimpleMapperImpl extends SimpleMapper {
   @override
   SimpleTarget fromSource(SimpleSource source) {
     final simpletarget = SimpleTarget(source.text, source.number);
