@@ -1,0 +1,7 @@
+language: dart
+before_install:
+  - cd generator
+dart:
+  - stable
+dart_task:
+  - test: --platform vm
