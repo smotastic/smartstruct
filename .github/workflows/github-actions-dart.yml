@@ -1,12 +1,11 @@
 name: Dart
 
 on: [push]
-
+defaults:
+  run:
+    working-directory: generator
 jobs:
   build:
-    run:
-      working-directory: generator
-
     runs-on: ubuntu-latest
 
     steps:
