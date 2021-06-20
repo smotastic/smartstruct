@@ -5,6 +5,7 @@ part 'simple_mapper_input.dart';
 part 'explicit_field_mapper_input.dart';
 part 'nested_mapper_input.dart';
 part 'injectable_mapper_input.dart';
+part 'list_mapper_input.dart';
 
 @ShouldThrow('theAnswer is not a class and cannot be annotated with @Mapper')
 @Mapper()
