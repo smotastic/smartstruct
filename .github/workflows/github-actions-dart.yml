@@ -4,6 +4,9 @@ on: [push]
 
 jobs:
   build:
+    run:
+      working-directory: generator
+
     runs-on: ubuntu-latest
 
     steps:
