@@ -1,6 +1,6 @@
 name: Dart
 
-on: [push]
+on: [push, pull_request]
 defaults:
   run:
     working-directory: generator
