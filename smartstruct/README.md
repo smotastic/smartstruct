@@ -181,6 +181,61 @@ class NestedMapperImpl extends NestedMapper {
 
 ```
 
+## List Support
+Lists will be mapped as new instances of a list, with help of the map method.
+```dart
+class Source {
+  final List<int> intList;
+  final List<SourceEntry> entryList;
+
+  Source(this.intList, this.entryList);
+}
+
+class SourceEntry {
+  final String prop;
+
+  SourceEntry(this.prop);
+}
+
+class Target {
+  final List<int> intList;
+  final List<TargetEntry> entryList;
+
+  Target(this.intList, this.entryList);
+}
+
+class TargetEntry {
+  final String prop;
+
+  TargetEntry(this.prop);
+}
+
+@Mapper()
+abstract class ListMapper {
+  Target fromSource(Source source);
+  TargetEntry fromSourceEntry(SourceEntry source);
+}
+```
+Will generate the Mapper
+
+```dart
+class ListMapperImpl extends ListMapper {
+  @override
+  Target fromSource(Source source) {
+    final target = Target(
+      source.intList.map((e) => e).toList(),
+      source.entryList.map(fromSourceEntry).toList());
+    return target;
+  }
+
+  @override
+  TargetEntry fromSourceEntry(SourceEntry source) {
+    final targetentry = TargetEntry(source.prop);
+    return targetentry;
+  }
+}
+```
+
 ## Injectable
 
 The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
