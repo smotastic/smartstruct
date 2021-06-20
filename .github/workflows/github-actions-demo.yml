@@ -17,5 +17,5 @@ jobs:
       - name: Install dependencies
         run: dart pub get
 
-      - name: Hello world
-        run: dart bin/hello_world.dart
+      - name: Run tests
+        run: cd generator && dart test
