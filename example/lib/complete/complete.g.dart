@@ -11,7 +11,9 @@ class ExampleMapperImpl extends ExampleMapper {
   @override
   BarTarget fromFoo(FooSource source) {
     final bartarget = BarTarget(source.number, source.text, source.truthy,
-        named: source.named, namedTwoDiff: source.namedTwo);
+        named: source.named,
+        namedTwoDiff: source.namedTwo,
+        list: source.list.map(fromFooSub).toList());
     bartarget.property = source.property;
     bartarget.propertyTwoDiff = source.propertyTwo;
     bartarget.nested = fromFooSub(source.nested);

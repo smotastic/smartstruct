@@ -14,8 +14,9 @@ class FooSource {
   num? setterNumber;
   String? setterText;
   late FooNestedSource nested;
+  final List<FooNestedSource> list;
   FooSource(this.number, this.text, this.truthy, this.named, this.setterNumber,
-      this.property, this.propertyTwo, this.namedTwo);
+      this.property, this.propertyTwo, this.namedTwo, this.list);
 }
 
 class FooNestedSource {
@@ -36,6 +37,7 @@ class BarTarget {
   num? _setterNumber;
   String? _setterTextDiff;
   late BarNestedTarget nested;
+  final List<BarNestedTarget> list;
 
   String? get setterTextDiff => _setterTextDiff;
 
@@ -50,7 +52,7 @@ class BarTarget {
   }
 
   BarTarget(this.numberDiff, this.text, this.truthy,
-      {required this.named, required this.namedTwoDiff});
+      {required this.named, required this.namedTwoDiff, required this.list});
 }
 
 class BarNestedTarget {
