@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/src/builder/build_step.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
@@ -158,18 +159,59 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       ClassElement classElement,
       VariableElement targetField) {
     var sourceFieldAssignment = sourceReference.property(sourceField.name);
+    // list support
+    if (sourceField.type.isDartCoreList ||
+        sourceField.type.isDartCoreIterable) {
+      final sourceListType = _getGenericTypes(sourceField.type).first;
+      final targetListType = _getGenericTypes(targetField.type).first;
+      final matchingMappingListMethods = _findMatchingMappingMethod(
+          classElement, targetListType, sourceListType);
 
-    final matchingMappingMethods = classElement.methods.where((met) {
-      return met.returnType == targetField.type &&
-          met.parameters.first.type == sourceField.type;
-    });
+      // mapping expression, default is just the identity,
+      // for example for primitive types or objects that do not have their own mapping method
+      var expr = refer('(e) => e');
+      if (matchingMappingListMethods.isNotEmpty) {
+        expr = refer(matchingMappingListMethods.first.name);
+      }
 
-    // nested classes can be mapped with their own mapping methods
-    if (matchingMappingMethods.isNotEmpty) {
-      sourceFieldAssignment = refer(matchingMappingMethods.first.name)
-          .call([sourceFieldAssignment]);
+      sourceFieldAssignment =
+          // source.{field}.map
+          sourceReference
+              .property(sourceField.name)
+              .property('map')
+              // (expr)
+              .call([expr])
+              //.toList()
+              .property('toList')
+              .call([]);
+    } else {
+      // found a mapping method in the class which will map the source to target
+      final matchingMappingMethods = _findMatchingMappingMethod(
+          classElement, targetField.type, sourceField.type);
+
+      // nested classes can be mapped with their own mapping methods
+      if (matchingMappingMethods.isNotEmpty) {
+        sourceFieldAssignment = refer(matchingMappingMethods.first.name)
+            .call([sourceFieldAssignment]);
+      }
     }
+
     return sourceFieldAssignment;
+  }
+
+  /// Finds a matching Mapping Method in [classElement]
+  /// which has the same return type as the given [targetReturnType] and same parametertype as the given [sourceParameterType]
+  Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
+      DartType targetReturnType, DartType sourceParameterType) {
+    final matchingMappingMethods = classElement.methods.where((met) {
+      return met.returnType == targetReturnType &&
+          met.parameters.first.type == sourceParameterType;
+    });
+    return matchingMappingMethods;
+  }
+
+  Iterable<DartType> _getGenericTypes(DartType type) {
+    return type is ParameterizedType ? type.typeArguments : const [];
   }
 
   /// Chooses the constructor which will be used to instantiate the target class.
