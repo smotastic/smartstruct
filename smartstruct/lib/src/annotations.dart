@@ -3,8 +3,9 @@
 /// Annotate your interface with [mapper], and run your build_runner to generate an implemented mapperclass of this interface.
 class Mapper {
   final bool useInjection;
+  final bool caseSensitiveFields;
 
-  const Mapper({this.useInjection = false});
+  const Mapper({this.useInjection = false, this.caseSensitiveFields = false});
 }
 
 const mapper = Mapper();
