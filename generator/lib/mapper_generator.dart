@@ -94,6 +94,14 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         hashCode: (a) => equalsHashCode(a));
 
     for (var f in sourceClass.fields) {
+      if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
+        final duplicatedKey = targetToSource.keys
+            .toList()
+            .firstWhere((k) => k.toUpperCase() == f.name.toUpperCase());
+        throw InvalidGenerationSourceError(
+            'Mapper ${classElement.displayName} got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
+            todo: "Use case sensitive mapper or change field's names");
+      }
       targetToSource[f.name] = f;
     }
 
