@@ -93,6 +93,49 @@ class DogMapperImpl extends DogMapper {
 
 The Mapper supports positional arguments, named arguments and property access via implicit and explicit setters.
 
+## Case sensitivity
+
+By default mapper generator works in case insensitivity maner. 
+
+```dart
+class Source {
+  final String userName;
+
+  Source(this.userName);
+}
+
+class Target {
+  final String username;
+
+  Target({required this.username});
+}
+
+@Mapper()
+abstract class ExampleMapper {
+  Target fromSource(Source source);
+}
+```
+As you can see, classes above got different field's names (case) for username. Because mappers are case insensitive by default, those classes are correctly mapped. 
+```dart
+
+class ExampleMapperImpl extends ExampleMapper {
+  @override
+  Target fromSource(Source source) {
+    final target = Target(username: source.userName);
+    return target;
+  }
+}
+```
+To create case sensitive mapper, you can add param caseSensitiveFields to @Mapper annotation. Case sensitive mapper is checking field's names in case sensitive maner.
+```dart
+
+@Mapper(caseSensitiveFields: true)
+abstract class ExampleMapper {
+  Target fromSource(Source source);
+}
+```
+
+
 ## Explicit Field Mapping
 
 If some fields do not match each other, you can add a Mapping Annotation on the method level, to change the behaviour of certain mappings.
