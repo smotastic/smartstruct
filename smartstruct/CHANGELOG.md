@@ -1,3 +1,6 @@
+# v1.1.3
+- Added Support for Lists (https://github.com/smotastic/smartstruct/issues/12)
+
 # v1.1.2+1
 
 - Added tests for the generator (https://github.com/smotastic/smartstruct/issues/8)

@@ -23,6 +23,7 @@ const _expectedAnnotatedTests = {
   'ExplicitFieldMapper',
   'NestedMapper',
   'InjectableMapper',
+  'ListMapper',
   'CaseInsensitiveMapper',
   'CaseSensitiveMapper',
   'CaseSensitiveDuplicateMapper'
