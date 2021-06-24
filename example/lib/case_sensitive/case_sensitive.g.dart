@@ -8,8 +8,8 @@ part of 'case_sensitive.dart';
 
 class ExampleMapperImpl extends ExampleMapper {
   @override
-  TargetClass call(SourceClass source) {
-    final targetclass = TargetClass(username: source.userName);
-    return targetclass;
+  Target fromSource(Source source) {
+    final target = Target(username: source.userName);
+    return target;
   }
 }

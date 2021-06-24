@@ -1,19 +1,19 @@
 import 'package:smartstruct/smartstruct.dart';
 part 'case_sensitive.g.dart';
 
-class SourceClass {
+class Source {
   final String userName;
 
-  SourceClass(this.userName);
+  Source(this.userName);
 }
 
-class TargetClass {
+class Target {
   final String username;
 
-  TargetClass({required this.username});
+  Target({required this.username});
 }
 
-@Mapper()
+@Mapper(caseSensitiveFields: false)
 abstract class ExampleMapper {
-  TargetClass call(SourceClass source);
+  Target fromSource(Source source);
 }
