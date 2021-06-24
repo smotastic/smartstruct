@@ -25,4 +25,5 @@ const _expectedAnnotatedTests = {
   'InjectableMapper',
   'CaseInsensitiveMapper',
   'CaseSensitiveMapper',
+  'CaseSensitiveDuplicateMapper'
 };

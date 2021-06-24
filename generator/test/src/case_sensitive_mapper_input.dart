@@ -11,6 +11,13 @@ class Target {
   Target(this.userName);
 }
 
+class Duplicated {
+  final String username;
+  final String userNAME;
+
+  Duplicated(this.username, this.userNAME);
+}
+
 @Mapper()
 @ShouldGenerate(r'''
 class CaseInsensitiveMapperImpl extends CaseInsensitiveMapper {
@@ -37,4 +44,18 @@ class CaseSensitiveMapperImpl extends CaseSensitiveMapper {
 ''')
 abstract class CaseSensitiveMapper {
   Target fromSource(Source source);
+}
+
+@Mapper(caseSensitiveFields: true)
+@ShouldGenerate(r'''
+class CaseSensitiveDuplicateMapperImpl extends CaseSensitiveDuplicateMapper {
+  @override
+  Duplicated fromSource(Duplicated source) {
+    final duplicated = Duplicated(source.username, source.userNAME);
+    return duplicated;
+  }
+}
+''')
+abstract class CaseSensitiveDuplicateMapper {
+  Duplicated fromSource(Duplicated source);
 }
