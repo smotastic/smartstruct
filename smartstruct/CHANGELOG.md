@@ -1,3 +1,7 @@
+# v1.1.4
+
+- Added support for case insensitive fields mapping
+
 # v1.1.3
 - Added Support for Lists (https://github.com/smotastic/smartstruct/issues/12)
 
