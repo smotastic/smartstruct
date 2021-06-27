@@ -65,8 +65,8 @@ class DogModel {
 To generate a mapper for these two beans, you need to create a mapper interface.
 
 ```dart
-// dog.mapper.dart
-part 'dog.mapper.g.dart';
+// dogmapper.dart
+part 'dogmapper.mapper.g.dart';
 
 @Mapper()
 abstract class DogMapper {
@@ -81,7 +81,7 @@ dart run build_runner build
 ```
 
 ```dart
-// dog.mapper.g.dart
+// dogmapper.mapper.g.dart
 class DogMapperImpl extends DogMapper {
     @override
     Dog fromModel(DogModel model) {
@@ -133,7 +133,7 @@ class DogMapperImpl extends DogMapper {
 Nested beans can be mapped, by defining an additional mapper method for the nested bean.
 
 ```dart
-// mapper.dart
+// nestedmapper.dart
 class NestedTarget {
   final SubNestedTarget subNested;
   NestedTarget(this.subNested);
@@ -164,7 +164,7 @@ abstract class NestedMapper {
 Will generate the mapper
 
 ```dart
-// mapper.g.dart
+// nestedmapper.mapper.g.dart
 class NestedMapperImpl extends NestedMapper {
   @override
   NestedTarget fromModel(NestedSource model) {
@@ -241,8 +241,13 @@ class ListMapperImpl extends ListMapper {
 The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
 In this case you also need to add the injectable dependency, as described here. https://pub.dev/packages/injectable
 
+Make sure, that in the Mapper File, you import the injectable dependency, before running the build_runner!
+
 ```dart
-// dog.mapper.dart
+// dogmapper.dart
+
+import 'package:injectable/injectable.dart';
+
 @Mapper(useInjectable = true)
 abstract class DogMapper {
     Dog fromModel(DogModel model);
@@ -250,7 +255,7 @@ abstract class DogMapper {
 ```
 
 ```dart
-// dog.mapper.g.dart
+// dogmapper.mapper.g.dart
 @LazySingleton(as: DogMapper)
 class DogMapperImpl extends DogMapper {...}
 ```
