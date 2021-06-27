@@ -1,6 +1,7 @@
 # Simple Mapping
 
 ```dart
+// dogmapper.dart
 class Dog {
     final String breed;
     final int age;
@@ -24,9 +25,9 @@ To generate a mapper for these two beans, you need to create a mapper interface.
 import 'package:smartstruct/smartstruct.dart';
 
 // dog.mapper.dart
-part 'dog.mapper.g.dart';
+part 'dogmapper.mapper.g.dart';
 
-@mapper
+@Mapper()
 abstract class DogMapper {
     Dog fromModel(DogModel model);
 }
@@ -48,10 +49,10 @@ class DogModel {
 ```
 
 ```dart
-// dog.mapper.dart
+// dogmapper.dart
 import 'package:smartstruct/smartstruct.dart';
 
-part 'dog.mapper.g.dart';
+part 'dogmapper.mapper.g.dart';
 
 @Mapper()
 class DogMapper {
@@ -63,7 +64,7 @@ class DogMapper {
 In this case, the field _dogName_ of _DogModel_ will be mapped to the field _name_ of the resulting _Dog_
 
 ```dart
-// dog.mapper.g.dart
+// dogmapper.mapper.g.dart
 
 class DogMapperImpl extends DogMapper {
     @override
@@ -100,7 +101,7 @@ class SubNestedSource {
 ```
 
 ```dart
-// nested.mapper.dart
+// nestedmapper.dart
 import 'package:smartstruct/smartstruct.dart';
 
 part 'nested.mapper.g.dart';
@@ -116,7 +117,7 @@ abstract class NestedMapper {
 Will generate the mapper
 
 ```dart
-// nested.mapper.g.dart
+// nestedmapper.mapper.g.dart
 class NestedMapperImpl extends NestedMapper {
   @override
   NestedTarget fromModel(NestedSource model) {
@@ -194,12 +195,15 @@ class ListMapperImpl extends ListMapper {
 The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
 In this case you also need to add the injectable dependency, as described here. https://pub.dev/packages/injectable
 
+Make sure, that in the Mapper File, you import the injectable dependency, before running the build_runner!
+
 ```dart
-// dog.mapper.dart
+// dogmapper.dart
 
 import 'package:smartstruct/smartstruct.dart';
+import 'package:injectable/injectable.dart';
 
-part 'dog.mapper.g.dart';
+part 'dogmapper.mapper.g.dart';
 
 @Mapper(useInjectable = true)
 abstract class DogMapper {
@@ -208,7 +212,7 @@ abstract class DogMapper {
 ```
 
 ```dart
-// dog.mapper.g.dart
+// dogmapper.mapper.g.dart
 @LazySingleton(as: DogMapper)
 class DogMapperImpl extends DogMapper {...}
 ```
