@@ -1,7 +1,7 @@
 // SOURCE
 import 'package:smartstruct/smartstruct.dart';
 
-part 'list.g.dart';
+part 'list.mapper.g.dart';
 
 class Source {
   final List<int> intList;
