@@ -14,3 +14,6 @@ include: package:pedantic/analysis_options.yaml
 # analyzer:
 #   exclude:
 #     - path/to/excluded/files/**
+analyzer:
+  enable-experiment:
+    - non-nullable
