@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:smartstruct/smartstruct.dart';
 
-part 'complete.g.dart';
+part 'complete.mapper.g.dart';
 
 class FooSource {
   final num number;

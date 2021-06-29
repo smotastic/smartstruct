@@ -1,6 +1,6 @@
 import 'package:smartstruct/smartstruct.dart';
 
-part 'nested.g.dart';
+part 'nested.mapper.g.dart';
 
 // TARGET
 

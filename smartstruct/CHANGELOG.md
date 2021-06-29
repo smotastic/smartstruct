@@ -1,7 +1,13 @@
-# v1.1.4
-
-- Added support for case insensitive fields mapping
-
+# v1.2.0
+- Fixed the useInjection attribute to properly work now (https://github.com/smotastic/smartstruct/issues/19)
+Note that all generated files are suffixed with *.mapper.g.dart* now instead of *.g.dart*
+So for migration purposes you'll have to just change the *part 'foomapper.g.dart'* in your mapper files to *part 'foomapper.mapper.g.dart*
+```dart
+// before
+part 'foomapper.g.dart'
+// after
+part 'foomapper.mapper.g.dart'
+```
 # v1.1.3
 - Added Support for Lists (https://github.com/smotastic/smartstruct/issues/12)
 

@@ -1,5 +1,5 @@
 import 'package:smartstruct/smartstruct.dart';
-part 'field_mapping.g.dart';
+part 'field_mapping.mapper.g.dart';
 
 // TARGET
 
