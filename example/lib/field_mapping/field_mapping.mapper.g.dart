@@ -7,6 +7,8 @@ part of 'field_mapping.dart';
 // **************************************************************************
 
 class DogMapperImpl extends DogMapper {
+  DogMapperImpl() : super();
+
   @override
   Dog fromDogModel(DogModel model) {
     final dog = Dog(model.dogName, model.breed, model.dogAge);

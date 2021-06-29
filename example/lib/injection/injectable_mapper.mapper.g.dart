@@ -8,6 +8,8 @@ part of 'injectable_mapper.dart';
 
 @LazySingleton(as: InjectableMapper)
 class InjectableMapperImpl extends InjectableMapper {
+  InjectableMapperImpl() : super();
+
   @override
   InjectableTarget fromSource(InjectableSource source) {
     final injectabletarget = InjectableTarget(source.text);
