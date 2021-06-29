@@ -1,6 +1,6 @@
 import 'package:smartstruct/smartstruct.dart';
 
-part 'simple.g.dart';
+part 'simple.mapper.g.dart';
 
 class Foo {
   final String fooBar;
