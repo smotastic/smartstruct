@@ -1,3 +1,7 @@
+# v.1.2.1
+- Constructors in the abstract mapper will now also be implemented by the generated mapper class (https://github.com/smotastic/smartstruct/issues/22).
+This should fix an issue where you cannot inject dependencies via the constructor in your mapper class.
+
 # v1.2.0
 - Fixed the useInjection attribute to properly work now (https://github.com/smotastic/smartstruct/issues/19)
 Note that all generated files are suffixed with *.mapper.g.dart* now instead of *.g.dart*
