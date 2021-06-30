@@ -25,6 +25,8 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       (b) => b
         ..annotations.addAll(_generateClassAnnotations(config, element))
         ..name = '${element.displayName}Impl'
+        ..constructors
+            .addAll(element.constructors.map((c) => _generateConstructor(c)))
         ..extend = refer('${element.displayName}')
         ..methods.addAll(element.methods
             .where((method) => method.isAbstract)
@@ -32,6 +34,42 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     );
     final emitter = DartEmitter();
     return '${mapperImpl.accept(emitter)}';
+  }
+
+  /// Generates a [Constructor] by copying the given [ConstructorElement] c
+  Constructor _generateConstructor(ConstructorElement c) {
+    final builder = ConstructorBuilder();
+    if (c.name.isNotEmpty) {
+      builder.name = c.name;
+    }
+
+    final namedParams = c.parameters
+        .where((element) => element.isNamed)
+        .map((e) => _generateParameter(e));
+
+    final positionalParams = c.parameters
+        .where((element) => element.isPositional)
+        .map((e) => _generateParameter(e));
+
+    builder.optionalParameters.addAll(namedParams);
+    builder.requiredParameters.addAll(positionalParams);
+
+    final namedArgs = {
+      for (var f in c.parameters.where((element) => element.isNamed))
+        f.name: refer(f.name)
+    };
+
+    var positionalArgs = c.parameters
+        .where((element) => element.isPositional)
+        .map((e) => refer(e.name));
+
+    Expression superCall = refer('super');
+    if (c.name.isNotEmpty) {
+      superCall = superCall.property(c.name);
+    }
+    builder.initializers.add(superCall.call(positionalArgs, namedArgs).code);
+
+    return builder.build();
   }
 
   /// Generates the Class Annotations for the created mapper implementation
@@ -229,8 +267,15 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
           element: e,
           todo: 'Add valid parameter type to mapping parameters');
     }
-    return Parameter((b) => b
-      ..name = e.name
-      ..type = refer(e.type.getDisplayString(withNullability: true)));
+
+    return Parameter(
+      (b) => b
+        ..required = e.isRequiredNamed
+        ..named = e.isNamed
+        ..name = e.name
+        ..type = refer(e.type.getDisplayString(withNullability: true))
+        ..defaultTo =
+            e.hasDefaultValue ? refer(e.defaultValueCode!).code : null,
+    );
   }
 }

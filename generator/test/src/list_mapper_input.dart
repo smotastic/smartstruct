@@ -27,6 +27,8 @@ class ListSubTarget {
 @Mapper()
 @ShouldGenerate(r'''
 class ListMapperImpl extends ListMapper {
+  ListMapperImpl() : super();
+
   @override
   ListTarget fromSource(ListSource source) {
     final listtarget = ListTarget(source.list.map(fromSubSource).toList());
