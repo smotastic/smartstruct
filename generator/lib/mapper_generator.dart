@@ -36,18 +36,13 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     return '${mapperImpl.accept(emitter)}';
   }
 
+  /// Generates a [Constructor] by copying the given [ConstructorElement] c
   Constructor _generateConstructor(ConstructorElement c) {
     final builder = ConstructorBuilder();
     if (c.name.isNotEmpty) {
       builder.name = c.name;
     }
 
-    // optional positional parameters = ?
-    // required positional parameters
-    // optional named parameters with default
-    // required named parameters with required
-
-    // positional können optional und required sein
     final namedParams = c.parameters
         .where((element) => element.isNamed)
         .map((e) => _generateParameter(e));
@@ -55,6 +50,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     final positionalParams = c.parameters
         .where((element) => element.isPositional)
         .map((e) => _generateParameter(e));
+
     builder.optionalParameters.addAll(namedParams);
     builder.requiredParameters.addAll(positionalParams);
 
