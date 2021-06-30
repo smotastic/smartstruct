@@ -24,4 +24,5 @@ const _expectedAnnotatedTests = {
   'NestedMapper',
   'InjectableMapper',
   'ListMapper',
+  'ConstructorMapper',
 };

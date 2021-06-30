@@ -1,11 +1,7 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
+part of 'mapper_test_input.dart';
 
-part of 'constructor.dart';
-
-// **************************************************************************
-// MapperGenerator
-// **************************************************************************
-
+@Mapper()
+@ShouldGenerate(r'''
 class ConstructorMapperImpl extends ConstructorMapper {
   ConstructorMapperImpl(String? optionalPos, String requiredPos,
       {required String requiredNamed, String? optionalNamed})
@@ -13,10 +9,10 @@ class ConstructorMapperImpl extends ConstructorMapper {
             requiredNamed: requiredNamed, optionalNamed: optionalNamed);
 
   ConstructorMapperImpl.foo(String text) : super.foo(text);
-
-  @override
-  Target fromSource(Source source) {
-    final target = Target(source.text);
-    return target;
-  }
+}
+''')
+abstract class ConstructorMapper {
+  ConstructorMapper(String? optionalPos, String requiredPos,
+      {required String requiredNamed, String? optionalNamed});
+  ConstructorMapper.foo(String text);
 }

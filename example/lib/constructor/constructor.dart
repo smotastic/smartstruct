@@ -16,9 +16,9 @@ class Target {
 
 @Mapper()
 abstract class ConstructorMapper {
-  ConstructorMapper(String? optionalPositional, String requiredPositional,
-      {required String requiredNamed});
-  // ConstructorMapper.bar({String foo: 'empty'});
+  ConstructorMapper(String? optionalPos, String requiredPos,
+      {required String requiredNamed, String? optionalNamed});
+  ConstructorMapper.foo(String text);
 
   Target fromSource(Source source);
 }
