@@ -1,12 +1,12 @@
 import 'dart:collection';
 
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/src/builder/build_step.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct/smartstruct.dart';
 import 'package:source_gen/source_gen.dart';
-
 import 'mapper_config.dart';
 
 /// Codegenerator to generate implemented mapping classes
@@ -87,10 +87,15 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         ? (a) => a.hashCode
         : (a) => a.toUpperCase().hashCode;
     final mappingConfig = MapperConfig.readMappingConfig(method);
+    final customMappingConfig = MapperConfig.readCustomMappingConfig(method);
 
     /// With HashMap you can specify how to compare keys
     /// It is very usefull when you want to have caseInsensitive keys
     var targetToSource = HashMap<String, FieldElement>(
+        equals: (a, b) => fieldMapper(a) == fieldMapper(b),
+        hashCode: (a) => equalsHashCode(a));
+
+    var customTargetToSource = HashMap<String, dynamic>(
         equals: (a, b) => fieldMapper(a) == fieldMapper(b),
         hashCode: (a) => equalsHashCode(a));
 
@@ -103,7 +108,19 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
             'Mapper ${classElement.displayName} got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
             todo: "Use case sensitive mapper or change field's names");
       }
-      targetToSource[f.name] = f;
+      if (customMappingConfig.containsKey(f.name)) {
+        customTargetToSource[f.name] = customMappingConfig[f.name];
+      } else if (targetClass.fields
+          .map((e) => e.displayName)
+          .contains(f.displayName)) {
+        targetToSource[f.name] = f;
+      }
+    }
+    for (var field in targetClass.fields
+        .where((field) => !sourceClass.fields.contains(field))) {
+      if (customMappingConfig.containsKey(field.displayName)) {
+        customTargetToSource[field.name] = customMappingConfig[field.name];
+      }
     }
 
     /// If there are Mapping Annotations on the method, the source attribute of the source mapping class,
@@ -119,6 +136,27 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     final targetConstructor = _chooseConstructor(targetClass, sourceClass);
     final positionalArgs = <Expression>[];
     final namedArgs = <String, Expression>{};
+
+    targetConstructor.parameters
+        .where(
+            (targetField) => customTargetToSource.containsKey(targetField.name))
+        .forEach((targetField) {
+      final mappingMethod = customTargetToSource[targetField.name]!;
+      print(mappingMethod);
+      if (mappingMethod is DartObject) {
+        final func = mappingMethod.toFunctionValue();
+        if (func != null) {
+          var fieldAssigment = refer(func.name).call([refer(source.name)]);
+          if (targetField.isNamed) {
+            namedArgs.putIfAbsent(targetField.name, () => fieldAssigment);
+          } else {
+            positionalArgs.add(fieldAssigment);
+          }
+        }
+      }
+      customTargetToSource.remove(targetField.name);
+    });
+
     // one of the inputfields matches the current constructorfield
     targetConstructor.parameters
         .where((targetField) => targetToSource.containsKey(targetField.name))
