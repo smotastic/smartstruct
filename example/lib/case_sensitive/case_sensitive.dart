@@ -1,5 +1,5 @@
 import 'package:smartstruct/smartstruct.dart';
-part 'case_sensitive.g.dart';
+part 'case_sensitive.mapper.g.dart';
 
 class Source {
   final String userName;

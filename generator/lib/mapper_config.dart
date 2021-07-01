@@ -31,4 +31,17 @@ class MapperConfig {
     });
     return config;
   }
+
+  static Map<String, dynamic> readCustomMappingConfig(MethodElement method) {
+    final config = <String, dynamic>{};
+    final annotations =
+        TypeChecker.fromRuntime(CustomMapping).annotationsOf(method);
+
+    annotations.forEach((element) {
+      var reader = ConstantReader(element);
+      config[reader.read('targetField').stringValue] =
+          reader.read('f').objectValue;
+    });
+    return config;
+  }
 }

@@ -1,12 +1,12 @@
 import 'dart:collection';
 
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/src/builder/build_step.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct/smartstruct.dart';
 import 'package:source_gen/source_gen.dart';
-
 import 'mapper_config.dart';
 
 /// Codegenerator to generate implemented mapping classes
@@ -116,6 +116,7 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       ClassElement classElement) {
     final source = method.parameters.first;
     final targetClass = method.returnType.element as ClassElement;
+
     final sourceClass = source.type.element as ClassElement;
     final sourceReference = refer(source.displayName);
 
@@ -125,10 +126,17 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         ? (a) => a.hashCode
         : (a) => a.toUpperCase().hashCode;
     final mappingConfig = MapperConfig.readMappingConfig(method);
+    final customMappingConfig = MapperConfig.readCustomMappingConfig(method);
 
     /// With HashMap you can specify how to compare keys
     /// It is very usefull when you want to have caseInsensitive keys
+    /// Contains data from @Mapping annotations
     var targetToSource = HashMap<String, FieldElement>(
+        equals: (a, b) => fieldMapper(a) == fieldMapper(b),
+        hashCode: (a) => equalsHashCode(a));
+
+    /// Contains data from @CustomMapping annotations
+    var customTargetToSource = HashMap<String, dynamic>(
         equals: (a, b) => fieldMapper(a) == fieldMapper(b),
         hashCode: (a) => equalsHashCode(a));
 
@@ -154,9 +162,43 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
       }
     });
 
+    for (var f in targetClass.fields) {
+      ///Mapped by @CustomMapping annotation
+      final fieldIsCustomMapped =
+          customMappingConfig.containsKey(f.displayName);
+      if (fieldIsCustomMapped) {
+        customTargetToSource[f.displayName] =
+            customMappingConfig[f.displayName];
+        if (targetToSource.containsKey(f.displayName)) {
+          targetToSource.remove(f.displayName);
+        }
+      }
+    }
+
     final targetConstructor = _chooseConstructor(targetClass, sourceClass);
     final positionalArgs = <Expression>[];
     final namedArgs = <String, Expression>{};
+
+    targetConstructor.parameters
+        .where(
+            (targetField) => customTargetToSource.containsKey(targetField.name))
+        .forEach((targetField) {
+      final mappingMethod = customTargetToSource[targetField.name]!;
+      print(mappingMethod);
+      if (mappingMethod is DartObject) {
+        final func = mappingMethod.toFunctionValue();
+        if (func != null) {
+          var fieldAssigment = refer(func.name).call([refer(source.name)]);
+          if (targetField.isNamed) {
+            namedArgs.putIfAbsent(targetField.name, () => fieldAssigment);
+          } else {
+            positionalArgs.add(fieldAssigment);
+          }
+        }
+      }
+      customTargetToSource.remove(targetField.name);
+    });
+
     // one of the inputfields matches the current constructorfield
     targetConstructor.parameters
         .where((targetField) => targetToSource.containsKey(targetField.name))
