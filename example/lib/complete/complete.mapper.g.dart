@@ -8,6 +8,8 @@ part of 'complete.dart';
 
 @LazySingleton(as: ExampleMapper)
 class ExampleMapperImpl extends ExampleMapper {
+  ExampleMapperImpl() : super();
+
   @override
   BarTarget fromFoo(FooSource source) {
     final bartarget = BarTarget(source.number, source.text, source.truthy,

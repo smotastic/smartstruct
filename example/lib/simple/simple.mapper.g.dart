@@ -7,6 +7,8 @@ part of 'simple.dart';
 // **************************************************************************
 
 class FooBarMapperImpl extends FooBarMapper {
+  FooBarMapperImpl() : super();
+
   @override
   Bar? fromFoo(Foo? foo) {
     if (foo == null) {

@@ -27,6 +27,8 @@ class NestedSubTarget {
 @Mapper()
 @ShouldGenerate(r'''
 class NestedMapperImpl extends NestedMapper {
+  NestedMapperImpl() : super();
+
   @override
   NestedTarget fromSource(NestedSource source) {
     final nestedtarget = NestedTarget(fromSubSource(source.nested));

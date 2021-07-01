@@ -7,6 +7,8 @@ part of 'nested.dart';
 // **************************************************************************
 
 class NestedMapperImpl extends NestedMapper {
+  NestedMapperImpl() : super();
+
   @override
   NestedTarget fromModel(NestedSource model) {
     final nestedtarget = NestedTarget(fromSubClassModel(model.subNestedSource));
