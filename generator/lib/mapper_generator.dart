@@ -7,7 +7,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct/smartstruct.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:smartstruct_generator/string_list_extensions.dart';
 import 'mapper_config.dart';
 
 /// Codegenerator to generate implemented mapping classes
@@ -81,8 +80,6 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
     final targetClass = method.returnType.element as ClassElement;
 
     final sourceClass = source.type.element as ClassElement;
-    final sourceClassFieldsDisplayNames =
-        sourceClass.fields.map((e) => e.displayName).toList();
     final sourceReference = refer(source.displayName);
 
     final caseSensitiveFields = config['caseSensitiveFields'];
@@ -105,53 +102,40 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
         equals: (a, b) => fieldMapper(a) == fieldMapper(b),
         hashCode: (a) => equalsHashCode(a));
 
-    for (var f in targetClass.fields) {
-      ///Mapped by @Mapping annotation
-      final fieldIsNameMapped = mappingConfig.containsValue(f.displayName);
-
-      ///Mapped by @CustomMapping annotation
-      final fieldIsCustomMapped =
-          customMappingConfig.containsKey(f.displayName);
-
-      ///Mapped by default field's names matching
-      final fieldIsDefaultMapped = sourceClassFieldsDisplayNames
-          .containsWithCase(f.displayName, caseSensitiveFields);
-
-      if (fieldIsNameMapped) {
-        targetToSource[mappingConfig[f.displayName]] = f;
-      } else if (fieldIsCustomMapped) {
-        customTargetToSource[f.displayName] =
-            customMappingConfig[f.displayName];
-      } else if (fieldIsDefaultMapped) {
-        targetToSource[f.displayName] = f;
+    for (var f in sourceClass.fields) {
+      if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
+        final duplicatedKey = targetToSource.keys
+            .toList()
+            .firstWhere((k) => k.toUpperCase() == f.name.toUpperCase());
+        throw InvalidGenerationSourceError(
+            'Mapper ${classElement.displayName} got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
+            todo: "Use case sensitive mapper or change field's names");
       }
-      print("");
-
-      // if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
-      //   final duplicatedKey = targetToSource.keys
-      //       .toList()
-      //       .firstWhere((k) => k.toUpperCase() == f.name.toUpperCase());
-      //   throw InvalidGenerationSourceError(
-      //       'Mapper ${classElement.displayName}§ got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
-      //       todo: "Use case sensitive mapper or change field's names");
-      // }
+      targetToSource[f.name] = f;
     }
-    // for (var field in targetClass.fields
-    //     .where((field) => !sourceClass.fields.contains(field))) {
-    //   if (customMappingConfig.containsKey(field.displayName)) {
-    //     customTargetToSource[field.name] = customMappingConfig[field.name];
-    //   }
-    // }
 
     /// If there are Mapping Annotations on the method, the source attribute of the source mapping class,
     /// will be replaced with the source attribute of the given mapping config.
-    // mappingConfig.forEach((sourceField, targetField) {
-    //   if (targetToSource.containsKey(sourceField)) {
-    //     targetToSource.putIfAbsent(
-    //         targetField, () => targetToSource[sourceField] as FieldElement);
-    //     targetToSource.remove(sourceField);
-    //   }
-    // });
+    mappingConfig.forEach((sourceField, targetField) {
+      if (targetToSource.containsKey(sourceField)) {
+        targetToSource.putIfAbsent(
+            targetField, () => targetToSource[sourceField] as FieldElement);
+        targetToSource.remove(sourceField);
+      }
+    });
+
+    for (var f in targetClass.fields) {
+      ///Mapped by @CustomMapping annotation
+      final fieldIsCustomMapped =
+          customMappingConfig.containsKey(f.displayName);
+      if (fieldIsCustomMapped) {
+        customTargetToSource[f.displayName] =
+            customMappingConfig[f.displayName];
+        if (targetToSource.containsKey(f.displayName)) {
+          targetToSource.remove(f.displayName);
+        }
+      }
+    }
 
     final targetConstructor = _chooseConstructor(targetClass, sourceClass);
     final positionalArgs = <Expression>[];
