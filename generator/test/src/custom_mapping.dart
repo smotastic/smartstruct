@@ -44,6 +44,8 @@ dynamic mapFullName(dynamic input) {
 @Mapper()
 @ShouldGenerate(r'''
 class CustomMapperImpl extends CustomMapper {
+  CustomMapperImpl() : super();
+
   @override
   CustomTarget fromSource(CustomSource source) {
     final customtarget =

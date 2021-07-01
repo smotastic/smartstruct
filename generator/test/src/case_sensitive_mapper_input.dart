@@ -21,6 +21,8 @@ class Duplicated {
 @Mapper()
 @ShouldGenerate(r'''
 class CaseInsensitiveMapperImpl extends CaseInsensitiveMapper {
+  CaseInsensitiveMapperImpl() : super();
+
   @override
   Target fromSource(Source source) {
     final target = Target(source.username);
@@ -35,6 +37,8 @@ abstract class CaseInsensitiveMapper {
 @Mapper(caseSensitiveFields: true)
 @ShouldGenerate(r'''
 class CaseSensitiveMapperImpl extends CaseSensitiveMapper {
+  CaseSensitiveMapperImpl() : super();
+
   @override
   Target fromSource(Source source) {
     final target = Target();
@@ -49,6 +53,8 @@ abstract class CaseSensitiveMapper {
 @Mapper(caseSensitiveFields: true)
 @ShouldGenerate(r'''
 class CaseSensitiveDuplicateMapperImpl extends CaseSensitiveDuplicateMapper {
+  CaseSensitiveDuplicateMapperImpl() : super();
+
   @override
   Duplicated fromSource(Duplicated source) {
     final duplicated = Duplicated(source.username, source.userNAME);
