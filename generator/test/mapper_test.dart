@@ -26,5 +26,6 @@ const _expectedAnnotatedTests = {
   'ListMapper',
   'CaseInsensitiveMapper',
   'CaseSensitiveMapper',
-  'CaseSensitiveDuplicateMapper'
+  'CaseSensitiveDuplicateMapper',
+  'ConstructorMapper',
 };

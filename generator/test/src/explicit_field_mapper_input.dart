@@ -17,6 +17,8 @@ class ExplicitFieldTarget {
 @Mapper()
 @ShouldGenerate(r'''
 class ExplicitFieldMapperImpl extends ExplicitFieldMapper {
+  ExplicitFieldMapperImpl() : super();
+
   @override
   ExplicitFieldTarget fromSource(ExplicitFieldSource source) {
     final explicitfieldtarget =

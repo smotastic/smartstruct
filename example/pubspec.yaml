@@ -13,7 +13,7 @@ dev_dependencies:
   smartstruct: 
     path: ../smartstruct
   injectable_generator: ^1.4.1
-  # smartstruct_generator: ^1.1.2
+  # smartstruct_generator: ^1.2.0
   smartstruct_generator:
     path: ../generator
    

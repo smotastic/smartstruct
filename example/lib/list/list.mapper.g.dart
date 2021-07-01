@@ -7,6 +7,8 @@ part of 'list.dart';
 // **************************************************************************
 
 class ListMapperImpl extends ListMapper {
+  ListMapperImpl() : super();
+
   @override
   Target fromSource(Source source) {
     final target = Target(source.intList.map((e) => e).toList(),
