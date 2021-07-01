@@ -17,19 +17,18 @@ class CustomSource {
 class CustomTarget {
   final String fullName;
   final DateTime birthDate;
-  final String avatar;
+  final String avatarString;
 
   CustomTarget(
     this.fullName,
     this.birthDate,
-    this.avatar,
+    this.avatarString,
   );
 }
 
 // To have type safety you need extend CustomMapping generic class with specific types.
 class DateTimeFromSourceMapper extends CustomMapping<DateTime, CustomSource> {
-  const DateTimeFromSourceMapper(
-      {required String targetField, required DateTime Function(CustomSource) f})
+  const DateTimeFromSourceMapper({required String targetField, required DateTime Function(CustomSource) f})
       : super(targetField: targetField, f: f);
 }
 
@@ -56,5 +55,6 @@ class CustomMapperImpl extends CustomMapper {
 abstract class CustomMapper {
   @DateTimeFromSourceMapper(targetField: 'birthDate', f: mapBirthDate)
   @CustomMapping(targetField: 'fullName', f: mapFullName)
+  @Mapping(source: 'avatar', target: 'avatarString')
   CustomTarget fromSource(CustomSource source);
 }
