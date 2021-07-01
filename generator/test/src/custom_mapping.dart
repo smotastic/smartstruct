@@ -47,7 +47,8 @@ dynamic mapFullName(dynamic input) {
 class CustomMapperImpl extends CustomMapper {
   @override
   CustomTarget fromSource(CustomSource source) {
-    final customtarget = CustomTarget(mapFullName(source), mapBirthDate(source), source.avatar);
+    final customtarget =
+        CustomTarget(mapFullName(source), mapBirthDate(source), source.avatar);
     return customtarget;
   }
 }
