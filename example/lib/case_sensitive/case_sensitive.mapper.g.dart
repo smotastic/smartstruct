@@ -7,6 +7,8 @@ part of 'case_sensitive.dart';
 // **************************************************************************
 
 class ExampleMapperImpl extends ExampleMapper {
+  ExampleMapperImpl() : super();
+
   @override
   Target fromSource(Source source) {
     final target = Target(username: source.userName);

@@ -7,6 +7,8 @@ part of 'custom_mapping.dart';
 // **************************************************************************
 
 class CustomMapperImpl extends CustomMapper {
+  CustomMapperImpl() : super();
+
   @override
   Target fromSource(Source source) {
     final target =
