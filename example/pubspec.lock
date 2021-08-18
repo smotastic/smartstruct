@@ -317,19 +317,19 @@ packages:
     source: hosted
     version: "1.0.1"
   smartstruct:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       path: "../smartstruct"
       relative: true
     source: path
-    version: "1.2.1"
+    version: "1.2.2"
   smartstruct_generator:
     dependency: "direct dev"
     description:
       path: "../generator"
       relative: true
     source: path
-    version: "1.2.1"
+    version: "1.2.2"
   source_gen:
     dependency: transitive
     description:
