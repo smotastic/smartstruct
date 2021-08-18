@@ -1,3 +1,7 @@
+# v1.2.2
+Fixes:
+- The generator will now always run after all .g.dart files from other builders have been run, so the mapper can potentially create mappers for other created classes. See Issue [#24](https://github.com/smotastic/smartstruct/issues/24)
+
 # v.1.2.1
 - Constructors in the abstract mapper will now also be implemented by the generated mapper class (https://github.com/smotastic/smartstruct/issues/22).
 This should fix an issue where you cannot inject dependencies via the constructor in your mapper class.
