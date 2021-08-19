@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/parameter_copy.dart';
@@ -40,31 +41,33 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
   final sourceClass = sourceParam.type.element as ClassElement;
   final sourceReference = refer(sourceParam.displayName);
 
-  final targetToSource = _targetToSource(sourceClass, method, config);
+  final _ = _targetToSource(sourceClass, targetClass, method, config);
+  final targetToSource = _[0];
+  final customTargetToSource = _[1];
 
   final targetConstructor = _chooseConstructor(targetClass, sourceClass);
   final positionalArgs = <Expression>[];
   final namedArgs = <String, Expression>{};
 
-  // targetConstructor.parameters
-  //     .where(
-  //         (targetField) => customTargetToSource.containsKey(targetField.name))
-  //     .forEach((targetField) {
-  //   final mappingMethod = customTargetToSource[targetField.name]!;
-  //   print(mappingMethod);
-  //   if (mappingMethod is DartObject) {
-  //     final func = mappingMethod.toFunctionValue();
-  //     if (func != null) {
-  //       var fieldAssigment = refer(func.name).call([refer(source.name)]);
-  //       if (targetField.isNamed) {
-  //         namedArgs.putIfAbsent(targetField.name, () => fieldAssigment);
-  //       } else {
-  //         positionalArgs.add(fieldAssigment);
-  //       }
-  //     }
-  //   }
-  //   customTargetToSource.remove(targetField.name);
-  // });
+  targetConstructor.parameters
+      .where(
+          (targetField) => customTargetToSource.containsKey(targetField.name))
+      .forEach((targetField) {
+    final mappingMethod = customTargetToSource[targetField.name]!;
+    print(mappingMethod);
+    if (mappingMethod is DartObject) {
+      final func = mappingMethod.toFunctionValue();
+      if (func != null) {
+        var fieldAssigment = refer(func.name).call([refer(sourceParam.name)]);
+        if (targetField.isNamed) {
+          namedArgs.putIfAbsent(targetField.name, () => fieldAssigment);
+        } else {
+          positionalArgs.add(fieldAssigment);
+        }
+      }
+    }
+    customTargetToSource.remove(targetField.name);
+  });
 
   // fills namedArgs and positionalArgs for the targetConstructor if
   // one of the inputfields matches the current constructorfield
@@ -119,8 +122,8 @@ ConstructorElement _chooseConstructor(
   return outputClass.constructors.where((element) => !element.isFactory).first;
 }
 
-HashMap<String, FieldElement> _targetToSource(
-    ClassElement source, MethodElement method, Map<String, dynamic> config) {
+List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
+    ClassElement target, MethodElement method, Map<String, dynamic> config) {
   final caseSensitiveFields = config['caseSensitiveFields'];
   final fieldMapper = caseSensitiveFields ? (a) => a : (a) => a.toUpperCase();
   final equalsHashCode =
@@ -136,9 +139,9 @@ HashMap<String, FieldElement> _targetToSource(
       hashCode: (a) => equalsHashCode(a));
 
   // /// Contains data from @CustomMapping annotations
-  // var customTargetToSource = HashMap<String, dynamic>(
-  //     equals: (a, b) => fieldMapper(a) == fieldMapper(b),
-  //     hashCode: (a) => equalsHashCode(a));
+  var customTargetToSource = HashMap<String, dynamic>(
+      equals: (a, b) => fieldMapper(a) == fieldMapper(b),
+      hashCode: (a) => equalsHashCode(a));
 
   for (var f in source.fields) {
     if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
@@ -162,17 +165,15 @@ HashMap<String, FieldElement> _targetToSource(
     }
   });
 
-  // for (var f in targetClass.fields) {
-  //   ///Mapped by @CustomMapping annotation
-  //   final fieldIsCustomMapped =
-  //       customMappingConfig.containsKey(f.displayName);
-  //   if (fieldIsCustomMapped) {
-  //     customTargetToSource[f.displayName] =
-  //         customMappingConfig[f.displayName];
-  //     if (targetToSource.containsKey(f.displayName)) {
-  //       targetToSource.remove(f.displayName);
-  //     }
-  //   }
-  // }
-  return targetToSource;
+  for (var f in target.fields) {
+    ///Mapped by @CustomMapping annotation
+    final fieldIsCustomMapped = customMappingConfig.containsKey(f.displayName);
+    if (fieldIsCustomMapped) {
+      customTargetToSource[f.displayName] = customMappingConfig[f.displayName];
+      if (targetToSource.containsKey(f.displayName)) {
+        targetToSource.remove(f.displayName);
+      }
+    }
+  }
+  return [targetToSource, customTargetToSource];
 }
