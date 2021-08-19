@@ -1,4 +1,4 @@
-import 'package:smartstruct_generator/mapper_generator.dart';
+import 'package:smartstruct_generator/generators/mapper_generator.dart';
 import 'package:source_gen_test/source_gen_test.dart';
 import 'package:path/path.dart' as p;
 
