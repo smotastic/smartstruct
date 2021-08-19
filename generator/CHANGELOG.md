@@ -1,3 +1,8 @@
+# v.1.2.3
+Features:
+- Added the functionality to add custom mapper function to a target (https://github.com/smotastic/smartstruct/pull/28)
+- New option caseSensitiveFields to turn on or off case sensitivity then comparing mappable fields (https://github.com/smotastic/smartstruct/pull/18)
+
 # v1.2.2
 Fixes:
 - The generator will now always run after all .g.dart files from other builders have been run, so the mapper can potentially create mappers for other created classes. See Issue [#24](https://github.com/smotastic/smartstruct/issues/24)
