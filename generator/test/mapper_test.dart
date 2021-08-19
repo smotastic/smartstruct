@@ -28,4 +28,5 @@ const _expectedAnnotatedTests = {
   'CaseSensitiveMapper',
   'CaseSensitiveDuplicateMapper',
   'ConstructorMapper',
+  'FunctionFieldMapper',
 };
