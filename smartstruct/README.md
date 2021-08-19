@@ -95,7 +95,7 @@ The Mapper supports positional arguments, named arguments and property access vi
 
 ## Case sensitivity
 
-By default mapper generator works in case insensitivity maner. 
+By default mapper generator works in case insensitivity manner. 
 
 ```dart
 class Source {
@@ -126,7 +126,7 @@ class ExampleMapperImpl extends ExampleMapper {
   }
 }
 ```
-To create case sensitive mapper, you can add param caseSensitiveFields to @Mapper annotation. Case sensitive mapper is checking field's names in case sensitive maner.
+To create case sensitive mapper, you can add param caseSensitiveFields to @Mapper annotation. Case sensitive mapper is checking field's names in case sensitive manner.
 ```dart
 
 @Mapper(caseSensitiveFields: true)
@@ -166,6 +166,41 @@ class DogMapperImpl extends DogMapper {
     @override
     Dog fromModel(DogModel model) {
         Dog dog = Dog(model.dogName);
+        return dog;
+    }
+}
+```
+
+### Function Mapping
+The source attribute can also be a Function. This Function will then be called with the Source Parameter of the mapper method as a parameter.
+```dart
+class Dog {
+    final String name;
+    final String breed;
+    Dog(this.name, this.breed);
+}
+class DogModel {
+    final String name;
+    DogModel(this.name);
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+    static String randomBreed(DogModel model) => 'some random breed';
+
+    @Mapping(source: randomBreed, target: 'breed')
+    Dog fromModel(DogModel model);
+}
+```
+
+Will generate the following Mapper.
+```dart
+class DogMapperImpl extends DogMapper {
+    @override
+    Dog fromModel(DogModel model) {
+        Dog dog = Dog(model.dogName, DogMapper.randomBreed(model));
         return dog;
     }
 }
