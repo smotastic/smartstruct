@@ -75,6 +75,8 @@ class DogMapperImpl extends DogMapper {
 }
 ```
 
+Also
+
 # Nested Bean Mapping
 
 Nested beans can be mapped, by defining an additional mapper method for the nested bean.
