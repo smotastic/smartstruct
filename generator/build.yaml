@@ -1,6 +1,6 @@
 builders:
   mapper:
-    import: "package:smartstruct_generator/builder.dart"
+    import: "package:smartstruct_generator/integrations/builder.dart"
     builder_factories: ["smartstructBuilder"]
     build_extensions: { ".dart": ["mapper.g.dart"] }
     auto_apply: dependents
