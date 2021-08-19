@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:smartstruct/smartstruct.dart';
 import 'package:source_gen/source_gen.dart';
@@ -20,27 +21,14 @@ class MapperConfig {
 
   /// Reads the attributes of the [Mapping] annotations of a given Method,
   /// and returns key value pairs, where the key is the source, and the value is the target attribute of the read Mapping
-  static Map<String, dynamic> readMappingConfig(MethodElement method) {
-    final config = <String, dynamic>{};
+  static Map<DartObject, String> readMappingConfig(MethodElement method) {
+    final config = <DartObject, String>{};
     final annotations = TypeChecker.fromRuntime(Mapping).annotationsOf(method);
 
     annotations.forEach((element) {
       var reader = ConstantReader(element);
-      config[reader.read('source').stringValue] =
+      config[reader.read('source').objectValue] =
           reader.read('target').stringValue;
-    });
-    return config;
-  }
-
-  static Map<String, dynamic> readCustomMappingConfig(MethodElement method) {
-    final config = <String, dynamic>{};
-    final annotations =
-        TypeChecker.fromRuntime(CustomMapping).annotationsOf(method);
-
-    annotations.forEach((element) {
-      var reader = ConstantReader(element);
-      config[reader.read('targetField').stringValue] =
-          reader.read('f').objectValue;
     });
     return config;
   }

@@ -75,7 +75,40 @@ class DogMapperImpl extends DogMapper {
 }
 ```
 
-Also
+## Function Mapping
+The source attribute can also be a Function. This Function will then be called with the Source Parameter of the mapper method as a parameter.
+```dart
+class Dog {
+    final String name;
+    final String breed;
+    Dog(this.name, this.breed);
+}
+class DogModel {
+    final String name;
+    DogModel(this.name);
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+    static String randomBreed(DogModel model) => 'some random breed';
+
+    @Mapping(source: randomBreed, target: 'breed')
+    Dog fromModel(DogModel model);
+}
+```
+
+Will generate the following Mapper.
+```dart
+class DogMapperImpl extends DogMapper {
+    @override
+    Dog fromModel(DogModel model) {
+        Dog dog = Dog(model.dogName, DogMapper.randomBreed(model));
+        return dog;
+    }
+}
+```
 
 # Nested Bean Mapping
 
