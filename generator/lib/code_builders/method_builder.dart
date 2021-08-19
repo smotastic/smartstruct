@@ -54,7 +54,6 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
           (targetField) => customTargetToSource.containsKey(targetField.name))
       .forEach((targetField) {
     final mappingMethod = customTargetToSource[targetField.name]!;
-    print(mappingMethod);
     if (mappingMethod is DartObject) {
       final func = mappingMethod.toFunctionValue();
       if (func != null) {
