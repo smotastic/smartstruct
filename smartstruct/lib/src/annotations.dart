@@ -14,18 +14,7 @@ const mapper = Mapper();
 ///
 /// Annotate the method with [Mapping] and provide a valid source and target fieldname to map these two fields with each other
 class Mapping {
-  final String source;
+  final dynamic source;
   final String target;
   const Mapping({required this.source, required this.target});
-}
-
-/// CustomMapping to support explicit field mapping in case the mapped target do not match in name,type or target is created based on few fields
-///
-/// Annotate the method with [CustomMapping] and provide a valid targetField and mapping function f
-/// To achive type safety, override CustomMapping class with specific TargetField and SourceClass types
-class CustomMapping<TargetField, SourceClass> {
-  final String targetField;
-  final TargetField Function(SourceClass) f;
-
-  const CustomMapping({required this.targetField, required this.f});
 }

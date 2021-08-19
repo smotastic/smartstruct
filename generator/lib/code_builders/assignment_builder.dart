@@ -17,7 +17,7 @@ import 'package:code_builder/code_builder.dart';
 ///
 Expression generateSourceFieldAssignment(
     Reference sourceReference,
-    FieldElement sourceField,
+    dynamic sourceField,
     ClassElement classElement,
     VariableElement targetField) {
   var sourceFieldAssignment = sourceReference.property(sourceField.name);
@@ -45,6 +45,13 @@ Expression generateSourceFieldAssignment(
             //.toList()
             .property('toList')
             .call([]);
+  } else if (sourceField is ExecutableElement) {
+    Expression expr = refer(sourceField.name);
+    if (sourceField.isStatic && sourceField.enclosingElement.name != null) {
+      expr =
+          refer(sourceField.enclosingElement.name!).property(sourceField.name);
+    }
+    sourceFieldAssignment = expr.call([sourceReference]);
   } else {
     // found a mapping method in the class which will map the source to target
     final matchingMappingMethods = _findMatchingMappingMethod(

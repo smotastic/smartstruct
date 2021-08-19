@@ -43,30 +43,11 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
 
   final _ = _targetToSource(sourceClass, targetClass, method, config);
   final targetToSource = _[0];
-  final customTargetToSource = _[1];
+  // final customTargetToSource = _[1];
 
   final targetConstructor = _chooseConstructor(targetClass, sourceClass);
   final positionalArgs = <Expression>[];
   final namedArgs = <String, Expression>{};
-
-  targetConstructor.parameters
-      .where(
-          (targetField) => customTargetToSource.containsKey(targetField.name))
-      .forEach((targetField) {
-    final mappingMethod = customTargetToSource[targetField.name]!;
-    if (mappingMethod is DartObject) {
-      final func = mappingMethod.toFunctionValue();
-      if (func != null) {
-        var fieldAssigment = refer(func.name).call([refer(sourceParam.name)]);
-        if (targetField.isNamed) {
-          namedArgs.putIfAbsent(targetField.name, () => fieldAssigment);
-        } else {
-          positionalArgs.add(fieldAssigment);
-        }
-      }
-    }
-    customTargetToSource.remove(targetField.name);
-  });
 
   // fills namedArgs and positionalArgs for the targetConstructor if
   // one of the inputfields matches the current constructorfield
@@ -128,12 +109,12 @@ List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
   final equalsHashCode =
       caseSensitiveFields ? (a) => a.hashCode : (a) => a.toUpperCase().hashCode;
   final mappingConfig = MapperConfig.readMappingConfig(method);
-  final customMappingConfig = MapperConfig.readCustomMappingConfig(method);
+  // final customMappingConfig = MapperConfig.readCustomMappingConfig(method);
 
   /// With HashMap you can specify how to compare keys
   /// It is very usefull when you want to have caseInsensitive keys
   /// Contains data from @Mapping annotations
-  var targetToSource = HashMap<String, FieldElement>(
+  var targetToSource = HashMap<String, dynamic>(
       equals: (a, b) => fieldMapper(a) == fieldMapper(b),
       hashCode: (a) => equalsHashCode(a));
 
@@ -157,22 +138,18 @@ List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
   /// If there are Mapping Annotations on the method, the source attribute of the source mapping class,
   /// will be replaced with the source attribute of the given mapping config.
   mappingConfig.forEach((sourceField, targetField) {
-    if (targetToSource.containsKey(sourceField)) {
-      targetToSource.putIfAbsent(
-          targetField, () => targetToSource[sourceField] as FieldElement);
-      targetToSource.remove(sourceField);
+    if (sourceField.toFunctionValue() != null) {
+      targetToSource[targetField] = sourceField.toFunctionValue()!;
+    }
+    if (sourceField.toStringValue() != null) {
+      final sourceFieldString = sourceField.toStringValue()!;
+      if (targetToSource.containsKey(sourceFieldString)) {
+        targetToSource.putIfAbsent(targetField,
+            () => targetToSource[sourceFieldString] as FieldElement);
+        targetToSource.remove(sourceFieldString);
+      }
     }
   });
 
-  for (var f in target.fields) {
-    ///Mapped by @CustomMapping annotation
-    final fieldIsCustomMapped = customMappingConfig.containsKey(f.displayName);
-    if (fieldIsCustomMapped) {
-      customTargetToSource[f.displayName] = customMappingConfig[f.displayName];
-      if (targetToSource.containsKey(f.displayName)) {
-        targetToSource.remove(f.displayName);
-      }
-    }
-  }
   return [targetToSource, customTargetToSource];
 }
