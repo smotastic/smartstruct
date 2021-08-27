@@ -10,7 +10,7 @@ dev_dependencies:
   test: ^1.17.7
   source_gen_test: ^1.0.0
 dependencies:
-  analyzer: ^1.7.1
+  analyzer: ^2.0.0
   build: ^2.0.2
   source_gen: ^1.0.1
   code_builder: ^4.0.0
