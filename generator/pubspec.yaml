@@ -1,6 +1,6 @@
 name: smartstruct_generator
 description: smartstruct - A dart bean mapper annotation processor - the easy nullsafe way!
-version: 1.2.3
+version: 1.2.3+1
 homepage: https://github.com/smotastic/smartstruct
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -14,7 +14,6 @@ dependencies:
   build: ^2.0.2
   source_gen: ^1.0.1
   code_builder: ^4.0.0
-  # after release please replace with smartstruct: 1.2.2
-  smartstruct: ^1.2.3
+  smartstruct: ^1.2.3+1
   path: ^1.8.0
  

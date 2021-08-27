@@ -1,7 +1,12 @@
+# v.1.2.3+1
+- Updated analyzer dependency to 2.0.0
+
+
 # v.1.2.3
 Features:
 - Added the functionality to add custom mapper function to a target (https://github.com/smotastic/smartstruct/pull/28)
 - New option caseSensitiveFields to turn on or off case sensitivity then comparing mappable fields (https://github.com/smotastic/smartstruct/pull/18)
+
 
 # v1.2.2
 Fixes:
