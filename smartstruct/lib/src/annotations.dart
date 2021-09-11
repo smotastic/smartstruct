@@ -5,7 +5,10 @@ class Mapper {
   final bool useInjection;
   final bool caseSensitiveFields;
 
-  const Mapper({this.useInjection = false, this.caseSensitiveFields = false});
+  const Mapper({
+    this.useInjection = false,
+    this.caseSensitiveFields = false
+  });
 }
 
 const mapper = Mapper();
@@ -16,5 +19,10 @@ const mapper = Mapper();
 class Mapping {
   final dynamic source;
   final String target;
-  const Mapping({required this.source, required this.target});
+  final String? defaultValue;
+  const Mapping({
+    required this.source,
+    required this.target,
+    this.defaultValue
+  });
 }

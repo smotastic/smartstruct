@@ -56,7 +56,8 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
       .forEach((targetField) {
     final sourceField = targetToSource[targetField.name]!;
     var sourceFieldAssignment = generateSourceFieldAssignment(
-        sourceReference, sourceField, classElement, targetField);
+        sourceReference, sourceField, classElement, targetField, method
+    );
 
     if (targetField.isNamed) {
       namedArgs.putIfAbsent(targetField.name, () => sourceFieldAssignment);
@@ -67,7 +68,14 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
   });
 
   var targetVarName = targetClass.displayName.toLowerCase();
-
+  var defaultValues = MapperConfig.readDefaultValueConfig(method);
+  for(var accessor in sourceClass.accessors){
+    if (accessor.toString().contains('?') && !defaultValues.containsKey(accessor.name)) {
+      blockBuilder.addExpression(refer(
+          "assert(source.${accessor.name} != null, '${accessor.name} cannot be blank')"
+      ));
+    }
+  }
   // source.isOptional does not work
   if (sourceParam.type.getDisplayString(withNullability: true).endsWith('?')) {
     blockBuilder.addExpression(
@@ -81,12 +89,11 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
   // non final properties (implicit and explicit setters)
   targetClass.fields //
       .where((field) => !field.isFinal) //
-      .where(
-          (targetField) => targetToSource.containsKey(targetField.displayName))
+      .where((targetField) => targetToSource.containsKey(targetField.displayName))
       .map((targetField) {
     var sourceField = targetToSource[targetField.displayName] as FieldElement;
     var sourceFieldAssignment = generateSourceFieldAssignment(
-        sourceReference, sourceField, classElement, targetField);
+        sourceReference, sourceField, classElement, targetField, method);
     return refer(targetVarName)
         .property(targetField.displayName)
         .assign(sourceFieldAssignment);
@@ -144,9 +151,8 @@ List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
     if (sourceField.toStringValue() != null) {
       final sourceFieldString = sourceField.toStringValue()!;
       if (targetToSource.containsKey(sourceFieldString)) {
-        targetToSource.putIfAbsent(targetField,
-            () => targetToSource[sourceFieldString] as FieldElement);
-        targetToSource.remove(sourceFieldString);
+        targetToSource.putIfAbsent(targetField, () => targetToSource[sourceFieldString] as FieldElement);
+        targetToSource.removeWhere((_, it) => it == sourceFieldString);
       }
     }
   });

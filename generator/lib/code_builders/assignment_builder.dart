@@ -2,6 +2,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 
+import '../mapper_config.dart';
+
 /// Generates an assignment of a reference to a sourcefield.
 ///
 /// The assignment is the property {sourceField} of the given [Reference] {sourceReference}.
@@ -19,8 +21,17 @@ Expression generateSourceFieldAssignment(
     Reference sourceReference,
     dynamic sourceField,
     ClassElement classElement,
-    VariableElement targetField) {
+    VariableElement targetField,
+    MethodElement method) {
+  var defaultValues = MapperConfig.readDefaultValueConfig(method);
   var sourceFieldAssignment = sourceReference.property(sourceField.name);
+  if(sourceField.toString().contains('?') && !targetField.toString().contains('?')){
+    if(defaultValues.containsKey(sourceField.name)){
+      sourceFieldAssignment = sourceReference.property(sourceField.name + ' ?? ' + defaultValues[sourceField.name]);
+    } else {
+      sourceFieldAssignment = sourceReference.property(sourceField.name + '!');
+    }
+  }
   // list support
   if (sourceField.type.isDartCoreList || sourceField.type.isDartCoreIterable) {
     final sourceListType = _getGenericTypes(sourceField.type).first;

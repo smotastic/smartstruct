@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'simple.dart';
+part of 'nullable.dart';
 
 // **************************************************************************
 // MapperGenerator

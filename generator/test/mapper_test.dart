@@ -17,6 +17,7 @@ Future<void> main() async {
 }
 
 const _expectedAnnotatedTests = {
+  'NullablePropertiesMapper',
   'theAnswer',
   'NoReturnTypeMapper',
   'SimpleMapper',
