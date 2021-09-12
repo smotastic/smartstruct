@@ -12,6 +12,10 @@ class ExampleMapperImpl extends ExampleMapper {
 
   @override
   BarTarget fromFoo(FooSource source) {
+    assert(source.setterNumber != null, 'setterNumber cannot be blank');
+    assert(source.setterNumber != null, 'setterNumber cannot be blank');
+    assert(source.setterText != null, 'setterText cannot be blank');
+    assert(source.setterText != null, 'setterText cannot be blank');
     final bartarget = BarTarget(source.number, source.text, source.truthy,
         named: source.named,
         namedTwoDiff: source.namedTwo,

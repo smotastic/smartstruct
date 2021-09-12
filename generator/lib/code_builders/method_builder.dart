@@ -72,7 +72,7 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
   for(var accessor in sourceClass.accessors){
     if (accessor.toString().contains('?') && !defaultValues.containsKey(accessor.name)) {
       blockBuilder.addExpression(refer(
-          "assert(source.${accessor.name} != null, '${accessor.name} cannot be blank')"
+          "assert(${sourceParam.displayName}.${accessor.displayName} != null, '${accessor.displayName} cannot be blank')"
       ));
     }
   }

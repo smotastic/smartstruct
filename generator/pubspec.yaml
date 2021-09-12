@@ -17,4 +17,3 @@ dependencies:
   smartstruct:
     path: '../smartstruct'
   path: ^1.8.0
- 
