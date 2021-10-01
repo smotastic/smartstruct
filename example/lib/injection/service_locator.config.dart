@@ -18,5 +18,7 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i3.ExampleMapper>(() => _i3.ExampleMapperImpl());
   gh.lazySingleton<_i4.InjectableNestedMapper>(
       () => _i4.InjectableNestedMapperImpl());
+  gh.lazySingleton<_i4.InjectableMapper>(
+      () => _i4.InjectableMapperImpl(get<_i4.InjectableNestedMapper>()));
   return get;
 }
