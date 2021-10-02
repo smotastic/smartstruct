@@ -37,9 +37,11 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
 
   final targetClass = method.returnType.element as ClassElement;
 
-  final sourceParam = method.parameters.first;
-  final sourceClass = sourceParam.type.element as ClassElement;
-  final sourceReference = refer(sourceParam.displayName);
+  final sourceParams = method.parameters;
+  final sourceClasses = sourceParams
+      .map((sourceParam) => sourceParam.type.element as ClassElement);
+  final sourceReferences =
+      sourceParams.map((sourceParam) => refer(sourceParam.displayName));
 
   final _ = _targetToSource(sourceClass, targetClass, method, config);
   final targetToSource = _[0];
@@ -113,7 +115,7 @@ List<FieldElement> _findFields(ClassElement clazz) {
   return [...clazz.fields, ...allSuperFields];
 }
 
-List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
+List<HashMap<String, dynamic>> _targetToSource(List<ClassElement> sources,
     ClassElement target, MethodElement method, Map<String, dynamic> config) {
   final caseSensitiveFields = config['caseSensitiveFields'];
   final fieldMapper = caseSensitiveFields ? (a) => a : (a) => a.toUpperCase();
