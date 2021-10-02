@@ -79,7 +79,8 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
       .assignFinal(targetVarName));
 
   // non final properties (implicit and explicit setters)
-  targetClass.fields //
+  final fields = _findFields(targetClass);
+  fields //
       .where((field) => !field.isFinal) //
       .where(
           (targetField) => targetToSource.containsKey(targetField.displayName))
@@ -100,6 +101,16 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
 ConstructorElement _chooseConstructor(
     ClassElement outputClass, ClassElement _) {
   return outputClass.constructors.where((element) => !element.isFactory).first;
+}
+
+List<FieldElement> _findFields(ClassElement clazz) {
+  final allSuperFields = clazz.allSupertypes
+      .map((e) => e.element)
+      .where((element) => !element.isDartCoreObject)
+      .map((e) => e.fields)
+      .expand((e) => e)
+      .toList();
+  return [...clazz.fields, ...allSuperFields];
 }
 
 List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
@@ -123,7 +134,7 @@ List<HashMap<String, dynamic>> _targetToSource(ClassElement source,
       equals: (a, b) => fieldMapper(a) == fieldMapper(b),
       hashCode: (a) => equalsHashCode(a));
 
-  for (var f in source.fields) {
+  for (var f in _findFields(source)) {
     if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
       final duplicatedKey = targetToSource.keys
           .toList()
