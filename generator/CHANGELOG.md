@@ -1,3 +1,6 @@
+# v1.2.4
+- Support inheritance (https://github.com/smotastic/smartstruct/pull/32)
+
 # v.1.2.3+1
 - Updated analyzer dependency to 2.0.0
 
