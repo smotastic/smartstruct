@@ -12,13 +12,15 @@ class ExampleMapperImpl extends ExampleMapper {
 
   @override
   BarTarget fromFoo(FooSource source) {
-    final bartarget = BarTarget(source.number, source.text, source.truthy,
+    final bartarget = BarTarget(
+        source.number, source.text, source.truthy, source.superText,
         named: source.named,
         namedTwoDiff: source.namedTwo,
         list: source.list.map(fromFooSub).toList());
     bartarget.property = source.property;
     bartarget.propertyTwoDiff = source.propertyTwo;
     bartarget.nested = fromFooSub(source.nested);
+    bartarget.superPropertySet = source.superPropertySet;
     bartarget.setterTextDiff = source.setterText;
     bartarget.setterNumber = source.setterNumber;
     return bartarget;
