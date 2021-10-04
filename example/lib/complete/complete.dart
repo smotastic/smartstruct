@@ -3,7 +3,23 @@ import 'package:smartstruct/smartstruct.dart';
 
 part 'complete.mapper.g.dart';
 
-class FooSource {
+abstract class SuperFooSource {
+  final String superText;
+
+  String get superGet;
+
+  String? _superPropertySet;
+
+  String? get superPropertySet => _superPropertySet;
+
+  set superPropertySet(String? superPropertySet) {
+    _superPropertySet = superPropertySet;
+  }
+
+  SuperFooSource(this.superText);
+}
+
+class FooSource extends SuperFooSource {
   final num number;
   final String text;
   final bool truthy;
@@ -15,8 +31,21 @@ class FooSource {
   String? setterText;
   late FooNestedSource nested;
   final List<FooNestedSource> list;
-  FooSource(this.number, this.text, this.truthy, this.named, this.setterNumber,
-      this.property, this.propertyTwo, this.namedTwo, this.list);
+  @override
+  final String superGet;
+  FooSource(
+      this.number,
+      this.text,
+      this.truthy,
+      this.named,
+      this.setterNumber,
+      this.property,
+      this.propertyTwo,
+      this.namedTwo,
+      this.list,
+      this.superGet,
+      String superText)
+      : super(superText);
 }
 
 class FooNestedSource {
@@ -38,6 +67,8 @@ class BarTarget {
   String? _setterTextDiff;
   late BarNestedTarget nested;
   final List<BarNestedTarget> list;
+  final String superText;
+  String? superPropertySet;
 
   String? get setterTextDiff => _setterTextDiff;
 
@@ -51,7 +82,7 @@ class BarTarget {
     _setterNumber = setterNumber;
   }
 
-  BarTarget(this.numberDiff, this.text, this.truthy,
+  BarTarget(this.numberDiff, this.text, this.truthy, this.superText,
       {required this.named, required this.namedTwoDiff, required this.list});
 }
 
