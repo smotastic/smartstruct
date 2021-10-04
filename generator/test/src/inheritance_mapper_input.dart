@@ -1,22 +1,34 @@
 part of 'mapper_test_input.dart';
 
+abstract class SuperSource {
+  final String superText;
+  String get abstractGetterText;
+
+  String get mappable {
+    return 'mappable';
+  }
+
+  SuperSource(this.superText);
+}
+
+class InheritanceSource extends SuperSource {
+  final num number;
+
+  @override
+  final String abstractGetterText;
+
+  InheritanceSource(this.abstractGetterText, this.number, String superText)
+      : super(superText);
+}
+
 class InheritanceTarget {
-  final String text;
+  final String abstractGetterText;
   final num number;
+  final String superText;
+  final String mappable;
 
-  InheritanceTarget(this.text, this.number);
-}
-
-class SubSource {
-  final String text;
-
-  SubSource(this.text);
-}
-
-class InheritanceSource extends SubSource {
-  final num number;
-
-  InheritanceSource(String text, this.number) : super(text);
+  InheritanceTarget(
+      this.abstractGetterText, this.number, this.superText, this.mappable);
 }
 
 @Mapper()
@@ -26,7 +38,8 @@ class InheritanceMapperImpl extends InheritanceMapper {
 
   @override
   InheritanceTarget fromSource(InheritanceSource source) {
-    final inheritancetarget = InheritanceTarget(source.text, source.number);
+    final inheritancetarget = InheritanceTarget(source.abstractGetterText,
+        source.number, source.superText, source.mappable);
     return inheritancetarget;
   }
 }

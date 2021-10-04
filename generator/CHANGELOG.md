@@ -1,5 +1,10 @@
+# v1.2.4+1
+- Bugfix: Mapper failing to generate when using interfaces https://github.com/smotastic/smartstruct/issues/35
+
+
 # v1.2.4
 - Support inheritance (https://github.com/smotastic/smartstruct/pull/32)
+
 
 # v.1.2.3+1
 - Updated analyzer dependency to 2.0.0

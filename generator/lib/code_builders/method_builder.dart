@@ -104,11 +104,28 @@ ConstructorElement _chooseConstructor(
 }
 
 List<FieldElement> _findFields(ClassElement clazz) {
-  final allSuperFields = clazz.allSupertypes
+  final allSuperclasses = clazz.allSupertypes
       .map((e) => e.element)
       .where((element) => !element.isDartCoreObject)
+      .toList();
+
+  final allAccessors = allSuperclasses.map((e) => e.accessors).expand((e) => e);
+  final accessorMap = {for (var e in allAccessors) e.displayName: e};
+
+  final fieldFilter = (FieldElement field) {
+    var isAbstract = false;
+    // fields, who can also be getters, are never abstract, only their PropertyAccessorElement (implicit getter)
+    if (accessorMap.containsKey(field.displayName)) {
+      final accessor = accessorMap[field.displayName]!;
+      isAbstract = accessor.isAbstract;
+    }
+    return !field.isStatic && !field.isConst && !isAbstract;
+  };
+
+  final allSuperFields = allSuperclasses
       .map((e) => e.fields)
       .expand((e) => e)
+      .where(fieldFilter)
       .toList();
   return [...clazz.fields, ...allSuperFields];
 }
