@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:smartstruct_generator/code_builders/source_to_target.dart';
 
 /// Generates an assignment of a reference to a sourcefield.
 ///
@@ -15,55 +16,62 @@ import 'package:code_builder/code_builder.dart';
 /// fromSub(model.sub);
 /// ```
 ///
-Expression generateSourceFieldAssignment(
-    Reference sourceReference,
-    dynamic sourceField,
-    ClassElement classElement,
-    VariableElement targetField) {
-  var sourceFieldAssignment = sourceReference.property(sourceField.name);
-  // list support
-  if (sourceField.type.isDartCoreList || sourceField.type.isDartCoreIterable) {
-    final sourceListType = _getGenericTypes(sourceField.type).first;
-    final targetListType = _getGenericTypes(targetField.type).first;
-    final matchingMappingListMethods = _findMatchingMappingMethod(
-        classElement, targetListType, sourceListType);
+Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
+    ClassElement abstractMapper, VariableElement targetField) {
+  Expression sourceFieldAssignment;
 
-    // mapping expression, default is just the identity,
-    // for example for primitive types or objects that do not have their own mapping method
-    var expr = refer('(e) => e');
-    if (matchingMappingListMethods.isNotEmpty) {
-      expr = refer(matchingMappingListMethods.first.name);
+  if (sourceAssignment.shouldUseFunction()) {
+    final sourceFunction = sourceAssignment.function!;
+    final references = sourceAssignment.params!
+        .map((sourceParam) => refer(sourceParam.displayName));
+    Expression expr = refer(sourceFunction.name);
+    if (sourceFunction.isStatic &&
+        sourceFunction.enclosingElement.name != null) {
+      expr = refer(sourceFunction.enclosingElement.name!)
+          .property(sourceFunction.name);
     }
-
-    sourceFieldAssignment =
-        // source.{field}.map
-        sourceReference
-            .property(sourceField.name)
-            .property('map')
-            // (expr)
-            .call([expr])
-            //.toList()
-            .property('toList')
-            .call([]);
-  } else if (sourceField is ExecutableElement) {
-    Expression expr = refer(sourceField.name);
-    if (sourceField.isStatic && sourceField.enclosingElement.name != null) {
-      expr =
-          refer(sourceField.enclosingElement.name!).property(sourceField.name);
-    }
-    sourceFieldAssignment = expr.call([sourceReference]);
+    sourceFieldAssignment = expr.call([...references]);
   } else {
-    // found a mapping method in the class which will map the source to target
-    final matchingMappingMethods = _findMatchingMappingMethod(
-        classElement, targetField.type, sourceField.type);
+    final sourceClass = sourceAssignment.sourceClass!;
+    final sourceField = sourceAssignment.field!;
+    final sourceReference = refer(sourceAssignment.param!.displayName);
+    sourceFieldAssignment = sourceReference.property(sourceField.name);
+    // list support
+    if (sourceAssignment.shouldAssignList()) {
+      final sourceListType = _getGenericTypes(sourceField.type).first;
+      final targetListType = _getGenericTypes(targetField.type).first;
+      final matchingMappingListMethods = _findMatchingMappingMethod(
+          abstractMapper, targetListType, sourceListType);
 
-    // nested classes can be mapped with their own mapping methods
-    if (matchingMappingMethods.isNotEmpty) {
-      sourceFieldAssignment = refer(matchingMappingMethods.first.name)
-          .call([sourceFieldAssignment]);
+      // mapping expression, default is just the identity,
+      // for example for primitive types or objects that do not have their own mapping method
+      var expr = refer('(e) => e');
+      if (matchingMappingListMethods.isNotEmpty) {
+        expr = refer(matchingMappingListMethods.first.name);
+      }
+
+      sourceFieldAssignment =
+          // source.{field}.map
+          sourceReference
+              .property(sourceField.name)
+              .property('map')
+              // (expr)
+              .call([expr])
+              //.toList()
+              .property('toList')
+              .call([]);
+    } else {
+      // found a mapping method in the class which will map the source to target
+      final matchingMappingMethods = _findMatchingMappingMethod(
+          abstractMapper, targetField.type, sourceField.type);
+
+      // nested classes can be mapped with their own mapping methods
+      if (matchingMappingMethods.isNotEmpty) {
+        sourceFieldAssignment = refer(matchingMappingMethods.first.name)
+            .call([sourceFieldAssignment]);
+      }
     }
   }
-
   return sourceFieldAssignment;
 }
 
