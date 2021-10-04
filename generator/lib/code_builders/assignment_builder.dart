@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:smartstruct_generator/code_builders/source_to_target.dart';
+import 'package:smartstruct_generator/models/source_assignment.dart';
 
 /// Generates an assignment of a reference to a sourcefield.
 ///

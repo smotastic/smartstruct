@@ -4,7 +4,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/parameter_copy.dart';
-import 'package:smartstruct_generator/code_builders/source_to_target.dart';
+import 'package:smartstruct_generator/models/source_assignment.dart';
 import 'package:smartstruct_generator/mapper_config.dart';
 import 'package:source_gen/source_gen.dart';
 
