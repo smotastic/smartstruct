@@ -14,8 +14,8 @@ dependencies:
   build: ^2.0.2
   source_gen: ^1.0.1
   code_builder: ^4.0.0
-  smartstruct: ^1.2.4+1
-  #smartstruct:
-  #  path: ../smartstruct
+  #smartstruct: ^1.2.4
+  smartstruct:
+    path: ../smartstruct
   path: ^1.8.0
  
