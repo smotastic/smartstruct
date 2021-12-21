@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/models/source_assignment.dart';
@@ -50,16 +51,31 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
         expr = refer(matchingMappingListMethods.first.name);
       }
 
-      sourceFieldAssignment =
-          // source.{field}.map
-          sourceReference
-              .property(sourceField.name)
-              .property('map')
-              // (expr)
-              .call([expr])
-              //.toList()
-              .property('toList')
-              .call([]);
+      if (sourceField.type.isDartCoreList &&
+          sourceField.type.nullabilitySuffix == NullabilitySuffix.question) {
+        sourceFieldAssignment =
+            // source.{field}.map
+            sourceReference
+                .property(sourceField.name)
+                .nullChecked
+                .property('map')
+                // (expr)
+                .call([expr])
+                //.toList()
+                .property('toList')
+                .call([]);
+      } else {
+        sourceFieldAssignment =
+            // source.{field}.map
+            sourceReference
+                .property(sourceField.name)
+                .property('map')
+                // (expr)
+                .call([expr])
+                //.toList()
+                .property('toList')
+                .call([]);
+      }
     } else {
       // found a mapping method in the class which will map the source to target
       final matchingMappingMethods = _findMatchingMappingMethod(
