@@ -76,7 +76,7 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
     }
   }
   // final output = Output(positionalArgs, {namedArgs});
-  blockBuilder.addExpression(refer(targetClass.displayName)
+  blockBuilder.addExpression(refer(targetConstructor.displayName)
       .newInstance(positionalArgs, namedArgs)
       .assignFinal(targetVarName));
 
@@ -101,7 +101,15 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
 
 /// Chooses the constructor which will be used to instantiate the target class.
 ConstructorElement _chooseConstructor(ClassElement outputClass) {
-  return outputClass.constructors.where((element) => !element.isFactory).first;
+  ConstructorElement chosen =
+      outputClass.constructors.where((element) => !element.isFactory).first;
+  for (var con in outputClass.constructors) {
+    if (con.parameters.length >= chosen.parameters.length) {
+      // choose the one with the most parameters
+      chosen = con;
+    }
+  }
+  return chosen;
 }
 
 List<FieldElement> _findFields(ClassElement clazz) {
@@ -113,6 +121,7 @@ List<FieldElement> _findFields(ClassElement clazz) {
   final allAccessors = allSuperclasses.map((e) => e.accessors).expand((e) => e);
   final accessorMap = {for (var e in allAccessors) e.displayName: e};
 
+  // ignore: prefer_function_declarations_over_variables
   final fieldFilter = (FieldElement field) {
     var isAbstract = false;
     // fields, who can also be getters, are never abstract, only their PropertyAccessorElement (implicit getter)
