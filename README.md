@@ -372,6 +372,49 @@ abstract class DogMapper {
 class DogMapperImpl extends DogMapper {...}
 ```
 
+## Freezed
+Generally you can use smartstruct with [freezed](https://pub.dev/packages/freezed).
+
+One problem you will have to manually workaround is ignoring the freezed generated `copyWith` method in the generated mapper.
+The copyWith field is a normal field in the model / entity, and smartstruct does not have a way of knowing on when to filter it out, and when not.
+
+Imagine having the following freezed models.
+```dart
+@freezed
+class Dog with _$Dog {
+  Dog._();
+  factory Dog(String name) = _Dog;
+}
+
+@freezed
+class DogModel with _$DogModel {
+  factory DogModel(String name) = _DogModel;
+}
+```
+
+Freezed will generate a `copyWith` field for your `Dog` and `DogModel`.
+
+When generating the mapper, you explicitly have to ignore this field.
+```dart
+@Mapper()
+abstract class DogMapper {
+  @Mapping(target: 'copyWith', ignore: true)
+  Dog fromModel(DogModel model);
+}
+```
+Will generate the mapper, using the factory constructor.
+```dart
+class DogMapperImpl extends DogMapper {
+  DogMapperImpl() : super();
+
+  @override
+  Dog fromModel(DogModel model) {
+    final dog = Dog(model.name);
+    return freezedtarget;
+  }
+}
+```
+
 # Examples
 
 Please refer to the [example](https://github.com/smotastic/smartstruct/tree/master/example) package, for a list of examples and how to use the Mapper Annotation.

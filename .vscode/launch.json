@@ -4,7 +4,7 @@
 
     {
       "name": "Debug Widgetbook Generator",
-      "cwd": "examplecopy",
+      "cwd": "example",
       "request": "launch",
       "program": ".dart_tool/build/entrypoint/build.dart",
       "type": "dart",
