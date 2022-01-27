@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/parameter_copy.dart';
@@ -175,18 +174,25 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
 
   /// If there are Mapping Annotations on the method, the source attribute of the source mapping class,
   /// will be replaced with the source attribute of the given mapping config.
-  mappingConfig.forEach((sourceField, targetField) {
-    if (sourceField.toFunctionValue() != null) {
-      targetToSource[targetField] = SourceAssignment.fromFunction(
-          sourceField.toFunctionValue()!, [...sources]);
-    }
-    if (sourceField.toStringValue() != null) {
-      final sourceFieldString = sourceField.toStringValue()!;
-      if (targetToSource.containsKey(sourceFieldString)) {
-        targetToSource.putIfAbsent(
-            targetField, () => targetToSource[sourceFieldString]!);
-        targetToSource.remove(sourceFieldString);
+  mappingConfig.forEach((targetField, mappingConfig) {
+    final sourceField = mappingConfig.source;
+    if (sourceField != null) {
+      if (sourceField.toFunctionValue() != null) {
+        targetToSource[targetField] = SourceAssignment.fromFunction(
+            sourceField.toFunctionValue()!, [...sources]);
+      } else if (sourceField.toStringValue() != null) {
+        final sourceFieldString = sourceField.toStringValue()!;
+        if (targetToSource.containsKey(sourceFieldString)) {
+          targetToSource.putIfAbsent(
+              targetField, () => targetToSource[sourceFieldString]!);
+
+          targetToSource.remove(sourceFieldString);
+        }
       }
+    }
+
+    if (mappingConfig.ignore) {
+      targetToSource.remove(targetField);
     }
   });
 

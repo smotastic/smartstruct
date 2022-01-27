@@ -23,8 +23,14 @@ class MapperGenerator extends GeneratorForAnnotation<Mapper> {
 
     var config = MapperConfig.readMapperConfig(annotation, element);
 
-    final mapperImpl = buildMapperClass(element, config);
-    final emitter = DartEmitter();
-    return '${mapperImpl.accept(emitter)}';
+    try {
+      final mapperImpl = buildMapperClass(element, config);
+      final emitter = DartEmitter();
+      return '${mapperImpl.accept(emitter)}';
+    } on Error catch (e) {
+      print(e);
+      print(e.stackTrace);
+      rethrow;
+    }
   }
 }

@@ -10,6 +10,7 @@ part 'constructor_mapper_input.dart';
 part 'function_mapper_input.dart';
 part 'inheritance_mapper_input.dart';
 part 'multiple_source_mapper_input.dart';
+part 'ignore_field_mapper_input.dart';
 
 @ShouldThrow('theAnswer is not a class and cannot be annotated with @Mapper')
 @Mapper()
