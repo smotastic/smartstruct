@@ -12,24 +12,34 @@ class MapperConfig {
     var mapper =
         mappingClass.metadata[0].element!.enclosingElement as ClassElement;
     final config = <String, dynamic>{};
-    mapper.fields.forEach((field) {
+
+    for (final field in mapper.fields) {
       final configField = annotation.read(field.name).literalValue;
       config.putIfAbsent(field.name, () => configField);
-    });
+    }
     return config;
   }
 
   /// Reads the attributes of the [Mapping] annotations of a given Method,
-  /// and returns key value pairs, where the key is the source, and the value is the target attribute of the read Mapping
-  static Map<DartObject, String> readMappingConfig(MethodElement method) {
-    final config = <DartObject, String>{};
+  /// and returns key value pairs, where the key is the target, and the value is an instance of [MappingConfig] containing the source and other meta attributes
+  static Map<String, MappingConfig> readMappingConfig(MethodElement method) {
+    final config = <String, MappingConfig>{};
     final annotations = TypeChecker.fromRuntime(Mapping).annotationsOf(method);
 
-    annotations.forEach((element) {
-      var reader = ConstantReader(element);
-      config[reader.read('source').objectValue] =
-          reader.read('target').stringValue;
-    });
+    for (final element in annotations) {
+      final reader = ConstantReader(element);
+      final sourceReader = reader.read('source');
+      config[reader.read('target').stringValue] = MappingConfig(
+          sourceReader.isNull ? null : sourceReader.objectValue,
+          reader.read('ignore').boolValue);
+    }
     return config;
   }
+}
+
+class MappingConfig {
+  final DartObject? source;
+  final bool ignore;
+
+  MappingConfig(this.source, this.ignore);
 }

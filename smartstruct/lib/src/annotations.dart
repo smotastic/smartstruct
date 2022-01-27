@@ -16,5 +16,6 @@ const mapper = Mapper();
 class Mapping {
   final dynamic source;
   final String target;
-  const Mapping({required this.source, required this.target});
+  final bool ignore;
+  const Mapping({required this.target, this.source, this.ignore = false});
 }
