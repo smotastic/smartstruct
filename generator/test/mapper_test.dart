@@ -31,5 +31,6 @@ const _expectedAnnotatedTests = {
   'FunctionFieldMapper',
   'InheritanceMapper',
   'MultipleSourceMapper',
-  'IgnoreMapper'
+  'IgnoreMapper',
+  'MultiConMapper'
 };
