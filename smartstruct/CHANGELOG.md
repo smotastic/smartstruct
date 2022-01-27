@@ -1,3 +1,6 @@
+# v1.2.5
+- Ignore certain fields (https://github.com/smotastic/smartstruct/issues/40)
+
 # v1.2.4+1
 - Bugfix: Mapper failing to generate when using interfaces https://github.com/smotastic/smartstruct/issues/35
 

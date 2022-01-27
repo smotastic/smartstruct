@@ -3,6 +3,13 @@ import 'package:smartstruct/smartstruct.dart';
 
 part 'complete.mapper.g.dart';
 
+class FooSourceTheSecond {
+  String? secondText;
+  final String secondTextOther;
+
+  FooSourceTheSecond(this.secondTextOther);
+}
+
 abstract class SuperFooSource {
   final String superText;
 
@@ -69,6 +76,8 @@ class BarTarget {
   final List<BarNestedTarget> list;
   final String superText;
   String? superPropertySet;
+  String? secondText;
+  final String secondTextOther;
 
   String? get setterTextDiff => _setterTextDiff;
 
@@ -83,7 +92,10 @@ class BarTarget {
   }
 
   BarTarget(this.numberDiff, this.text, this.truthy, this.superText,
-      {required this.named, required this.namedTwoDiff, required this.list});
+      {required this.named,
+      required this.namedTwoDiff,
+      required this.list,
+      required this.secondTextOther});
 }
 
 class BarNestedTarget {
@@ -102,7 +114,7 @@ abstract class ExampleMapper {
   @Mapping(source: 'namedTwo', target: 'namedTwoDiff')
   @Mapping(source: 'setterText', target: 'setterTextDiff')
   @Mapping(source: 'propertyTwo', target: 'propertyTwoDiff')
-  BarTarget fromFoo(FooSource source);
+  BarTarget fromFoo(FooSource source, FooSourceTheSecond second);
 
   BarNestedTarget fromFooSub(FooNestedSource source);
 }
