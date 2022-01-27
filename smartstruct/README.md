@@ -205,6 +205,40 @@ class DogMapperImpl extends DogMapper {
     }
 }
 ```
+### Ignore Fields
+Fields can be ignored, by specififying the `ignore` attribute on the Mapping `Annotation``
+
+```dart
+class Dog {
+    final String name;
+    String? breed;
+    Dog(this.name);
+}
+class DogModel {
+    final String name;
+    final String breed;
+    DogModel(this.name, this.breed);
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+    @Mapping(target: 'breed', ignore: true)
+    Dog fromModel(DogModel model);
+}
+```
+
+Will generate the following Mapper.
+```dart
+class DogMapperImpl extends DogMapper {
+    @override
+    Dog fromModel(DogModel model) {
+        Dog dog = Dog(model.name);
+        return dog;
+    }
+}
+```
 
 ## Nested Bean Mapping
 
