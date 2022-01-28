@@ -293,6 +293,63 @@ class NestedMapperImpl extends NestedMapper {
 
 ```
 
+Alternatively you can directly define the nested mapping in the source attribute.
+
+```dart
+class User {
+  final String username;
+  final String zipcode;
+  final String street;
+
+  User(this.username, this.zipcode, this.street);
+}
+
+class UserResponse {
+  final String username;
+  final AddressResponse address;
+
+  UserResponse(this.username, this.address);
+}
+
+class AddressResponse {
+  final String zipcode;
+  final StreetResponse street;
+
+  AddressResponse(this.zipcode, this.street);
+}
+
+class StreetResponse {
+  final num streetNumber;
+  final String streetName;
+
+  StreetResponse(this.streetNumber, this.streetName);
+}
+```
+With this, you can define the mappings directly in the `Mapping` Annotation
+
+```dart
+@Mapper()
+abstract class UserMapper {
+  @Mapping(target: 'zipcode', source: 'response.address.zipcode')
+  @Mapping(target: 'street', source: 'response.address.street.streetName')
+  User fromResponse(UserResponse response);
+}
+```
+
+Would generate the following mapper.
+```dart
+class UserMapperImpl extends UserMapper {
+  UserMapperImpl() : super();
+
+  @override
+  User fromResponse(UserResponse response) {
+    final user = User(response.username, response.address.zipcode,
+        response.address.street.streetName);
+    return user;
+  }
+}
+```
+
 ## List Support
 Lists will be mapped as new instances of a list, with help of the map method.
 ```dart

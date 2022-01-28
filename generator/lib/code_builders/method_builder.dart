@@ -169,8 +169,8 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
   final mappingStringConfig = _extractStringMappingConfig(mappingConfig);
 
   for (final sourceEntry in sourceMap.entries) {
-    List<List<String>> matchedSourceClazzInSourceMapping =
-        _findMatchingSourceClazzInMapping(
+    Map<String, List<String>> matchedSourceClazzInSourceMapping =
+        _findMatchingSourceClazzInMappingMap(
             mappingStringConfig, sourceEntry.value.displayName);
     for (var f in _findFields(sourceEntry.key)) {
       if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
@@ -183,17 +183,19 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
       }
       if (matchedSourceClazzInSourceMapping.isNotEmpty &&
           _shouldSearchMoreFields(f)) {
-        for (var sourceValueList in matchedSourceClazzInSourceMapping) {
+        for (var matchedTarget in matchedSourceClazzInSourceMapping.keys) {
+          final sourceValueList =
+              matchedSourceClazzInSourceMapping[matchedTarget]!;
           final fieldClazz = f.type.element as ClassElement;
           final foundFields = _findFields(fieldClazz);
           final matchingFieldForSourceValues =
               _findMatchingField(sourceValueList.sublist(1), foundFields);
           if (matchingFieldForSourceValues != null) {
-            final sourceRefer =
-                sources.sublist(0, sources.length - 1).join(".");
-            targetToSource[matchingFieldForSourceValues.name] =
-                SourceAssignment.fromField(
-                    matchingFieldForSourceValues, sourceRefer);
+            final sourceRefer = sourceValueList
+                .sublist(0, sourceValueList.length - 1)
+                .join(".");
+            targetToSource[matchedTarget] = SourceAssignment.fromField(
+                matchingFieldForSourceValues, sourceRefer);
           } else {
             targetToSource[f.name] =
                 SourceAssignment.fromField(f, sourceEntry.value.displayName);
@@ -262,6 +264,21 @@ List<List<String>> _findMatchingSourceClazzInMapping(
     }
   });
   return matchedSourceClazzInSourceMapping;
+}
+
+Map<String, List<String>> _findMatchingSourceClazzInMappingMap(
+    Map<String, MappingConfig> mappingStringConfig,
+    String matchingSourceClazzName) {
+  Map<String, List<String>> ret = {};
+  mappingStringConfig.forEach((key, value) {
+    // clazz.attribute1.attribute1_1
+    final sourceValueList = value.source!.toStringValue()!.split(".");
+    final sourceClass = sourceValueList[0];
+    if (sourceClass == matchingSourceClazzName) {
+      ret.putIfAbsent(key, () => sourceValueList);
+    }
+  });
+  return ret;
 }
 
 /// Finds the matching field, matching the last source of [sources] to any field of [fields]
