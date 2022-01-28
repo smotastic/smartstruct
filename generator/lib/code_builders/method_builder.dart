@@ -166,7 +166,25 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
       equals: (a, b) => fieldMapper(a) == fieldMapper(b),
       hashCode: (a) => equalsHashCode(a));
 
+  final mappingStringConfig = <String, MappingConfig>{};
+
+  mappingConfig.forEach((key, value) {
+    if (value.source != null) {
+      if (value.source!.toStringValue() != null) {
+        mappingStringConfig.putIfAbsent(key, () => value);
+      }
+    }
+  });
+
   for (final sourceEntry in sourceMap.entries) {
+    List<MappingConfig> mappingConfigs = [];
+    mappingStringConfig.forEach((key, value) {
+      final sourceClass = value.source!.toStringValue()!.split(".")[0];
+      if (sourceClass == sourceEntry.value.displayName) {
+        // TODO hier kommen jetzt potentiell mehrere
+        mappingConfigs.add(value);
+      }
+    });
     for (var f in _findFields(sourceEntry.key)) {
       if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
         final duplicatedKey = targetToSource.keys
@@ -176,8 +194,28 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
             'Mapper got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
             todo: "Use case sensitive mapper or change field's names");
       }
-      targetToSource[f.name] =
-          SourceAssignment.fromField(sourceEntry.key, f, sourceEntry.value);
+      if (mappingConfigs.isNotEmpty) {
+        for (var mappingConfig in mappingConfigs) {
+          final sources = mappingConfig!.source!.toStringValue()!.split(".");
+          final foundClazz = f.type.element as ClassElement;
+          final foundFields = _findFields(foundClazz); // zipcode, ...
+          // .zipcode
+          final foundField =
+              _findMatchingField(sources.sublist(1), foundFields);
+          if (foundField != null) {
+            final sourceRefer =
+                sources.sublist(0, sources.length - 1).join(".");
+            targetToSource[foundField.name] =
+                SourceAssignment.fromField(foundField, sourceRefer);
+          } else {
+            targetToSource[f.name] =
+                SourceAssignment.fromField(f, sourceEntry.value.displayName);
+          }
+        }
+      } else {
+        targetToSource[f.name] =
+            SourceAssignment.fromField(f, sourceEntry.value.displayName);
+      }
     }
   }
 
@@ -191,12 +229,42 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
             sourceField.toFunctionValue()!, [...sources]);
       } else if (sourceField.toStringValue() != null) {
         final sourceFieldString = sourceField.toStringValue()!;
+        // sourceField exists in any sourceParam
         if (targetToSource.containsKey(sourceFieldString)) {
+          // replace mapping target with mapping
           targetToSource.putIfAbsent(
               targetField, () => targetToSource[sourceFieldString]!);
 
           targetToSource.remove(sourceFieldString);
         }
+        //  else {
+        //   // response.address.zipcode
+        //   // search for address in targetToSource
+        //   final sourceFields = sourceFieldString.split(".");
+        //   final sourceClassParam = sourceFields[0]; // response
+        //   final sourceClassFields = [sourceFields[1]]; // .address.
+        //   final sourceField = sourceFields[2]; // zipcode
+
+        //   final allSourceAssignments = targetToSource.values;
+
+        //   // find response param in targetToSource.values
+        //   final sourceAssignment = allSourceAssignments
+        //       .where(
+        //           (element) => element.field!.displayName == sourceClassParam)
+        //       .first; // response
+        //   final sourceFieldsAssignment = _findFields(sourceAssignment
+        //       .sourceClass!); // response fields (username, address)
+
+        //   sourceClassFields.fold(sourceAssignment, (acc, val) {
+        //     // final curField = sourceFieldsAssignment
+        //     //     .where((element) => element.displayName == acc)
+        //     //     .first;
+        //     return acc;
+        //   });
+
+        //   // targetToSource.putIfAbsent(
+        //   //     targetField, () => ...);
+        // }
       }
     }
 
@@ -206,4 +274,28 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
   });
 
   return [targetToSource, customTargetToSource];
+}
+
+FieldElement? _findMatchingField(
+    List<String> sources, List<FieldElement> fields) {
+  for (var source in sources) {
+    final potentielFinds =
+        fields.where((element) => element.name == source); // zipcode field
+    if (potentielFinds.isEmpty) {
+      continue;
+    }
+    final foundField = potentielFinds.first;
+    // foundField is not string
+    if (_shouldContinueSearching(foundField)) {
+      final searchClazz = foundField.type.element as ClassElement;
+      return _findMatchingField(
+          sources.skip(1).toList(), _findFields(searchClazz));
+    } else {
+      return foundField;
+    }
+  }
+}
+
+bool _shouldContinueSearching(FieldElement field) {
+  return !field.type.isDartCoreString;
 }

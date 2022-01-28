@@ -32,9 +32,9 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
     }
     sourceFieldAssignment = expr.call([...references]);
   } else {
-    final sourceClass = sourceAssignment.sourceClass!;
+    // final sourceClass = sourceAssignment.sourceClass!;
     final sourceField = sourceAssignment.field!;
-    final sourceReference = refer(sourceAssignment.param!.displayName);
+    final sourceReference = refer(sourceAssignment.sourceName!);
     sourceFieldAssignment = sourceReference.property(sourceField.name);
     // list support
     if (sourceAssignment.shouldAssignList()) {
