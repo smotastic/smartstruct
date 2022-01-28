@@ -1,14 +1,13 @@
 import 'package:analyzer/dart/element/element.dart';
 
 class SourceAssignment {
-  ClassElement? sourceClass;
   FieldElement? field;
-  ParameterElement? param;
+  String? sourceName;
 
   ExecutableElement? function;
   List<ParameterElement>? params;
 
-  SourceAssignment.fromField(this.sourceClass, this.field, this.param);
+  SourceAssignment.fromField(this.field, this.sourceName);
   SourceAssignment.fromFunction(this.function, this.params);
 
   bool shouldAssignList() {
