@@ -166,25 +166,12 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
       equals: (a, b) => fieldMapper(a) == fieldMapper(b),
       hashCode: (a) => equalsHashCode(a));
 
-  final mappingStringConfig = <String, MappingConfig>{};
-
-  mappingConfig.forEach((key, value) {
-    if (value.source != null) {
-      if (value.source!.toStringValue() != null) {
-        mappingStringConfig.putIfAbsent(key, () => value);
-      }
-    }
-  });
+  final mappingStringConfig = _extractStringMappingConfig(mappingConfig);
 
   for (final sourceEntry in sourceMap.entries) {
-    List<List<String>> matchedSourceClazzInSourceMapping = [];
-    mappingStringConfig.forEach((key, value) {
-      final sourceValueList = value.source!.toStringValue()!.split(".");
-      final sourceClass = sourceValueList[0];
-      if (sourceClass == sourceEntry.value.displayName) {
-        matchedSourceClazzInSourceMapping.add(sourceValueList);
-      }
-    });
+    List<List<String>> matchedSourceClazzInSourceMapping =
+        _findMatchingSourceClazzInMapping(
+            mappingStringConfig, sourceEntry.value.displayName);
     for (var f in _findFields(sourceEntry.key)) {
       if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
         final duplicatedKey = targetToSource.keys
@@ -194,7 +181,8 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
             'Mapper got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
             todo: "Use case sensitive mapper or change field's names");
       }
-      if (matchedSourceClazzInSourceMapping.isNotEmpty) {
+      if (matchedSourceClazzInSourceMapping.isNotEmpty &&
+          _shouldSearchMoreFields(f)) {
         for (var sourceValueList in matchedSourceClazzInSourceMapping) {
           final fieldClazz = f.type.element as ClassElement;
           final foundFields = _findFields(fieldClazz);
@@ -246,8 +234,41 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
   return [targetToSource, customTargetToSource];
 }
 
+/// Extracts all Mapping Config Entries in [mappingConfig] which contains source mappings of type string
+Map<String, MappingConfig> _extractStringMappingConfig(
+    Map<String, MappingConfig> mappingConfig) {
+  final mappingStringConfig = <String, MappingConfig>{};
+  mappingConfig.forEach((key, value) {
+    if (value.source != null && value.source!.toStringValue() != null) {
+      mappingStringConfig.putIfAbsent(key, () => value);
+    }
+  });
+  return mappingStringConfig;
+}
+
+/// Searches for a matching class for every given [MappingConfig] in [mappingStringConfig], matched against the given [matchingSourceClazzName]
+/// For MappingConfigs including dot seperated clazz attributes, the first value before the first dot is matched against the given matchingSourceClazzName.
+/// Example: A MappingConfig containing "user.address.zipcode" would try to match against user
+List<List<String>> _findMatchingSourceClazzInMapping(
+    Map<String, MappingConfig> mappingStringConfig,
+    String matchingSourceClazzName) {
+  List<List<String>> matchedSourceClazzInSourceMapping = [];
+  mappingStringConfig.forEach((key, value) {
+    // clazz.attribute1.attribute1_1
+    final sourceValueList = value.source!.toStringValue()!.split(".");
+    final sourceClass = sourceValueList[0];
+    if (sourceClass == matchingSourceClazzName) {
+      matchedSourceClazzInSourceMapping.add(sourceValueList);
+    }
+  });
+  return matchedSourceClazzInSourceMapping;
+}
+
 /// Finds the matching field, matching the last source of [sources] to any field of [fields]
 /// If no field was found, null is returned
+///
+/// Example: [sources]="user,address,zipcode" with [fields]=address would identify address as a field, then continue searching in the address field for the zipcode field.
+/// If the address contains a field zipcode, the zipcode field is returned.
 FieldElement? _findMatchingField(
     List<String> sources, List<FieldElement> fields) {
   for (var source in sources) {
@@ -257,7 +278,7 @@ FieldElement? _findMatchingField(
     }
     final foundField = potentielFinds.first;
     // foundField is not string
-    if (_shouldContinueSearching(foundField)) {
+    if (_shouldSearchMoreFields(foundField)) {
       final searchClazz = foundField.type.element as ClassElement;
       return _findMatchingField(
           sources.skip(1).toList(), _findFields(searchClazz));
@@ -268,7 +289,7 @@ FieldElement? _findMatchingField(
 }
 
 /// A search for a potential underlying should only be continued, if the field is not a primitive type (string, int, double etc)
-bool _shouldContinueSearching(FieldElement field) {
+bool _shouldSearchMoreFields(FieldElement field) {
   return !field.type.isDartCoreString &&
       !field.type.isDartCoreBool &&
       !field.type.isDartCoreDouble &&
