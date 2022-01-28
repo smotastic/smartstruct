@@ -293,6 +293,63 @@ class NestedMapperImpl extends NestedMapper {
 
 ```
 
+Alternatively you can directly define the nested mapping in the source attribute.
+
+```dart
+class User {
+  final String username;
+  final String zipcode;
+  final String street;
+
+  User(this.username, this.zipcode, this.street);
+}
+
+class UserResponse {
+  final String username;
+  final AddressResponse address;
+
+  UserResponse(this.username, this.address);
+}
+
+class AddressResponse {
+  final String zipcode;
+  final StreetResponse street;
+
+  AddressResponse(this.zipcode, this.street);
+}
+
+class StreetResponse {
+  final num streetNumber;
+  final String streetName;
+
+  StreetResponse(this.streetNumber, this.streetName);
+}
+```
+With this, you can define the mappings directly in the `Mapping` Annotation
+
+```dart
+@Mapper()
+abstract class UserMapper {
+  @Mapping(target: 'zipcode', source: 'response.address.zipcode')
+  @Mapping(target: 'street', source: 'response.address.street.streetName')
+  User fromResponse(UserResponse response);
+}
+```
+
+Would generate the following mapper.
+```dart
+class UserMapperImpl extends UserMapper {
+  UserMapperImpl() : super();
+
+  @override
+  User fromResponse(UserResponse response) {
+    final user = User(response.username, response.address.zipcode,
+        response.address.street.streetName);
+    return user;
+  }
+}
+```
+
 ## List Support
 Lists will be mapped as new instances of a list, with help of the map method.
 ```dart
@@ -370,6 +427,49 @@ abstract class DogMapper {
 // dogmapper.mapper.g.dart
 @LazySingleton(as: DogMapper)
 class DogMapperImpl extends DogMapper {...}
+```
+
+## Freezed
+Generally you can use smartstruct with [freezed](https://pub.dev/packages/freezed).
+
+One problem you will have to manually workaround is ignoring the freezed generated `copyWith` method in the generated mapper.
+The copyWith field is a normal field in the model / entity, and smartstruct does not have a way of knowing on when to filter it out, and when not.
+
+Imagine having the following freezed models.
+```dart
+@freezed
+class Dog with _$Dog {
+  Dog._();
+  factory Dog(String name) = _Dog;
+}
+
+@freezed
+class DogModel with _$DogModel {
+  factory DogModel(String name) = _DogModel;
+}
+```
+
+Freezed will generate a `copyWith` field for your `Dog` and `DogModel`.
+
+When generating the mapper, you explicitly have to ignore this field.
+```dart
+@Mapper()
+abstract class DogMapper {
+  @Mapping(target: 'copyWith', ignore: true)
+  Dog fromModel(DogModel model);
+}
+```
+Will generate the mapper, using the factory constructor.
+```dart
+class DogMapperImpl extends DogMapper {
+  DogMapperImpl() : super();
+
+  @override
+  Dog fromModel(DogModel model) {
+    final dog = Dog(model.name);
+    return freezedtarget;
+  }
+}
 ```
 
 # Examples

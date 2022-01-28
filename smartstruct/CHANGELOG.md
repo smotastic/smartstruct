@@ -1,3 +1,8 @@
+# v1.2.6
+- Nested Mapping directly in the mapping annotation (https://github.com/smotastic/smartstruct/issues/26)
+- Better support for freezed (https://github.com/smotastic/smartstruct/issues/29)
+
+
 # v1.2.5
 - Ignore certain fields (https://github.com/smotastic/smartstruct/issues/40)
 
