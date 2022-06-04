@@ -340,9 +340,9 @@ packages:
   smartstruct_generator:
     dependency: "direct dev"
     description:
-      name: smartstruct_generator
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../generator"
+      relative: true
+    source: path
     version: "1.2.6"
   source_gen:
     dependency: transitive

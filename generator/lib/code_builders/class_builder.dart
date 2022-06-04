@@ -1,10 +1,33 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/method_builder.dart';
-
 import 'parameter_copy.dart';
 
-Class buildMapperClass(
+Library buildMapperClass(
+    ClassElement abstractClass, Map<String, dynamic> config) {
+  return Library((b) => b.body.addAll(
+        [
+          _generateMapperImplementationClass(abstractClass, config),
+          ..._generateStaticMethods(abstractClass, config),
+        ],
+      ));
+}
+
+List<Method> _generateStaticMethods(
+    ClassElement abstractClass, Map<String, dynamic> config) {
+  var staticMethods = abstractClass.methods
+      .where((method) => method.isStatic && !_isPrimitive(method.returnType))
+      .map((method) => buildStaticMapperImplementation(config, method, abstractClass))
+      .toList();
+  return staticMethods;
+}
+
+bool _isPrimitive(DartType type) {
+  return type.isDartCoreBool || type.isDartCoreDouble || type.isDartCoreInt || type.isDartCoreNum || type.isDartCoreString;
+}
+
+Class _generateMapperImplementationClass(
     ClassElement abstractClass, Map<String, dynamic> config) {
   return Class(
     (b) => b

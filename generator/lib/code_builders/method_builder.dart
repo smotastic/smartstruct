@@ -18,6 +18,7 @@ Method buildMapperImplementation(Map<String, dynamic> config,
         element: method,
         todo: 'Add valid return type to mapping method');
   }
+
   return Method((b) => b
     ..annotations.add(CodeExpression(Code('override')))
     ..name = method.displayName
@@ -26,6 +27,21 @@ Method buildMapperImplementation(Map<String, dynamic> config,
     ..returns =
         refer(method.returnType.getDisplayString(withNullability: true)));
 }
+
+
+/// Generates the implemented mapper method by the given abstract [MethodElement].
+Method buildStaticMapperImplementation(Map<String, dynamic> config,
+    MethodElement method, ClassElement abstractMapper) {
+  return Method(
+        (b) => b
+      ..name = '_\$${method.name}'
+      ..requiredParameters.addAll(method.parameters.map((e) => copyParameter(e)))
+      ..body = _generateBody(config, method, abstractMapper)
+      ..returns =
+      refer(method.returnType.getDisplayString(withNullability: true)),
+  );
+}
+
 
 /// Generates the body for the mapping method.
 ///
