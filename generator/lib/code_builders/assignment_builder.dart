@@ -81,7 +81,7 @@ Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
     DartType targetReturnType, DartType sourceParameterType) {
   final matchingMappingMethods = classElement.methods.where((met) {
     return met.returnType == targetReturnType &&
-        met.parameters.first.type == sourceParameterType;
+        met.parameters.isNotEmpty && met.parameters.first.type == sourceParameterType;
   });
   return matchingMappingMethods;
 }
