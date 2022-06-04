@@ -18,8 +18,7 @@ List<Method> _generateStaticMethods(
     ClassElement abstractClass, Map<String, dynamic> config) {
   var staticMethods = abstractClass.methods
       .where((method) => method.isStatic && !_isPrimitive(method.returnType))
-      .map((method) =>
-          buildStaticMapperImplementation(config, method, abstractClass))
+      .map((method) => buildStaticMapperImplementation(config, method, abstractClass))
       .toList();
   return staticMethods;
 }
