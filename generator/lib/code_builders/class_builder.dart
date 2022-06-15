@@ -16,11 +16,24 @@ Library buildMapperClass(
 
 List<Method> _generateStaticMethods(
     ClassElement abstractClass, Map<String, dynamic> config) {
+  // I have no idea why the static methods needed to be generated.
+  // But if the return type is abstract class like List, the _generateBody in "method_builder.dart" can not work.
+  // So we need to filter these function.
   var staticMethods = abstractClass.methods
-      .where((method) => method.isStatic && !_isPrimitive(method.returnType))
+      .where((method) => method.isStatic 
+        && !_isPrimitive(method.returnType)
+        && !isAbstractType(method.returnType))
       .map((method) => buildStaticMapperImplementation(config, method, abstractClass))
       .toList();
   return staticMethods;
+}
+
+bool isAbstractType(DartType type) {
+    final element = type.element;
+    if(element is! ClassElement) {
+        return false;
+    }
+    return element.isAbstract; 
 }
 
 bool _isPrimitive(DartType type) {
