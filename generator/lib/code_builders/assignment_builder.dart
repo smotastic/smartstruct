@@ -31,6 +31,15 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
           .property(sourceFunction.name);
     }
     sourceFieldAssignment = expr.call([...references]);
+
+    // The return of the function may be needed a nested mapping.
+    final returnType = sourceFunction.returnType;
+    final matchingMappingMethods = _findMatchingMappingMethod(
+        abstractMapper, targetField.type, returnType);
+    if(matchingMappingMethods.isNotEmpty) {
+        sourceFieldAssignment = refer(matchingMappingMethods.first.name)
+            .call([sourceFieldAssignment]);
+    }
   } else {
     // final sourceClass = sourceAssignment.sourceClass!;
     final sourceField = sourceAssignment.field!;
