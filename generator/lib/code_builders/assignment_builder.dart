@@ -76,10 +76,29 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
 
       // nested classes can be mapped with their own mapping methods
       if (matchingMappingMethods.isNotEmpty) {
-        sourceFieldAssignment = refer(matchingMappingMethods.first.name)
-            .call([sourceFieldAssignment]);
+        sourceFieldAssignment = invokeNestedMappingFunction(
+          matchingMappingMethods.first, 
+          sourceAssignment);
       }
     }
+  }
+  return sourceFieldAssignment;
+}
+
+Expression invokeNestedMappingFunction(MethodElement method, SourceAssignment sourceAssignment) {
+  Expression sourceFieldAssignment;
+  if(method.parameters.first.isOptional) {
+    // The parameter can be null.
+    sourceFieldAssignment = refer(method.name)
+        .call([refer(sourceAssignment.refChain!.refWithQuestion)]);
+  } else {
+    sourceFieldAssignment = refer(method.name)
+        .call([refer(sourceAssignment.refChain!.ref)]);
+    sourceFieldAssignment = checkNullExpression(
+      sourceAssignment.refChain!.isNullable,
+      sourceAssignment.refChain!.refWithQuestion, 
+      sourceFieldAssignment
+    );
   }
   return sourceFieldAssignment;
 }
@@ -126,4 +145,19 @@ Map<String, Expression> makeNamedArgumentForStaticFunction(ExecutableElement  el
         value.name, 
         refer(argumentMap[value.name]!)
       ));
+}
+
+Expression checkNullExpression(
+  bool needCheck,
+  String sourceRef,
+  Expression expression,
+) {
+  if(needCheck) {
+    return refer("$sourceRef == null").conditional(
+      refer("null"), 
+      expression,
+    );
+  } else {
+    return expression;
+  }
 }
