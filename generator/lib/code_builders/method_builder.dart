@@ -19,7 +19,6 @@ Method buildMapperImplementation(Map<String, dynamic> config,
         element: method,
         todo: 'Add valid return type to mapping method');
   }
-
   return Method((b) => b
     ..annotations.add(CodeExpression(Code('override')))
     ..name = method.displayName
@@ -207,7 +206,6 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
           final foundFields = _findFields(fieldClazz);
           
           final refChain = RefChain.byPropNames(sourceEntry.value, sourceValueList.sublist(1));
-          print("---refChain ${refChain.ref} $sourceValueList");
           targetToSource[matchedTarget] = SourceAssignment.fromRefChain(refChain);
 
         //   final matchingFieldForSourceValues =
