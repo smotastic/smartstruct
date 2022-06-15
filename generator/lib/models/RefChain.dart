@@ -15,22 +15,39 @@ class RefChain {
   }
 
   RefChain(this.elementList) {
-    isNullable = elementList.any((x) => checkNullable(x));
+		// Ingore the nullability of the first element
+    final _elementList = elementList.sublist(1);
+    isNullable = _elementList.any((x) => checkNullable(x));
+    makeRef();
+  }
 
+  makeRef() {
+    // the first element is not nullability.
     if(elementList.isEmpty) {
       ref = '';
       refWithQuestion = '';
-    } else if(elementList.length == 1) {
-      refWithQuestion = elementList[0].name;
-      ref = elementList[0].name;
+      return;
+    }
+
+    final first = elementList[0];
+
+    if(elementList.length == 1) {
+      refWithQuestion = first.name;
+      ref = first.name;
     } else {
-      refWithQuestion = [
-        _makeVarChainList(elementList.sublist(0, elementList.length - 1), "?"),
-        elementList.last.name
-      ].join(".");
-      ref = _makeVarChainList(elementList,"!");
+    // _elementList.length >= 1, elementList.length >= 2
+    ref = [
+			first.name,
+			..._makeVarChainList(elementList.sublist(1),"!")
+    ].join('.');
+			refWithQuestion = [
+					first.name,
+					..._makeVarChainList(elementList.sublist(1, elementList.length - 1), "?"),
+					elementList.last.name
+			].join('.');
     }
   }
+
 
   _makeVarChainName(VariableElement element, String nullPrefix) {
     if(checkNullable(element)) {
@@ -41,7 +58,7 @@ class RefChain {
   }
 
   _makeVarChainList(List<VariableElement> elementList, String nullPrefix) {
-    return elementList.map((e) => _makeVarChainName(e, nullPrefix)).join('.');
+    return elementList.map((e) => _makeVarChainName(e, nullPrefix));
   }
 
   checkNullable(VariableElement element) {
