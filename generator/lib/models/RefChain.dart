@@ -53,7 +53,6 @@ class RefChain {
   }
 
   removeLast() {
-    print("elementList----------------------$elementList");
     return RefChain(elementList.sublist(0, elementList.length - 1));
   }
 }
