@@ -89,8 +89,20 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
 Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
     DartType targetReturnType, DartType sourceParameterType) {
   final matchingMappingMethods = classElement.methods.where((met) {
-    return met.returnType == targetReturnType &&
-        met.parameters.isNotEmpty && met.parameters.first.type == sourceParameterType;
+    // Sometimes the user is troubled by the nullability of these types.
+    // So ingore the nullability of all the type for the nested mapping function is more easy to be matched.
+    // The process of nullability is one duty for this library.
+    final metReturnElement = met.returnType.element;
+    final metParameterElement = met.parameters.first.type.element;
+
+    final targetReturnElement = targetReturnType.element;
+    final srcParameterElement = sourceParameterType.element;
+
+    return metReturnElement == targetReturnElement &&
+        (metParameterElement == srcParameterElement);
+
+    // return met.returnType == targetReturnType &&
+    //     met.parameters.isNotEmpty && met.parameters.first.type == sourceParameterType;
   });
   return matchingMappingMethods;
 }
