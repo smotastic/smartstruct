@@ -30,7 +30,7 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
       expr = refer(sourceFunction.enclosingElement.name!)
           .property(sourceFunction.name);
     }
-    sourceFieldAssignment = expr.call([...references]);
+    sourceFieldAssignment = expr.call([...references], makeNamedArgumentForStaticFunction(sourceFunction));
 
     // The return of the function may be needed a nested mapping.
     final returnType = sourceFunction.returnType;
@@ -97,4 +97,21 @@ Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
 
 Iterable<DartType> _getGenericTypes(DartType type) {
   return type is ParameterizedType ? type.typeArguments : const [];
+}
+
+// Sometimes we need to pass some variable to the static function just like "this pointer".
+// We can use the named parameters to implement the goal.
+Map<String, Expression> makeNamedArgumentForStaticFunction(ExecutableElement  element) {
+
+    final argumentMap = {
+      "mapper": "this",
+      "\$this": "this",
+    };
+    final namedParameterList = element.parameters.where((p) => p.isNamed && argumentMap.containsKey(p.name)).toList();
+
+    return namedParameterList
+      .asMap().map((key, value) => MapEntry(
+        value.name, 
+        refer(argumentMap[value.name]!)
+      ));
 }
