@@ -12,7 +12,10 @@ class SourceAssignment {
 
   SourceAssignment.fromField(this.field, this.sourceName);
   SourceAssignment.fromFunction(this.function, this.params);
-  SourceAssignment.fromRefChain(this.refChain);
+  SourceAssignment.fromRefChain(this.refChain) {
+    sourceName = refChain!.removeLast().refWithQuestion;
+    field = refChain?.elementList.last as FieldElement;
+  }
 
   bool shouldAssignList() {
     return field != null &&

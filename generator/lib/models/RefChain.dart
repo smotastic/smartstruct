@@ -9,18 +9,27 @@ class RefChain {
   late final String ref;
   late final String refWithQuestion;
 
-  factory RefChain.byPropNames(PropertyInducingElement element, Iterable<String> names) {
+  factory RefChain.byPropNames(VariableElement element, Iterable<String> names) {
     final properyList = _toPropertyList(element, names);
-    return RefChain(properyList);
+    return RefChain([element, ...properyList]);
   }
 
   RefChain(this.elementList) {
     isNullable = elementList.any((x) => checkNullable(x));
-    refWithQuestion = [
-      _makeVarChainList(elementList.sublist(0, elementList.length - 1), "?"),
-      elementList.last.name
-    ].join(".");
-    ref = _makeVarChainList(elementList,"!");
+
+    if(elementList.isEmpty) {
+      ref = '';
+      refWithQuestion = '';
+    } else if(elementList.length == 1) {
+      refWithQuestion = elementList[0].name;
+      ref = elementList[0].name;
+    } else {
+      refWithQuestion = [
+        _makeVarChainList(elementList.sublist(0, elementList.length - 1), "?"),
+        elementList.last.name
+      ].join(".");
+      ref = _makeVarChainList(elementList,"!");
+    }
   }
 
   _makeVarChainName(VariableElement element, String nullPrefix) {
@@ -38,11 +47,20 @@ class RefChain {
   checkNullable(VariableElement element) {
     return element.type.nullabilitySuffix == NullabilitySuffix.question;
   }
+
+  from(VariableElement element) {
+    return RefChain([element, ...elementList]);
+  }
+
+  removeLast() {
+    print("elementList----------------------$elementList");
+    return RefChain(elementList.sublist(0, elementList.length - 1));
+  }
 }
 
 
 // Create the property list corresponding to the nameList. 
-List<PropertyInducingElement> _toPropertyList(PropertyInducingElement element, Iterable<String> nameList) {
+List<PropertyInducingElement> _toPropertyList(VariableElement element, Iterable<String> nameList) {
   final findTargetName = nameList.first;
   final propList = getAllReadProperty(element);
   
@@ -58,20 +76,20 @@ List<PropertyInducingElement> _toPropertyList(PropertyInducingElement element, I
 
   bool shouldContinue = targetProp.type is InterfaceType;
   if(shouldContinue) {
-    return [..._toPropertyList(targetProp, nameList.skip(1))];
+    return [targetProp, ..._toPropertyList(targetProp, nameList.skip(1))];
   } else {
     throw "";
   }
 }
 
-List<PropertyInducingElement> getAllReadProperty(PropertyInducingElement field) {
+List<PropertyInducingElement> getAllReadProperty(VariableElement field) {
   final type = field.type;
   if(type is! InterfaceType) {
     return [];
   }
 
   return [...type.accessors, ...type.allSupertypes.expand((e) => e.accessors)]
-    .where((e) => e.isSetter)
+    .where((e) => e.isGetter)
     .map((e) => e.variable)
     .toList();
 }
