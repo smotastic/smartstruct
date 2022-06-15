@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:smartstruct_generator/models/RefChain.dart';
 
 class SourceAssignment {
   FieldElement? field;
@@ -7,8 +8,11 @@ class SourceAssignment {
   ExecutableElement? function;
   List<ParameterElement>? params;
 
+  RefChain? refChain;
+
   SourceAssignment.fromField(this.field, this.sourceName);
   SourceAssignment.fromFunction(this.function, this.params);
+  SourceAssignment.fromRefChain(this.refChain);
 
   bool shouldAssignList() {
     return field != null &&
