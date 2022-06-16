@@ -84,12 +84,15 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
         sourceFieldAssignment = sourceFieldAssignment.property("where").call([refer("(x) => x != null")]);
       }
 
-      sourceFieldAssignment = sourceFieldAssignment
-        //.toList() .toSet()
-        .property(sourceAssignment.collectInvoke(targetField.type))
-        // .property('toList')
-        // .call([])
-        ;
+      if(sourceAssignment.needCollect(targetField.type)) {
+        sourceFieldAssignment = sourceFieldAssignment
+          //.toList() .toSet()
+          .property(sourceAssignment.collectInvoke(targetField.type))
+          // .property('toList')
+          // .call([])
+          ;
+      }
+
       if(needTargetFilter) {
         sourceFieldAssignment = sourceFieldAssignment
           .asA(refer(targetField.type.getDisplayString(withNullability: true)));

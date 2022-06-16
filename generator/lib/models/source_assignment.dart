@@ -20,9 +20,6 @@ class SourceAssignment {
 
   bool shouldAssignList(DartType targetFieldType) {
     // The source can be mapped to the target, if the source is mapable object and the target is listLike.
-    if(!_isCoreListLike(targetFieldType)) {
-      return false;
-    }
     return _isCoreListLike(targetFieldType) && _isMapable(field!.type);
   }
 
@@ -31,6 +28,10 @@ class SourceAssignment {
   }
 
   bool _isMapable(DartType type) {
+    if(_isCoreListLike(type)) {
+      return true;
+    }
+
     if(type is! InterfaceType) {
       return false;
     }
@@ -42,10 +43,12 @@ class SourceAssignment {
       return "toList()";
     } else if(type.isDartCoreSet) {
       return "toSet()";
-    } else if(type.isDartCoreIterable) {
-      return "";
-    }
+    }    
     throw "Unkown type ${type.getDisplayString(withNullability: false)}";
+  }
+
+  bool needCollect(DartType targetType) {
+    return !targetType.isDartCoreIterable;
   }
 
   bool shouldUseFunction() {
