@@ -45,7 +45,7 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
     final sourceReference = refer(sourceAssignment.sourceName!);
     sourceFieldAssignment = sourceReference.property(sourceField.name);
     // list support
-    if (sourceAssignment.shouldAssignList()) {
+    if (sourceAssignment.shouldAssignList(targetField.type)) {
       final sourceListType = _getGenericTypes(sourceField.type).first;
       final targetListType = _getGenericTypes(targetField.type).first;
       final matchingMappingListMethods = _findMatchingMappingMethod(
@@ -85,9 +85,11 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
       }
 
       sourceFieldAssignment = sourceFieldAssignment
-        //.toList()
-        .property('toList')
-        .call([]);
+        //.toList() .toSet()
+        .property(sourceAssignment.collectInvoke(targetField.type))
+        // .property('toList')
+        // .call([])
+        ;
       if(needTargetFilter) {
         sourceFieldAssignment = sourceFieldAssignment
           .asA(refer(targetField.type.getDisplayString(withNullability: true)));
