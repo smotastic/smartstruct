@@ -54,20 +54,44 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
       // mapping expression, default is just the identity,
       // for example for primitive types or objects that do not have their own mapping method
       var expr = refer('(e) => e');
+      var sourceIsNullable = sourceListType.nullabilitySuffix == NullabilitySuffix.question;
+      var targetIsNullable = targetListType.nullabilitySuffix == NullabilitySuffix.question; 
+      var needTargetFilter = sourceIsNullable && !targetIsNullable;
       if (matchingMappingListMethods.isNotEmpty) {
-        expr = refer(matchingMappingListMethods.first.name);
+        final nestedMapping = matchingMappingListMethods.first;
+        // expr = refer(nestedMapping.name);
+        final invokeStr = invokeNestedMappingFunction(
+          nestedMapping, 
+          sourceIsNullable, 
+          refer("x"), 
+          refer("x"),
+        ).accept(DartEmitter()).toString();
+        expr = refer('''
+          (x) => $invokeStr
+        ''');
+        final returnIsNullable = checkNestMappingReturnNullable(nestedMapping, sourceIsNullable);
+        needTargetFilter = !targetIsNullable && returnIsNullable; 
       }
 
       sourceFieldAssignment =
           // source.{field}.map
-          sourceReference
-              .property(sourceField.name)
-              .property('map')
-              // (expr)
-              .call([expr])
-              //.toList()
-              .property('toList')
-              .call([]);
+        sourceReference.property(sourceField.name)
+        .property('map')
+        // (expr)
+        .call([expr]);
+
+      if(needTargetFilter) {
+        sourceFieldAssignment = sourceFieldAssignment.property("where").call([refer("(x) => x != null")]);
+      }
+
+      sourceFieldAssignment = sourceFieldAssignment
+        //.toList()
+        .property('toList')
+        .call([]);
+      if(needTargetFilter) {
+        sourceFieldAssignment = sourceFieldAssignment
+          .asA(refer(targetField.type.getDisplayString(withNullability: true)));
+      }
     } else {
       // found a mapping method in the class which will map the source to target
       final matchingMappingMethods = _findMatchingMappingMethod(
@@ -213,4 +237,16 @@ makeNullCheckCall(
     return tmp == null ? null : $methodInvoke;
   }()
 ''';
+}
+
+checkNestMappingReturnNullable(MethodElement method, bool inputNullable) {
+  final returnIsNullable = 
+    (inputNullable && 
+      method.parameters.first.type.nullabilitySuffix != NullabilitySuffix.question
+    ) ||
+    (
+      inputNullable &&
+      method.returnType.nullabilitySuffix == NullabilitySuffix.question
+    );
+    return returnIsNullable;
 }
