@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/models/source_assignment.dart';
@@ -33,13 +34,11 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
     sourceFieldAssignment = expr.call([...references], makeNamedArgumentForStaticFunction(sourceFunction));
 
     // The return of the function may be needed a nested mapping.
-    final returnType = sourceFunction.returnType;
-    final matchingMappingMethods = _findMatchingMappingMethod(
-        abstractMapper, targetField.type, returnType);
-    if(matchingMappingMethods.isNotEmpty) {
-        sourceFieldAssignment = refer(matchingMappingMethods.first.name)
-            .call([sourceFieldAssignment]);
-    }
+    sourceFieldAssignment = invokeNestedMappingForStaticFunction(
+      sourceFunction, 
+      abstractMapper, 
+      targetField, 
+      sourceFieldAssignment);
   } else {
     // final sourceClass = sourceAssignment.sourceClass!;
     final sourceField = sourceAssignment.field!;
@@ -78,27 +77,67 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
       if (matchingMappingMethods.isNotEmpty) {
         sourceFieldAssignment = invokeNestedMappingFunction(
           matchingMappingMethods.first, 
-          sourceAssignment);
+          sourceAssignment.refChain!.isNullable,
+          refer(sourceAssignment.refChain!.refWithQuestion),
+          refer(sourceAssignment.refChain!.ref),
+        );
       }
     }
   }
   return sourceFieldAssignment;
 }
 
-Expression invokeNestedMappingFunction(MethodElement method, SourceAssignment sourceAssignment) {
+Expression invokeNestedMappingFunction(
+  MethodElement method, 
+  bool sourceNullable,
+  Expression refWithQuestion,
+  Expression ref,
+) {
   Expression sourceFieldAssignment;
   if(method.parameters.first.isOptional) {
     // The parameter can be null.
     sourceFieldAssignment = refer(method.name)
-        .call([refer(sourceAssignment.refChain!.refWithQuestion)]);
+        .call([refWithQuestion]);
   } else {
     sourceFieldAssignment = refer(method.name)
-        .call([refer(sourceAssignment.refChain!.ref)]);
+        .call([ref]);
     sourceFieldAssignment = checkNullExpression(
-      sourceAssignment.refChain!.isNullable,
-      sourceAssignment.refChain!.refWithQuestion, 
+      sourceNullable,
+      refWithQuestion, 
       sourceFieldAssignment
     );
+  }
+  return sourceFieldAssignment;
+}
+
+Expression invokeNestedMappingForStaticFunction(
+  ExecutableElement sourceFunction,
+  ClassElement abstractMapper,
+  VariableElement targetField,
+  Expression sourceFieldAssignment,
+) {
+  final returnType = sourceFunction.returnType;
+  final matchingMappingMethods = _findMatchingMappingMethod(
+      abstractMapper, targetField.type, returnType);
+  if(matchingMappingMethods.isNotEmpty) {
+    final nestedMappingMethod = matchingMappingMethods.first;
+
+    if(
+      nestedMappingMethod.parameters.first.type.nullabilitySuffix != NullabilitySuffix.question &&
+      sourceFunction.returnType.nullabilitySuffix == NullabilitySuffix.question
+    ) {
+      final str = makeNullCheckCall(
+        sourceFieldAssignment.accept(
+          DartEmitter()
+        ).toString(),
+        nestedMappingMethod,
+      );
+      sourceFieldAssignment = refer(str);
+    } else {
+      sourceFieldAssignment = refer(matchingMappingMethods.first.name)
+          .call([sourceFieldAssignment]);
+    }
+
   }
   return sourceFieldAssignment;
 }
@@ -149,15 +188,29 @@ Map<String, Expression> makeNamedArgumentForStaticFunction(ExecutableElement  el
 
 Expression checkNullExpression(
   bool needCheck,
-  String sourceRef,
+  Expression sourceRef,
   Expression expression,
 ) {
   if(needCheck) {
-    return refer("$sourceRef == null").conditional(
-      refer("null"), 
+    return sourceRef.equalTo(literalNull).conditional(
+      literalNull, 
       expression,
     );
   } else {
     return expression;
   }
+}
+
+makeNullCheckCall(
+  String checkTarget,
+  MethodElement method,
+) {
+
+  final methodInvoke = refer(method.name).call([refer("tmp")]).accept(DartEmitter()).toString();
+  return '''
+  (){
+    final tmp = $checkTarget;
+    return tmp == null ? null : $methodInvoke;
+  }()
+''';
 }
