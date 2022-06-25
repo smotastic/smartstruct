@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:smartstruct/smartstruct.dart';
 import 'package:source_gen_test/source_gen_test.dart';
 part 'simple_mapper_input.dart';
@@ -14,6 +16,7 @@ part 'ignore_field_mapper_input.dart';
 part 'multiple_constructor_input.dart';
 part 'nested_mapper_in_mapping_input.dart';
 part 'static_mapper_input.dart';
+part 'collection_mapper_input.dart';
 
 @ShouldThrow('theAnswer is not a class and cannot be annotated with @Mapper')
 @Mapper()
