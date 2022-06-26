@@ -19,6 +19,7 @@ part 'static_mapper_input.dart';
 part 'collection_mapper_input.dart';
 part 'nested_generic_mapper_input.dart';
 part 'nullable_nested_mapper_input.dart';
+part 'nested_mapping_after_function_mapping_input.dart';
 
 @ShouldThrow('theAnswer is not a class and cannot be annotated with @Mapper')
 @Mapper()
