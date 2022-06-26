@@ -26,6 +26,7 @@ const _expectedAnnotatedTests = {
   'NestedMappingAfterFunctionMappingMapper',
   'InjectableMapper',
   'ListMapper',
+  'NullableListMapper',
   "CollectionMapper",
   'CaseInsensitiveMapper',
   'CaseSensitiveMapper',
