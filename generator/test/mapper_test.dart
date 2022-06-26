@@ -39,5 +39,6 @@ const _expectedAnnotatedTests = {
   'MultiConMapper',
   'NestedMappingMapper',
   'StaticMappingMapper',
-  'NestedGenericMapper'
+  'NestedGenericMapper',
+  'PassOnMapperFunctionMapper',
 };
