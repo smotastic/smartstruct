@@ -179,6 +179,10 @@ Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
     // Sometimes the user is troubled by the nullability of these types.
     // So ingore the nullability of all the type for the nested mapping function is more easy to be matched.
     // The process of nullability is one duty for this library.
+
+    if(met.parameters.isEmpty) {
+        return false;
+    }
     final metReturnElement = met.returnType.element;
     final metParameterElement = met.parameters.first.type.element;
 
