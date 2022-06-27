@@ -31,13 +31,17 @@ class AgeHolderTarget {
   late int age;
 }
 
-/// Mapper showcasing explicit fieldmapping in case fields do not match their respective fieldnames
+// This is a more complex example.
+// The toAgeHolderSource may return a "null" and the nested mapping "fromDogModel"
+// is not accept "null". 
+// So we need to invoke "toAgeHolderSource" and assign the
+// return the a variable "tmp". And determine whether use the "nested mapping" by
+// case that the value of "tmp" is null or not.
 @Mapper()
 abstract class DogMapper {
   static String breedCustom(DogModel model) => 'customBreed';
-
+  
   @Mapping(source: fullNameWithAge, target: 'name')
-//   @Mapping(source: FunctionUtils.mapAge, target: 'age')
   @Mapping(source: breedCustom, target: 'breed')
   @Mapping(source: toAgeHolderSource, target: 'model')
   Dog fromDogModel(DogModel model);
