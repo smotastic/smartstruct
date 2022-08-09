@@ -1,21 +1,11 @@
-part of 'mapper_test_input.dart';
+// GENERATED CODE - DO NOT MODIFY BY HAND
 
-class NullableListSource {
-  final List<ListSubSource>? list;
-  final List<ListSubSource>? list2;
+part of 'nullable_list.dart';
 
-  NullableListSource(this.list, this.list2);
-}
+// **************************************************************************
+// MapperGenerator
+// **************************************************************************
 
-class NullableListTarget {
-  final List<ListSubTarget>? list;
-  final List<ListSubTarget> list2;
-
-  NullableListTarget(this.list, this.list2);
-}
-
-@Mapper()
-@ShouldGenerate(r'''
 class NullableListMapperImpl extends NullableListMapper {
   NullableListMapperImpl() : super();
 
@@ -32,9 +22,4 @@ class NullableListMapperImpl extends NullableListMapper {
     final listsubtarget = ListSubTarget(source.text);
     return listsubtarget;
   }
-}
-''')
-abstract class NullableListMapper {
-  NullableListTarget fromSource(NullableListSource source);
-  ListSubTarget fromSubSource(ListSubSource source);
 }
