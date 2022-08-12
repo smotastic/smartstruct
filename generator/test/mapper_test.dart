@@ -22,8 +22,12 @@ const _expectedAnnotatedTests = {
   'SimpleMapper',
   'ExplicitFieldMapper',
   'NestedMapper',
+  'NullableNestedMapper',
+  'NestedMappingAfterFunctionMappingMapper',
   'InjectableMapper',
   'ListMapper',
+  'NullableListMapper',
+  "CollectionMapper",
   'CaseInsensitiveMapper',
   'CaseSensitiveMapper',
   'CaseSensitiveDuplicateMapper',
@@ -34,5 +38,7 @@ const _expectedAnnotatedTests = {
   'IgnoreMapper',
   'MultiConMapper',
   'NestedMappingMapper',
-  'StaticMappingMapper'
+  'StaticMappingMapper',
+  'NestedGenericMapper',
+  'PassOnMapperFunctionMapper',
 };

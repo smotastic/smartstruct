@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/parameter_copy.dart';
+import 'package:smartstruct_generator/models/RefChain.dart';
 import 'package:smartstruct_generator/models/source_assignment.dart';
 import 'package:smartstruct_generator/mapper_config.dart';
 import 'package:source_gen/source_gen.dart';
@@ -18,7 +19,6 @@ Method buildMapperImplementation(Map<String, dynamic> config,
         element: method,
         todo: 'Add valid return type to mapping method');
   }
-
   return Method((b) => b
     ..annotations.add(CodeExpression(Code('override')))
     ..name = method.displayName
@@ -204,22 +204,28 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
               matchedSourceClazzInSourceMapping[matchedTarget]!;
           final fieldClazz = f.type.element as ClassElement;
           final foundFields = _findFields(fieldClazz);
-          final matchingFieldForSourceValues =
-              _findMatchingField(sourceValueList.sublist(1), foundFields);
-          if (matchingFieldForSourceValues != null) {
-            final sourceRefer = sourceValueList
-                .sublist(0, sourceValueList.length - 1)
-                .join(".");
-            targetToSource[matchedTarget] = SourceAssignment.fromField(
-                matchingFieldForSourceValues, sourceRefer);
-          } else {
-            targetToSource[f.name] =
-                SourceAssignment.fromField(f, sourceEntry.value.displayName);
-          }
+          
+          final refChain = RefChain.byPropNames(sourceEntry.value, sourceValueList.sublist(1));
+          targetToSource[matchedTarget] = SourceAssignment.fromRefChain(refChain);
+
+        //   final matchingFieldForSourceValues =
+        //       _findMatchingField(sourceValueList.sublist(1), foundFields);
+        //   if (matchingFieldForSourceValues != null) {
+        //     final sourceRefer = sourceValueList
+        //         .sublist(0, sourceValueList.length - 1)
+        //         .join(".");
+        //     targetToSource[matchedTarget] = SourceAssignment.fromField(
+        //         matchingFieldForSourceValues, sourceRefer);
+        //   } else {
+        //     targetToSource[f.name] =
+        //         SourceAssignment.fromField(f, sourceEntry.value.displayName);
+        //   }
         }
       } else {
         targetToSource[f.name] =
-            SourceAssignment.fromField(f, sourceEntry.value.displayName);
+            SourceAssignment.fromRefChain(RefChain([sourceEntry.value, f]));
+        // targetToSource[f.name] =
+        //     SourceAssignment.fromField(f, sourceEntry.value.displayName);
       }
     }
   }
