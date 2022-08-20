@@ -4,8 +4,9 @@
 class Mapper {
   final bool useInjection;
   final bool caseSensitiveFields;
+  final bool static;
 
-  const Mapper({this.useInjection = false, this.caseSensitiveFields = false});
+  const Mapper({this.useInjection = false, this.caseSensitiveFields = false, this.static = false});
 }
 
 const mapper = Mapper();

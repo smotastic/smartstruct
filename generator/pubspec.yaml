@@ -18,3 +18,6 @@ dependencies:
   #   path: ../smartstruct
   smartstruct: ^1.2.6
   source_gen: ^1.2.1
+dependency_overrides:
+  smartstruct:
+    path: ../smartstruct

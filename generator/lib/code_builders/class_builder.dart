@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/method_builder.dart';
+import 'package:smartstruct_generator/code_builders/static_proxy_builder.dart';
 import 'parameter_copy.dart';
 
 Library buildMapperClass(
@@ -10,8 +11,17 @@ Library buildMapperClass(
         [
           _generateMapperImplementationClass(abstractClass, config),
           ..._generateStaticMethods(abstractClass, config),
+          ..._generateStaticProxy(abstractClass, config),
         ],
       ));
+}
+
+List<Class> _generateStaticProxy(
+    ClassElement abstractClass, Map<String, dynamic> config) {
+  if(config['static']) {
+    return [generateStaticProxy(abstractClass)];
+  }
+  return [];
 }
 
 List<Method> _generateStaticMethods(

@@ -17,3 +17,6 @@ dev_dependencies:
   #smartstruct_generator: ^1.2.6
   smartstruct_generator:
     path: ../generator
+dependency_overrides:
+  smartstruct:
+    path: ../smartstruct
