@@ -41,4 +41,5 @@ const _expectedAnnotatedTests = {
   'StaticMappingMapper',
   'NestedGenericMapper',
   'PassOnMapperFunctionMapper',
+  'MapperInheritanceMapper',
 };

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
@@ -49,11 +51,24 @@ Class _generateMapperImplementationClass(
       ..constructors.addAll(
           abstractClass.constructors.map((c) => _generateConstructor(c)))
       ..extend = refer('${abstractClass.displayName}')
-      ..methods.addAll(abstractClass.methods
+      ..methods.addAll(_getAllMethods(abstractClass.thisType)
           .where((method) => method.isAbstract)
           .map((method) =>
               buildMapperImplementation(config, method, abstractClass))),
   );
+}
+
+List<MethodElement> _getAllMethods(InterfaceType interfaceType) {
+
+    final set = LinkedHashSet<MethodElement>(
+      equals: (p0, p1) => p0.name ==  p1.name,
+      hashCode: (p0) => p0.name.hashCode,
+    );
+    // The methods of subclass has the priority. 
+    // So it should be added before the methods of superclass.
+    set.addAll(interfaceType.methods);
+    set.addAll(interfaceType.allSupertypes.expand(_getAllMethods));
+    return set.toList();
 }
 
 /// Generates a [Constructor] by copying the given [ConstructorElement] c
