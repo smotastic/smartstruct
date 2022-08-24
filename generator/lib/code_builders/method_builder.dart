@@ -161,14 +161,10 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
     ClassElement target,
     MethodElement method,
     Map<String, dynamic> config) {
-  final sourceMap = {for (var e in sources) e.type.element as ClassElement: e};
-
   final caseSensitiveFields = config['caseSensitiveFields'];
   final fieldMapper = caseSensitiveFields ? (a) => a : (a) => a.toUpperCase();
-  final equalsHashCode =
-      caseSensitiveFields ? (a) => a.hashCode : (a) => a.toUpperCase().hashCode;
+  equalsHashCode(a)  => fieldMapper(a).hashCode;
   final mappingConfig = MapperConfig.readMappingConfig(method);
-  // final customMappingConfig = MapperConfig.readCustomMappingConfig(method);
 
   /// With HashMap you can specify how to compare keys
   /// It is very usefull when you want to have caseInsensitive keys
@@ -176,168 +172,93 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
   var targetToSource = HashMap<String, SourceAssignment>(
       equals: (a, b) => fieldMapper(a) == fieldMapper(b),
       hashCode: (a) => equalsHashCode(a));
-
-  /// Contains data from @CustomMapping annotations
-  var customTargetToSource = HashMap<String, SourceAssignment>(
+  final mappingConfigKeySet = HashSet<String>(
       equals: (a, b) => fieldMapper(a) == fieldMapper(b),
       hashCode: (a) => equalsHashCode(a));
+  mappingConfigKeySet.addAll(mappingConfig.keys);
 
-  final mappingStringConfig = _extractStringMappingConfig(mappingConfig);
+  _collectDirectMapping(targetToSource, sources, mappingConfigKeySet);
+  _collectConfigMapping(targetToSource, sources, mappingConfig);
+  return [targetToSource];
+}
+
+_collectDirectMapping(
+  Map<String, SourceAssignment> targetToSource,
+  List<ParameterElement> sources,
+  Set<String> mappingConfigKeySet,
+) {
+
+  final sourceMap = {for (var e in sources) e.type.element as ClassElement: e};
 
   for (final sourceEntry in sourceMap.entries) {
-    Map<String, List<String>> matchedSourceClazzInSourceMapping =
-        _findMatchingSourceClazzInMappingMap(
-            mappingStringConfig, sourceEntry.value.displayName);
     for (var f in _findFields(sourceEntry.key)) {
-      if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
-        final duplicatedKey = targetToSource.keys
-            .toList()
-            .firstWhere((k) => k.toUpperCase() == f.name.toUpperCase());
-        throw InvalidGenerationSourceError(
-            'Mapper got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
-            todo: "Use case sensitive mapper or change field's names");
+      // The target field is binded by annotation 'Mapping'. The direct mapping is skiped.
+      if(mappingConfigKeySet.contains(f.name)) {
+        continue;
       }
-      if (matchedSourceClazzInSourceMapping.isNotEmpty &&
-          _shouldSearchMoreFields(f)) {
-        for (var matchedTarget in matchedSourceClazzInSourceMapping.keys) {
-          final sourceValueList =
-              matchedSourceClazzInSourceMapping[matchedTarget]!;
-          final fieldClazz = f.type.element as ClassElement;
-          final foundFields = _findFields(fieldClazz);
-          
-          final refChain = RefChain.byPropNames(sourceEntry.value, sourceValueList.sublist(1));
-          targetToSource[matchedTarget] = SourceAssignment.fromRefChain(refChain);
 
-        //   final matchingFieldForSourceValues =
-        //       _findMatchingField(sourceValueList.sublist(1), foundFields);
-        //   if (matchingFieldForSourceValues != null) {
-        //     final sourceRefer = sourceValueList
-        //         .sublist(0, sourceValueList.length - 1)
-        //         .join(".");
-        //     targetToSource[matchedTarget] = SourceAssignment.fromField(
-        //         matchingFieldForSourceValues, sourceRefer);
-        //   } else {
-        //     targetToSource[f.name] =
-        //         SourceAssignment.fromField(f, sourceEntry.value.displayName);
-        //   }
-        }
-      } else {
-        targetToSource[f.name] =
-            SourceAssignment.fromRefChain(RefChain([sourceEntry.value, f]));
-        // targetToSource[f.name] =
-        //     SourceAssignment.fromField(f, sourceEntry.value.displayName);
-      }
+      _checkDuplicatedKey(targetToSource, f.name);
+
+      targetToSource[f.name] =
+          SourceAssignment.fromRefChain(RefChain([sourceEntry.value, f]));
     }
   }
+}
 
+_collectConfigMapping(
+  Map<String, SourceAssignment> targetToSource,
+  List<ParameterElement> sources,
+  Map<String, MappingConfig> mappingConfig, 
+) {
   /// If there are Mapping Annotations on the method, the source attribute of the source mapping class,
   /// will be replaced with the source attribute of the given mapping config.
   mappingConfig.forEach((targetField, mappingConfig) {
+    _checkDuplicatedKey(targetToSource, targetField);
+
+    if (mappingConfig.ignore) {
+      targetToSource.remove(targetField);
+      return;
+    }
+
     final sourceField = mappingConfig.source;
     if (sourceField != null) {
       if (sourceField.toFunctionValue() != null) {
         targetToSource[targetField] = SourceAssignment.fromFunction(
             sourceField.toFunctionValue()!, [...sources]);
       } else if (sourceField.toStringValue() != null) {
-        final sourceFieldString = sourceField.toStringValue()!;
-        // sourceField exists in any sourceParam
-        if (targetToSource.containsKey(sourceFieldString)) {
-          // replace mapping target with mapping
-          targetToSource.putIfAbsent(
-              targetField, () => targetToSource[sourceFieldString]!);
-          targetToSource.remove(sourceFieldString);
-        }
+        final refChain = _createChainRefFromString(sources, sourceField.toStringValue()!);
+        targetToSource[targetField] = SourceAssignment.fromRefChain(refChain);
       }
     }
-
-    if (mappingConfig.ignore) {
-      targetToSource.remove(targetField);
-    }
   });
-
-  return [targetToSource, customTargetToSource];
 }
 
-/// Extracts all Mapping Config Entries in [mappingConfig] which contains source mappings of type string
-Map<String, MappingConfig> _extractStringMappingConfig(
-    Map<String, MappingConfig> mappingConfig) {
-  final mappingStringConfig = <String, MappingConfig>{};
-  mappingConfig.forEach((key, value) {
-    if (value.source != null && value.source!.toStringValue() != null) {
-      mappingStringConfig.putIfAbsent(key, () => value);
-    }
-  });
-  return mappingStringConfig;
-}
-
-/// Searches for a matching class for every given [MappingConfig] in [mappingStringConfig], matched against the given [matchingSourceClazzName]
-/// For MappingConfigs including dot seperated clazz attributes, the first value before the first dot is matched against the given matchingSourceClazzName.
-/// Example: A MappingConfig containing "user.address.zipcode" would try to match against user
-List<List<String>> _findMatchingSourceClazzInMapping(
-    Map<String, MappingConfig> mappingStringConfig,
-    String matchingSourceClazzName) {
-  List<List<String>> matchedSourceClazzInSourceMapping = [];
-  mappingStringConfig.forEach((key, value) {
-    // clazz.attribute1.attribute1_1
-    final sourceValueList = value.source!.toStringValue()!.split(".");
-    final sourceClass = sourceValueList[0];
-    if (sourceClass == matchingSourceClazzName) {
-      matchedSourceClazzInSourceMapping.add(sourceValueList);
-    }
-  });
-  return matchedSourceClazzInSourceMapping;
-}
-
-Map<String, List<String>> _findMatchingSourceClazzInMappingMap(
-    Map<String, MappingConfig> mappingStringConfig,
-    String matchingSourceClazzName) {
-  Map<String, List<String>> ret = {};
-  mappingStringConfig.forEach((key, value) {
-    // clazz.attribute1.attribute1_1
-    final sourceValueList = value.source!.toStringValue()!.split(".");
-    final sourceClass = sourceValueList[0];
-    if (sourceClass == matchingSourceClazzName) {
-      ret.putIfAbsent(key, () => sourceValueList);
-    }
-  });
-  return ret;
-}
-
-/// Finds the matching field, matching the last source of [sources] to any field of [fields]
-/// If no field was found, null is returned
-///
-/// Example: [sources]="user,address,zipcode" with [fields]=address would identify address as a field, then continue searching in the address field for the zipcode field.
-/// If the address contains a field zipcode, the zipcode field is returned.
-FieldElement? _findMatchingField(
-    List<String> sources, List<FieldElement> fields) {
-  for (var source in sources) {
-    final potentielFinds = fields.where((element) => element.name == source);
-    if (potentielFinds.isEmpty) {
-      continue;
-    }
-    final foundField = potentielFinds.first;
-    // foundField is not string
-    if (_shouldSearchMoreFields(foundField)) {
-      final searchClazz = foundField.type.element as ClassElement;
-      return _findMatchingField(
-          sources.skip(1).toList(), _findFields(searchClazz));
-    } else {
-      return foundField;
-    }
+_checkDuplicatedKey(
+  Map<String, SourceAssignment> targetToSource,
+  String name,
+) {
+  if (targetToSource.containsKey(name)) {
+        final duplicatedKey = targetToSource.keys
+            .toList()
+            .firstWhere((k) => k.toUpperCase() == name.toUpperCase());
+    throw InvalidGenerationSourceError(
+        'Mapper got case insensitive fields and contains fields: $name and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
+        todo: "Use case sensitive mapper or change field's names");
   }
 }
 
-/// A search for a potential underlying should only be continued, if the field is not a primitive type (string, int, double etc)
-bool _shouldSearchMoreFields(FieldElement field) {
-  return !field.type.isDartCoreString &&
-      !field.type.isDartCoreBool &&
-      !field.type.isDartCoreDouble &&
-      !field.type.isDartCoreFunction &&
-      !field.type.isDartCoreInt &&
-      !field.type.isDartCoreIterable &&
-      !field.type.isDartCoreList &&
-      !field.type.isDartCoreMap &&
-      !field.type.isDartCoreNull &&
-      !field.type.isDartCoreNum &&
-      !field.type.isDartCoreSet;
+_createChainRefFromString(List<ParameterElement> sources, String refString) {
+  if(refString.isEmpty) {
+    throw InvalidGenerationSourceError(
+      'The ref length is 0!'
+    );
+  }
+
+  final names = refString.split('.');
+  final findSources = sources.where((element) => element.name == names.first);
+  return findSources.isNotEmpty ?
+    RefChain.byPropNames(findSources.first, names.skip(1)) :
+    // If the start of the 'refString' is not the source name,
+    // use the first source in the source list by default.
+    RefChain.byPropNames(sources.first, names);
 }
