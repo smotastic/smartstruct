@@ -16,7 +16,7 @@ class StaticProxySource {
   StaticProxySource(this.text, this.number);
 }
 
-@Mapper(static: true)
+@Mapper(generateStaticProxy: true)
 @ShouldGenerate('''
 class StaticProxyMapperImpl extends StaticProxyMapper {
   StaticProxyMapperImpl() : super();

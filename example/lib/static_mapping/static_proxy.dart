@@ -17,7 +17,7 @@ class StaticMappingSource {
   StaticMappingSource(this.text, this.number);
 }
 
-@Mapper(static:  true)
+@Mapper(generateStaticProxy:  true)
 abstract class StaticMappingMapper {
   StaticProxyTarget fromSourceNormal(StaticMappingSource source);
 }

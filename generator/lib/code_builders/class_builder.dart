@@ -18,7 +18,7 @@ Library buildMapperClass(
 
 List<Class> _generateStaticProxy(
     ClassElement abstractClass, Map<String, dynamic> config) {
-  if(config['static']) {
+  if(config['generateStaticProxy']) {
     return [generateStaticProxy(abstractClass)];
   }
   return [];
