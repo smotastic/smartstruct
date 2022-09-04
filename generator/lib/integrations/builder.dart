@@ -4,4 +4,4 @@ import '../generators/mapper_generator.dart';
 
 /// Main Builder for the [Mapping] Annotation
 Builder smartstructBuilder(BuilderOptions options) =>
-    PartBuilder([MapperGenerator()], '.mapper.g.dart');
+    PartBuilder([MapperGenerator()], '.mapper.g.dart', options: options);
