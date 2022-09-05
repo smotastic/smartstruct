@@ -12,7 +12,7 @@ class ListMapperImpl extends ListMapper {
   @override
   Target fromSource(Source source) {
     final target = Target(source.intList.map((e) => e).toList(),
-        source.entryList.map(fromSourceEntry).toList());
+        source.entryList.map((x) => fromSourceEntry(x)).toList());
     return target;
   }
 

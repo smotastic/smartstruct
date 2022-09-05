@@ -31,7 +31,8 @@ class ListMapperImpl extends ListMapper {
 
   @override
   ListTarget fromSource(ListSource source) {
-    final listtarget = ListTarget(source.list.map(fromSubSource).toList());
+    final listtarget =
+        ListTarget(source.list.map((x) => fromSubSource(x)).toList());
     return listtarget;
   }
 

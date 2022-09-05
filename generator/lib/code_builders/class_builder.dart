@@ -1,10 +1,58 @@
+import 'dart:collection';
+
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/method_builder.dart';
-
+import 'package:smartstruct_generator/code_builders/static_proxy_builder.dart';
 import 'parameter_copy.dart';
 
-Class buildMapperClass(
+Library buildMapperClass(
+    ClassElement abstractClass, Map<String, dynamic> config) {
+  return Library((b) => b.body.addAll(
+        [
+          _generateMapperImplementationClass(abstractClass, config),
+          ..._generateStaticMethods(abstractClass, config),
+          ..._generateStaticProxy(abstractClass, config),
+        ],
+      ));
+}
+
+List<Class> _generateStaticProxy(
+    ClassElement abstractClass, Map<String, dynamic> config) {
+  if(config['generateStaticProxy']) {
+    return [generateStaticProxy(abstractClass)];
+  }
+  return [];
+}
+
+List<Method> _generateStaticMethods(
+    ClassElement abstractClass, Map<String, dynamic> config) {
+  // I have no idea why the static methods needed to be generated.
+  // But if the return type is abstract class like List, the _generateBody in "method_builder.dart" can not work.
+  // So we need to filter these function.
+  var staticMethods = abstractClass.methods
+      .where((method) => method.isStatic 
+        && !_isPrimitive(method.returnType)
+        && !isAbstractType(method.returnType))
+      .map((method) => buildStaticMapperImplementation(config, method, abstractClass))
+      .toList();
+  return staticMethods;
+}
+
+bool isAbstractType(DartType type) {
+    final element = type.element;
+    if(element is! ClassElement) {
+        return false;
+    }
+    return element.isAbstract; 
+}
+
+bool _isPrimitive(DartType type) {
+  return type.isDartCoreBool || type.isDartCoreDouble || type.isDartCoreInt || type.isDartCoreNum || type.isDartCoreString;
+}
+
+Class _generateMapperImplementationClass(
     ClassElement abstractClass, Map<String, dynamic> config) {
   return Class(
     (b) => b
@@ -13,11 +61,24 @@ Class buildMapperClass(
       ..constructors.addAll(
           abstractClass.constructors.map((c) => _generateConstructor(c)))
       ..extend = refer('${abstractClass.displayName}')
-      ..methods.addAll(abstractClass.methods
+      ..methods.addAll(_getAllMethods(abstractClass.thisType)
           .where((method) => method.isAbstract)
           .map((method) =>
               buildMapperImplementation(config, method, abstractClass))),
   );
+}
+
+List<MethodElement> _getAllMethods(InterfaceType interfaceType) {
+
+    final set = LinkedHashSet<MethodElement>(
+      equals: (p0, p1) => p0.name ==  p1.name,
+      hashCode: (p0) => p0.name.hashCode,
+    );
+    // The methods of subclass has the priority. 
+    // So it should be added before the methods of superclass.
+    set.addAll(interfaceType.methods);
+    set.addAll(interfaceType.allSupertypes.expand(_getAllMethods));
+    return set.toList();
 }
 
 /// Generates a [Constructor] by copying the given [ConstructorElement] c

@@ -16,7 +16,7 @@ class ExampleMapperImpl extends ExampleMapper {
         source.number, source.text, source.truthy, source.superText,
         named: source.named,
         namedTwoDiff: source.namedTwo,
-        list: source.list.map(fromFooSub).toList(),
+        list: source.list.map((x) => fromFooSub(x)).toList(),
         secondTextOther: second.secondTextOther);
     bartarget.property = source.property;
     bartarget.propertyTwoDiff = source.propertyTwo;

@@ -46,19 +46,19 @@ Create your beans.
 
 ```dart
 class Dog {
-    final String breed;
-    final int age;
-    final String name;
-    Dog(this.breed, this.age, this.name);
+  final String breed;
+  final int age;
+  final String name;
+  Dog(this.breed, this.age, this.name);
 }
 ```
 
 ```dart
 class DogModel {
-    final String breed;
-    final int age;
-    final String name;
-    DogModel(this.breed, this.age, this.name);
+  final String breed;
+  final int age;
+  final String name;
+  DogModel(this.breed, this.age, this.name);
 }
 ```
 
@@ -70,7 +70,7 @@ part 'dogmapper.mapper.g.dart';
 
 @Mapper()
 abstract class DogMapper {
-    Dog fromModel(DogModel model);
+  Dog fromModel(DogModel model);
 }
 ```
 
@@ -83,11 +83,11 @@ dart run build_runner build
 ```dart
 // dogmapper.mapper.g.dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.breed, model.age, model.name);
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.breed, model.age, model.name);
+    return dog;
+  }
 }
 ```
 
@@ -95,7 +95,7 @@ The Mapper supports positional arguments, named arguments and property access vi
 
 ## Case sensitivity
 
-By default mapper generator works in case insensitivity manner. 
+By default mapper generator works in case insensitivity manner.
 
 ```dart
 class Source {
@@ -115,7 +115,7 @@ abstract class ExampleMapper {
   Target fromSource(Source source);
 }
 ```
-As you can see, classes above got different field's names (case) for username. Because mappers are case insensitive by default, those classes are correctly mapped. 
+As you can see, classes above got different field's names (case) for username. Because mappers are case insensitive by default, those classes are correctly mapped.
 ```dart
 
 class ExampleMapperImpl extends ExampleMapper {
@@ -142,20 +142,20 @@ If some fields do not match each other, you can add a Mapping Annotation on the 
 
 ```dart
 class Dog {
-    final String name;
-    Dog(this.name);
+  final String name;
+  Dog(this.name);
 }
 class DogModel {
-    final String dogName;
-    DogModel(this.dogName);
+  final String dogName;
+  DogModel(this.dogName);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    @Mapping(source: 'dogName', target: 'name')
-    Dog fromModel(DogModel model);
+  @Mapping(source: 'dogName', target: 'name')
+  Dog fromModel(DogModel model);
 }
 ```
 
@@ -163,11 +163,11 @@ In this case, the field _dogName_ of _DogModel_ will be mapped to the field _nam
 
 ```dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.dogName);
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.dogName);
+    return dog;
+  }
 }
 ```
 
@@ -175,34 +175,34 @@ class DogMapperImpl extends DogMapper {
 The source attribute can also be a Function. This Function will then be called with the Source Parameter of the mapper method as a parameter.
 ```dart
 class Dog {
-    final String name;
-    final String breed;
-    Dog(this.name, this.breed);
+  final String name;
+  final String breed;
+  Dog(this.name, this.breed);
 }
 class DogModel {
-    final String name;
-    DogModel(this.name);
+  final String name;
+  DogModel(this.name);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    static String randomBreed(DogModel model) => 'some random breed';
+  static String randomBreed(DogModel model) => 'some random breed';
 
-    @Mapping(source: randomBreed, target: 'breed')
-    Dog fromModel(DogModel model);
+  @Mapping(source: randomBreed, target: 'breed')
+  Dog fromModel(DogModel model);
 }
 ```
 
 Will generate the following Mapper.
 ```dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.dogName, DogMapper.randomBreed(model));
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.dogName, DogMapper.randomBreed(model));
+    return dog;
+  }
 }
 ```
 ### Ignore Fields
@@ -210,33 +210,33 @@ Fields can be ignored, by specififying the `ignore` attribute on the Mapping `An
 
 ```dart
 class Dog {
-    final String name;
-    String? breed;
-    Dog(this.name);
+  final String name;
+  String? breed;
+  Dog(this.name);
 }
 class DogModel {
-    final String name;
-    final String breed;
-    DogModel(this.name, this.breed);
+  final String name;
+  final String breed;
+  DogModel(this.name, this.breed);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    @Mapping(target: 'breed', ignore: true)
-    Dog fromModel(DogModel model);
+  @Mapping(target: 'breed', ignore: true)
+  Dog fromModel(DogModel model);
 }
 ```
 
 Will generate the following Mapper.
 ```dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.name);
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.name);
+    return dog;
+  }
 }
 ```
 
@@ -392,8 +392,8 @@ class ListMapperImpl extends ListMapper {
   @override
   Target fromSource(Source source) {
     final target = Target(
-      source.intList.map((e) => e).toList(),
-      source.entryList.map(fromSourceEntry).toList());
+        source.intList.map((e) => e).toList(),
+        source.entryList.map(fromSourceEntry).toList());
     return target;
   }
 
@@ -419,7 +419,7 @@ import 'package:injectable/injectable.dart';
 
 @Mapper(useInjectable = true)
 abstract class DogMapper {
-    Dog fromModel(DogModel model);
+  Dog fromModel(DogModel model);
 }
 ```
 
@@ -469,6 +469,76 @@ class DogMapperImpl extends DogMapper {
     final dog = Dog(model.name);
     return freezedtarget;
   }
+}
+```
+
+## Static Mapping
+Static Methods in a Mapper Class will automatically be mapped with a static pendant in the generated mapper file.
+
+
+```dart
+class Dog {
+    final String name;
+    Dog(this.name);
+}
+class DogModel {
+    final String name;
+    DogModel(this.name);
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+    static Dog fromModel(DogModel model) => _$fromModel(model);
+}
+```
+
+Will generate a mapper file providing the following static methods.
+```dart
+Dog _$fromModel(DogModel model) {
+  final dog = Dog(model.name);
+  return dog;
+}
+```
+
+## Static Mapping with a proxy
+Alternatively you can set ``generateStaticProxy`` to ``true``in the Mapping Annotation, to generate a Mapper Proxy implementation for your static methods.
+```dart
+class Dog {
+    final String name;
+    Dog(this.name);
+}
+class DogModel {
+    final String name;
+    DogModel(this.name);
+}
+```
+
+```dart
+@Mapper(generateStaticProxy = true)
+class DogMapper {
+    Dog fromModel(DogModel model);
+}
+```
+
+Will generate the following mapper.
+```dart
+class DogMapperImpl extends DogMapper {
+  DogMapperImpl() : super();
+
+  @override
+  Dog fromModel(DogModel model) {
+    final dog = Dog(model.name);
+    return dog;
+  }
+}
+
+class DogMapper$ {
+  static final DogMapper mapper = DogMapperImpl();
+
+  static Dog fromModel(DogModel model) =>
+      mapper.fromModel(model);
 }
 ```
 

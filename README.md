@@ -472,6 +472,76 @@ class DogMapperImpl extends DogMapper {
 }
 ```
 
+## Static Mapping
+Static Methods in a Mapper Class will automatically be mapped with a static pendant in the generated mapper file.
+
+
+```dart
+class Dog {
+    final String name;
+    Dog(this.name);
+}
+class DogModel {
+    final String name;
+    DogModel(this.name);
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+    static Dog fromModel(DogModel model) => _$fromModel(model);
+}
+```
+
+Will generate a mapper file providing the following static methods.
+```dart
+Dog _$fromModel(DogModel model) {
+  final dog = Dog(model.name);
+  return dog;
+}
+```
+
+## Static Mapping with a proxy
+Alternatively you can set ``generateStaticProxy`` to ``true``in the Mapping Annotation, to generate a Mapper Proxy implementation for your static methods.
+```dart
+class Dog {
+    final String name;
+    Dog(this.name);
+}
+class DogModel {
+    final String name;
+    DogModel(this.name);
+}
+```
+
+```dart
+@Mapper(generateStaticProxy = true)
+class DogMapper {
+    Dog fromModel(DogModel model);
+}
+```
+
+Will generate the following mapper.
+```dart
+class DogMapperImpl extends DogMapper {
+  DogMapperImpl() : super();
+
+  @override
+  Dog fromModel(DogModel model) {
+    final dog = Dog(model.name);
+    return dog;
+  }
+}
+
+class DogMapper$ {
+  static final DogMapper mapper = DogMapperImpl();
+
+  static Dog fromModel(DogModel model) =>
+      mapper.fromModel(model);
+}
+```
+
 # Examples
 
 Please refer to the [example](https://github.com/smotastic/smartstruct/tree/master/example) package, for a list of examples and how to use the Mapper Annotation.

@@ -1,3 +1,13 @@
+# v1.2.7
+
+## Bugfixes
+* Generator does not recognize inherited methods https://github.com/smotastic/smartstruct/issues/56 (Thanks to @skykaka)
+* Unable to generate files in different directories https://github.com/smotastic/smartstruct/issues/54 (Thanks to @skykaka)
+
+## Features
+Static Mapping (https://github.com/smotastic/smartstruct/issues/53)
+Static Mapping with a proxy (https://github.com/smotastic/smartstruct/pull/59) (Thanks to @skykaka)
+
 # v1.2.6
 - Nested Mapping directly in the mapping annotation (https://github.com/smotastic/smartstruct/issues/26)
 - Better support for freezed (https://github.com/smotastic/smartstruct/issues/29)
@@ -30,12 +40,12 @@ Fixes:
 
 # v.1.2.1
 - Constructors in the abstract mapper will now also be implemented by the generated mapper class (https://github.com/smotastic/smartstruct/issues/22).
-This should fix an issue where you cannot inject dependencies via the constructor in your mapper class.
+  This should fix an issue where you cannot inject dependencies via the constructor in your mapper class.
 
 # v1.2.0
 - Fixed the useInjection attribute to properly work now (https://github.com/smotastic/smartstruct/issues/19)
-Note that all generated files are suffixed with *.mapper.g.dart* now instead of *.g.dart*
-So for migration purposes you'll have to just change the *part 'foomapper.g.dart'* in your mapper files to *part 'foomapper.mapper.g.dart*
+  Note that all generated files are suffixed with *.mapper.g.dart* now instead of *.g.dart*
+  So for migration purposes you'll have to just change the *part 'foomapper.g.dart'* in your mapper files to *part 'foomapper.mapper.g.dart*
 ```dart
 // before
 part 'foomapper.g.dart'

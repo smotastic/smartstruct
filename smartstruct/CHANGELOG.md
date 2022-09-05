@@ -1,3 +1,13 @@
+# v1.2.7
+
+## Bugfixes
+* Generator does not recognize inherited methods https://github.com/smotastic/smartstruct/issues/56 (Thanks to @skykaka)
+* Unable to generate files in different directories https://github.com/smotastic/smartstruct/issues/54 (Thanks to @skykaka)
+
+## Features
+Static Mapping (https://github.com/smotastic/smartstruct/issues/53)
+Static Mapping with a proxy (https://github.com/smotastic/smartstruct/pull/59) (Thanks to @skykaka)
+
 # v1.2.6
 - Nested Mapping directly in the mapping annotation (https://github.com/smotastic/smartstruct/issues/26)
 - Better support for freezed (https://github.com/smotastic/smartstruct/issues/29)
