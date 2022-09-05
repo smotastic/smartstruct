@@ -4,5 +4,3 @@
 
 # Conventional directory for build output.
 build/
-
-*.mapper.g.dart
