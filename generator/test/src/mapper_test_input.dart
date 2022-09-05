@@ -23,6 +23,7 @@ part 'nested_mapping_after_function_mapping_input.dart';
 part 'nullable_list_mapper_input.dart';
 part 'pass_on_mapper_function_mapper_input.dart';
 part 'static_proxy_input.dart';
+part 'mapper_inheritance_input.dart';
 
 @ShouldThrow('theAnswer is not a class and cannot be annotated with @Mapper')
 @Mapper()
