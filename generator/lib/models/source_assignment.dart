@@ -5,13 +5,16 @@ import 'package:smartstruct_generator/models/RefChain.dart';
 class SourceAssignment {
   FieldElement? field;
   String? sourceName;
+  //this attr is judge whether the parameter need to fill the target straightly
+  bool isStraight = false;
 
   ExecutableElement? function;
   List<ParameterElement>? params;
 
   RefChain? refChain;
 
-  SourceAssignment.fromField(this.field, this.sourceName);
+  //if you use the method to create the SourceAssignment, isStraight default will be true
+  SourceAssignment.fromField(this.field, this.sourceName, {this.isStraight = true});
   SourceAssignment.fromFunction(this.function, this.params);
   SourceAssignment.fromRefChain(this.refChain) {
     sourceName = refChain!.removeLast().refWithQuestion;
@@ -28,22 +31,22 @@ class SourceAssignment {
   }
 
   bool _isMapable(DartType type) {
-    if(_isCoreListLike(type)) {
+    if (_isCoreListLike(type)) {
       return true;
     }
 
-    if(type is! InterfaceType) {
+    if (type is! InterfaceType) {
       return false;
     }
     return type.allSupertypes.any(_isCoreListLike);
   }
 
   String collectInvoke(DartType type) {
-    if(type.isDartCoreList) {
+    if (type.isDartCoreList) {
       return "toList()";
-    } else if(type.isDartCoreSet) {
+    } else if (type.isDartCoreSet) {
       return "toSet()";
-    }    
+    }
     throw "Unkown type ${type.getDisplayString(withNullability: false)}";
   }
 

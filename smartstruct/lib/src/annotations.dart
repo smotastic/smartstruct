@@ -6,7 +6,10 @@ class Mapper {
   final bool caseSensitiveFields;
   final bool generateStaticProxy;
 
-  const Mapper({this.useInjection = false, this.caseSensitiveFields = false, this.generateStaticProxy = false});
+  const Mapper(
+      {this.useInjection = false,
+      this.caseSensitiveFields = false,
+      this.generateStaticProxy = false});
 }
 
 const mapper = Mapper();
@@ -18,5 +21,6 @@ class Mapping {
   final dynamic source;
   final String target;
   final bool ignore;
-  const Mapping({required this.target, this.source, this.ignore = false});
+  final bool isStraight;
+  const Mapping({required this.target, this.source, this.ignore = false, this.isStraight = false});
 }
