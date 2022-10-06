@@ -319,11 +319,9 @@ packages:
   smartstruct:
     dependency: "direct main"
     description:
-      path: smartstruct
-      ref: develop
-      resolved-ref: "0cb945f4ae5adf60b04af30fbab3e1e683d9ce74"
-      url: "git@github.com:luissalgadofreire/smartstruct.git"
-    source: git
+      name: smartstruct
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.2.7"
   source_gen:
     dependency: "direct main"
