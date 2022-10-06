@@ -14,9 +14,14 @@ dependencies:
   build: ^2.2.1
   code_builder: ^4.1.0
   path: ^1.8.1
-  # smartstruct:
-  #   path: ../smartstruct
-  smartstruct: ^1.2.7
+  #smartstruct:
+  #  path: ../smartstruct
+  #smartstruct: ^1.2.7
+  smartstruct:
+    git:
+      url: git@github.com:luissalgadofreire/smartstruct.git
+      path: smartstruct
+      ref: develop
   source_gen: ^1.2.1
 dependency_overrides:
   smartstruct:
