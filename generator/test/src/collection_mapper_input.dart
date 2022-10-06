@@ -80,11 +80,12 @@ class CollectionMapperImpl extends CollectionMapper {
   @override
   CollectionTarget fromSource(CollectionSource source) {
     final collectiontarget = CollectionTarget(
-        source.customToList.map((x) => fromSubSource(x)).toList(),
-        source.set.map((x) => fromSubSource(x)).toSet(),
-        source.setToList.map((x) => fromSubSource(x)).toList(),
-        source.listToSet.map((x) => fromSubSource(x)).toSet(),
-        source.iterable.map((x) => fromSubSource(x)));
+      source.customToList.map((x) => fromSubSource(x)).toList(),
+      source.set.map((x) => fromSubSource(x)).toSet(),
+      source.setToList.map((x) => fromSubSource(x)).toList(),
+      source.listToSet.map((x) => fromSubSource(x)).toSet(),
+      source.iterable.map((x) => fromSubSource(x)),
+    );
     return collectiontarget;
   }
 
