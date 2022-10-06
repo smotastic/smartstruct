@@ -274,8 +274,8 @@
         <entry key="lints">
           <value>
             <list>
-              <option value="$USER_HOME$/applications/flutter/.pub-cache/hosted/pub.dartlang.org/lints-2.0.0/lib" />
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/lints-1.0.1/lib" />
+              <option value="$USER_HOME$/applications/flutter/.pub-cache/hosted/pub.dartlang.org/lints-2.0.0/lib" />
             </list>
           </value>
         </entry>
@@ -404,7 +404,7 @@
         <entry key="smartstruct">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/git/smartstruct-0cb945f4ae5adf60b04af30fbab3e1e683d9ce74/smartstruct/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/smartstruct-1.2.7/lib" />
             </list>
           </value>
         </entry>
@@ -557,7 +557,6 @@
       </option>
     </properties>
     <CLASSES>
-      <root url="file://$USER_HOME$/.pub-cache/git/smartstruct-0cb945f4ae5adf60b04af30fbab3e1e683d9ce74/smartstruct/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-47.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/analyzer-4.7.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/args-2.3.1/lib" />
@@ -603,6 +602,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-3.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_static-1.1.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/smartstruct-1.2.7/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_gen-1.2.5/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_gen_test-1.0.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.1.0/lib" />
