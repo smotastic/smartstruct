@@ -21,13 +21,19 @@ class StaticMappingMapperImpl extends StaticMappingMapper {
 
   @override
   StaticMappingTarget fromSourceNormal(StaticMappingSource source) {
-    final staticmappingtarget = StaticMappingTarget(source.text, source.number);
+    final staticmappingtarget = StaticMappingTarget(
+      source.text,
+      source.number,
+    );
     return staticmappingtarget;
   }
 }
 
 StaticMappingTarget _$fromSourceStatic(StaticMappingSource source) {
-  final staticmappingtarget = StaticMappingTarget(source.text, source.number);
+  final staticmappingtarget = StaticMappingTarget(
+    source.text,
+    source.number,
+  );
   return staticmappingtarget;
 }
 ''')

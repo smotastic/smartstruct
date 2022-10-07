@@ -26,8 +26,13 @@ class MultipleSourceMapperImpl extends MultipleSourceMapper {
 
   @override
   MultiSourceTarget fromSource(
-      MultiSourceSource source, MultiSourceSourceSecond source2) {
-    final multisourcetarget = MultiSourceTarget(source.text, source2.number);
+    MultiSourceSource source,
+    MultiSourceSourceSecond source2,
+  ) {
+    final multisourcetarget = MultiSourceTarget(
+      source.text,
+      source2.number,
+    );
     return multisourcetarget;
   }
 }

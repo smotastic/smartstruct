@@ -57,7 +57,10 @@ class CaseSensitiveDuplicateMapperImpl extends CaseSensitiveDuplicateMapper {
 
   @override
   Duplicated fromSource(Duplicated source) {
-    final duplicated = Duplicated(source.username, source.userNAME);
+    final duplicated = Duplicated(
+      source.username,
+      source.userNAME,
+    );
     return duplicated;
   }
 }

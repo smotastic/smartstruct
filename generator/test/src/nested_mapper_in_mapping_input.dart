@@ -36,8 +36,11 @@ class NestedMappingMapperImpl extends NestedMappingMapper {
 
   @override
   User fromResponse(UserResponse response) {
-    final user = User(response.username, response.address.zipcode,
-        response.address.street.streetName);
+    final user = User(
+      response.username,
+      response.address.zipcode,
+      response.address.street.streetName,
+    );
     return user;
   }
 }

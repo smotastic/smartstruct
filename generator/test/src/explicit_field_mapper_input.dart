@@ -21,8 +21,10 @@ class ExplicitFieldMapperImpl extends ExplicitFieldMapper {
 
   @override
   ExplicitFieldTarget fromSource(ExplicitFieldSource source) {
-    final explicitfieldtarget =
-        ExplicitFieldTarget(source.fieldTextSource, source.fieldNumSource);
+    final explicitfieldtarget = ExplicitFieldTarget(
+      source.fieldTextSource,
+      source.fieldNumSource,
+    );
     return explicitfieldtarget;
   }
 }
