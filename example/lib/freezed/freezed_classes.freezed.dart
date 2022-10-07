@@ -12,22 +12,7 @@ part of 'freezed_classes.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-/// @nodoc
-class _$FreezedTargetTearOff {
-  const _$FreezedTargetTearOff();
-
-  _FreezedTarget call(String name, int age) {
-    return _FreezedTarget(
-      name,
-      age,
-    );
-  }
-}
-
-/// @nodoc
-const $FreezedTarget = _$FreezedTargetTearOff();
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$FreezedTarget {
@@ -75,32 +60,32 @@ class _$FreezedTargetCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$FreezedTargetCopyWith<$Res>
+abstract class _$$_FreezedTargetCopyWith<$Res>
     implements $FreezedTargetCopyWith<$Res> {
-  factory _$FreezedTargetCopyWith(
-          _FreezedTarget value, $Res Function(_FreezedTarget) then) =
-      __$FreezedTargetCopyWithImpl<$Res>;
+  factory _$$_FreezedTargetCopyWith(
+          _$_FreezedTarget value, $Res Function(_$_FreezedTarget) then) =
+      __$$_FreezedTargetCopyWithImpl<$Res>;
   @override
   $Res call({String name, int age});
 }
 
 /// @nodoc
-class __$FreezedTargetCopyWithImpl<$Res>
+class __$$_FreezedTargetCopyWithImpl<$Res>
     extends _$FreezedTargetCopyWithImpl<$Res>
-    implements _$FreezedTargetCopyWith<$Res> {
-  __$FreezedTargetCopyWithImpl(
-      _FreezedTarget _value, $Res Function(_FreezedTarget) _then)
-      : super(_value, (v) => _then(v as _FreezedTarget));
+    implements _$$_FreezedTargetCopyWith<$Res> {
+  __$$_FreezedTargetCopyWithImpl(
+      _$_FreezedTarget _value, $Res Function(_$_FreezedTarget) _then)
+      : super(_value, (v) => _then(v as _$_FreezedTarget));
 
   @override
-  _FreezedTarget get _value => super._value as _FreezedTarget;
+  _$_FreezedTarget get _value => super._value as _$_FreezedTarget;
 
   @override
   $Res call({
     Object? name = freezed,
     Object? age = freezed,
   }) {
-    return _then(_FreezedTarget(
+    return _then(_$_FreezedTarget(
       name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -132,7 +117,7 @@ class _$_FreezedTarget extends _FreezedTarget {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _FreezedTarget &&
+            other is _$_FreezedTarget &&
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other.age, age));
   }
@@ -145,12 +130,12 @@ class _$_FreezedTarget extends _FreezedTarget {
 
   @JsonKey(ignore: true)
   @override
-  _$FreezedTargetCopyWith<_FreezedTarget> get copyWith =>
-      __$FreezedTargetCopyWithImpl<_FreezedTarget>(this, _$identity);
+  _$$_FreezedTargetCopyWith<_$_FreezedTarget> get copyWith =>
+      __$$_FreezedTargetCopyWithImpl<_$_FreezedTarget>(this, _$identity);
 }
 
 abstract class _FreezedTarget extends FreezedTarget {
-  factory _FreezedTarget(String name, int age) = _$_FreezedTarget;
+  factory _FreezedTarget(final String name, final int age) = _$_FreezedTarget;
   _FreezedTarget._() : super._();
 
   @override
@@ -159,24 +144,9 @@ abstract class _FreezedTarget extends FreezedTarget {
   int get age;
   @override
   @JsonKey(ignore: true)
-  _$FreezedTargetCopyWith<_FreezedTarget> get copyWith =>
+  _$$_FreezedTargetCopyWith<_$_FreezedTarget> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$FreezedSourceTearOff {
-  const _$FreezedSourceTearOff();
-
-  _FreezedSource call(String name, int age) {
-    return _FreezedSource(
-      name,
-      age,
-    );
-  }
-}
-
-/// @nodoc
-const $FreezedSource = _$FreezedSourceTearOff();
 
 /// @nodoc
 mixin _$FreezedSource {
@@ -224,32 +194,32 @@ class _$FreezedSourceCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$FreezedSourceCopyWith<$Res>
+abstract class _$$_FreezedSourceCopyWith<$Res>
     implements $FreezedSourceCopyWith<$Res> {
-  factory _$FreezedSourceCopyWith(
-          _FreezedSource value, $Res Function(_FreezedSource) then) =
-      __$FreezedSourceCopyWithImpl<$Res>;
+  factory _$$_FreezedSourceCopyWith(
+          _$_FreezedSource value, $Res Function(_$_FreezedSource) then) =
+      __$$_FreezedSourceCopyWithImpl<$Res>;
   @override
   $Res call({String name, int age});
 }
 
 /// @nodoc
-class __$FreezedSourceCopyWithImpl<$Res>
+class __$$_FreezedSourceCopyWithImpl<$Res>
     extends _$FreezedSourceCopyWithImpl<$Res>
-    implements _$FreezedSourceCopyWith<$Res> {
-  __$FreezedSourceCopyWithImpl(
-      _FreezedSource _value, $Res Function(_FreezedSource) _then)
-      : super(_value, (v) => _then(v as _FreezedSource));
+    implements _$$_FreezedSourceCopyWith<$Res> {
+  __$$_FreezedSourceCopyWithImpl(
+      _$_FreezedSource _value, $Res Function(_$_FreezedSource) _then)
+      : super(_value, (v) => _then(v as _$_FreezedSource));
 
   @override
-  _FreezedSource get _value => super._value as _FreezedSource;
+  _$_FreezedSource get _value => super._value as _$_FreezedSource;
 
   @override
   $Res call({
     Object? name = freezed,
     Object? age = freezed,
   }) {
-    return _then(_FreezedSource(
+    return _then(_$_FreezedSource(
       name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -281,7 +251,7 @@ class _$_FreezedSource implements _FreezedSource {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _FreezedSource &&
+            other is _$_FreezedSource &&
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other.age, age));
   }
@@ -294,12 +264,12 @@ class _$_FreezedSource implements _FreezedSource {
 
   @JsonKey(ignore: true)
   @override
-  _$FreezedSourceCopyWith<_FreezedSource> get copyWith =>
-      __$FreezedSourceCopyWithImpl<_FreezedSource>(this, _$identity);
+  _$$_FreezedSourceCopyWith<_$_FreezedSource> get copyWith =>
+      __$$_FreezedSourceCopyWithImpl<_$_FreezedSource>(this, _$identity);
 }
 
 abstract class _FreezedSource implements FreezedSource {
-  factory _FreezedSource(String name, int age) = _$_FreezedSource;
+  factory _FreezedSource(final String name, final int age) = _$_FreezedSource;
 
   @override
   String get name;
@@ -307,24 +277,9 @@ abstract class _FreezedSource implements FreezedSource {
   int get age;
   @override
   @JsonKey(ignore: true)
-  _$FreezedSourceCopyWith<_FreezedSource> get copyWith =>
+  _$$_FreezedSourceCopyWith<_$_FreezedSource> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$FreezedNamedTargetTearOff {
-  const _$FreezedNamedTargetTearOff();
-
-  _FreezedNamedTarget call({String? name, int? age}) {
-    return _FreezedNamedTarget(
-      name: name,
-      age: age,
-    );
-  }
-}
-
-/// @nodoc
-const $FreezedNamedTarget = _$FreezedNamedTargetTearOff();
 
 /// @nodoc
 mixin _$FreezedNamedTarget {
@@ -372,32 +327,32 @@ class _$FreezedNamedTargetCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$FreezedNamedTargetCopyWith<$Res>
+abstract class _$$_FreezedNamedTargetCopyWith<$Res>
     implements $FreezedNamedTargetCopyWith<$Res> {
-  factory _$FreezedNamedTargetCopyWith(
-          _FreezedNamedTarget value, $Res Function(_FreezedNamedTarget) then) =
-      __$FreezedNamedTargetCopyWithImpl<$Res>;
+  factory _$$_FreezedNamedTargetCopyWith(_$_FreezedNamedTarget value,
+          $Res Function(_$_FreezedNamedTarget) then) =
+      __$$_FreezedNamedTargetCopyWithImpl<$Res>;
   @override
   $Res call({String? name, int? age});
 }
 
 /// @nodoc
-class __$FreezedNamedTargetCopyWithImpl<$Res>
+class __$$_FreezedNamedTargetCopyWithImpl<$Res>
     extends _$FreezedNamedTargetCopyWithImpl<$Res>
-    implements _$FreezedNamedTargetCopyWith<$Res> {
-  __$FreezedNamedTargetCopyWithImpl(
-      _FreezedNamedTarget _value, $Res Function(_FreezedNamedTarget) _then)
-      : super(_value, (v) => _then(v as _FreezedNamedTarget));
+    implements _$$_FreezedNamedTargetCopyWith<$Res> {
+  __$$_FreezedNamedTargetCopyWithImpl(
+      _$_FreezedNamedTarget _value, $Res Function(_$_FreezedNamedTarget) _then)
+      : super(_value, (v) => _then(v as _$_FreezedNamedTarget));
 
   @override
-  _FreezedNamedTarget get _value => super._value as _FreezedNamedTarget;
+  _$_FreezedNamedTarget get _value => super._value as _$_FreezedNamedTarget;
 
   @override
   $Res call({
     Object? name = freezed,
     Object? age = freezed,
   }) {
-    return _then(_FreezedNamedTarget(
+    return _then(_$_FreezedNamedTarget(
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -429,7 +384,7 @@ class _$_FreezedNamedTarget extends _FreezedNamedTarget {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _FreezedNamedTarget &&
+            other is _$_FreezedNamedTarget &&
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other.age, age));
   }
@@ -442,12 +397,14 @@ class _$_FreezedNamedTarget extends _FreezedNamedTarget {
 
   @JsonKey(ignore: true)
   @override
-  _$FreezedNamedTargetCopyWith<_FreezedNamedTarget> get copyWith =>
-      __$FreezedNamedTargetCopyWithImpl<_FreezedNamedTarget>(this, _$identity);
+  _$$_FreezedNamedTargetCopyWith<_$_FreezedNamedTarget> get copyWith =>
+      __$$_FreezedNamedTargetCopyWithImpl<_$_FreezedNamedTarget>(
+          this, _$identity);
 }
 
 abstract class _FreezedNamedTarget extends FreezedNamedTarget {
-  factory _FreezedNamedTarget({String? name, int? age}) = _$_FreezedNamedTarget;
+  factory _FreezedNamedTarget({final String? name, final int? age}) =
+      _$_FreezedNamedTarget;
   _FreezedNamedTarget._() : super._();
 
   @override
@@ -456,24 +413,9 @@ abstract class _FreezedNamedTarget extends FreezedNamedTarget {
   int? get age;
   @override
   @JsonKey(ignore: true)
-  _$FreezedNamedTargetCopyWith<_FreezedNamedTarget> get copyWith =>
+  _$$_FreezedNamedTargetCopyWith<_$_FreezedNamedTarget> get copyWith =>
       throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$FreezedNamedSourceTearOff {
-  const _$FreezedNamedSourceTearOff();
-
-  _FreezedNamedSource call({String? name, int? age}) {
-    return _FreezedNamedSource(
-      name: name,
-      age: age,
-    );
-  }
-}
-
-/// @nodoc
-const $FreezedNamedSource = _$FreezedNamedSourceTearOff();
 
 /// @nodoc
 mixin _$FreezedNamedSource {
@@ -521,32 +463,32 @@ class _$FreezedNamedSourceCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$FreezedNamedSourceCopyWith<$Res>
+abstract class _$$_FreezedNamedSourceCopyWith<$Res>
     implements $FreezedNamedSourceCopyWith<$Res> {
-  factory _$FreezedNamedSourceCopyWith(
-          _FreezedNamedSource value, $Res Function(_FreezedNamedSource) then) =
-      __$FreezedNamedSourceCopyWithImpl<$Res>;
+  factory _$$_FreezedNamedSourceCopyWith(_$_FreezedNamedSource value,
+          $Res Function(_$_FreezedNamedSource) then) =
+      __$$_FreezedNamedSourceCopyWithImpl<$Res>;
   @override
   $Res call({String? name, int? age});
 }
 
 /// @nodoc
-class __$FreezedNamedSourceCopyWithImpl<$Res>
+class __$$_FreezedNamedSourceCopyWithImpl<$Res>
     extends _$FreezedNamedSourceCopyWithImpl<$Res>
-    implements _$FreezedNamedSourceCopyWith<$Res> {
-  __$FreezedNamedSourceCopyWithImpl(
-      _FreezedNamedSource _value, $Res Function(_FreezedNamedSource) _then)
-      : super(_value, (v) => _then(v as _FreezedNamedSource));
+    implements _$$_FreezedNamedSourceCopyWith<$Res> {
+  __$$_FreezedNamedSourceCopyWithImpl(
+      _$_FreezedNamedSource _value, $Res Function(_$_FreezedNamedSource) _then)
+      : super(_value, (v) => _then(v as _$_FreezedNamedSource));
 
   @override
-  _FreezedNamedSource get _value => super._value as _FreezedNamedSource;
+  _$_FreezedNamedSource get _value => super._value as _$_FreezedNamedSource;
 
   @override
   $Res call({
     Object? name = freezed,
     Object? age = freezed,
   }) {
-    return _then(_FreezedNamedSource(
+    return _then(_$_FreezedNamedSource(
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -578,7 +520,7 @@ class _$_FreezedNamedSource implements _FreezedNamedSource {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _FreezedNamedSource &&
+            other is _$_FreezedNamedSource &&
             const DeepCollectionEquality().equals(other.name, name) &&
             const DeepCollectionEquality().equals(other.age, age));
   }
@@ -591,12 +533,14 @@ class _$_FreezedNamedSource implements _FreezedNamedSource {
 
   @JsonKey(ignore: true)
   @override
-  _$FreezedNamedSourceCopyWith<_FreezedNamedSource> get copyWith =>
-      __$FreezedNamedSourceCopyWithImpl<_FreezedNamedSource>(this, _$identity);
+  _$$_FreezedNamedSourceCopyWith<_$_FreezedNamedSource> get copyWith =>
+      __$$_FreezedNamedSourceCopyWithImpl<_$_FreezedNamedSource>(
+          this, _$identity);
 }
 
 abstract class _FreezedNamedSource implements FreezedNamedSource {
-  factory _FreezedNamedSource({String? name, int? age}) = _$_FreezedNamedSource;
+  factory _FreezedNamedSource({final String? name, final int? age}) =
+      _$_FreezedNamedSource;
 
   @override
   String? get name;
@@ -604,6 +548,6 @@ abstract class _FreezedNamedSource implements FreezedNamedSource {
   int? get age;
   @override
   @JsonKey(ignore: true)
-  _$FreezedNamedSourceCopyWith<_FreezedNamedSource> get copyWith =>
+  _$$_FreezedNamedSourceCopyWith<_$_FreezedNamedSource> get copyWith =>
       throw _privateConstructorUsedError;
 }
