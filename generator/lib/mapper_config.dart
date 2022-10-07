@@ -10,7 +10,7 @@ class MapperConfig {
   static Map<String, dynamic> readMapperConfig(
       ConstantReader annotation, ClassElement mappingClass) {
     var mapper =
-        mappingClass.metadata[0].element!.enclosingElement as ClassElement;
+        mappingClass.metadata[0].element!.enclosingElement3 as ClassElement;
     final config = <String, dynamic>{};
 
     for (final field in mapper.fields) {
@@ -34,6 +34,11 @@ class MapperConfig {
           reader.read('ignore').boolValue);
     }
     return config;
+  }
+
+  static bool isIgnoreMapping(MethodElement method) {
+    final annotations = TypeChecker.fromRuntime(IgnoreMapping).annotationsOf(method);
+    return annotations.isNotEmpty;
   }
 }
 

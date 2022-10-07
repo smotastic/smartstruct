@@ -22,8 +22,11 @@ class FunctionFieldMapperImpl extends FunctionFieldMapper {
 
   @override
   FunctionFieldTarget fromSource(FunctionFieldSource source) {
-    final functionfieldtarget = FunctionFieldTarget(source.fieldTextSource,
-        someNum(source), FunctionFieldMapper.someText(source));
+    final functionfieldtarget = FunctionFieldTarget(
+      source.fieldTextSource,
+      someNum(source),
+      FunctionFieldMapper.someText(source),
+    );
     return functionfieldtarget;
   }
 }

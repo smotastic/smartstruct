@@ -38,8 +38,12 @@ class InheritanceMapperImpl extends InheritanceMapper {
 
   @override
   InheritanceTarget fromSource(InheritanceSource source) {
-    final inheritancetarget = InheritanceTarget(source.abstractGetterText,
-        source.number, source.superText, source.mappable);
+    final inheritancetarget = InheritanceTarget(
+      source.abstractGetterText,
+      source.number,
+      source.superText,
+      source.mappable,
+    );
     return inheritancetarget;
   }
 }
