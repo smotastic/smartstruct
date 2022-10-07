@@ -44,7 +44,7 @@ List<Method> _generateStaticMethods(
 }
 
 bool shouldGenerateStaticMethod(MethodElement method) {
-  return MapperConfig.hasStaticMappingConfig(method);
+  return !MapperConfig.isIgnoreMapping(method);
 }
 
 bool isAbstractType(DartType type) {

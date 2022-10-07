@@ -21,18 +21,18 @@ class Mapping {
   const Mapping({required this.target, this.source, this.ignore = false});
 }
 
-/// Annotate static methods to indicate that you want a static mapper implementation to be generated for this method
+/// Annotate methods to indicate that you don't want smartstruct to generate a mapping implementation for you
 ///
 /// Example
 /// ```dart
 /// @Mapper()
 /// abstract class UserMapper {
+///   @IgnoreMapping // no method will be generated
 ///   static EnumTargetFoo mapFoo(UserSource source) => EnumTargetFoo.ONE; // no static method will be generated
-///   @StaticMapping // A static helper method _$fromSourceStatic will be generated
 ///   static UserTarget fromSourceStatic(UserSource source) => _$fromSourceStatic(source);
 ///   ...
 /// }
 /// ```
-class StaticMapping {
-  const StaticMapping();
+class IgnoreMapping {
+  const IgnoreMapping();
 }

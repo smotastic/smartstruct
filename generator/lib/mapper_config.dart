@@ -36,8 +36,8 @@ class MapperConfig {
     return config;
   }
 
-  static bool hasStaticMappingConfig(MethodElement method) {
-    final annotations = TypeChecker.fromRuntime(StaticMapping).annotationsOf(method);
+  static bool isIgnoreMapping(MethodElement method) {
+    final annotations = TypeChecker.fromRuntime(IgnoreMapping).annotationsOf(method);
     return annotations.isNotEmpty;
   }
 }
