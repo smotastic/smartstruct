@@ -188,12 +188,16 @@ class DogModel {
 ```dart
 @Mapper()
 class DogMapper {
+    @IgnoreMapping()
     static String randomBreed(DogModel model) => 'some random breed';
 
     @Mapping(source: randomBreed, target: 'breed')
     Dog fromModel(DogModel model);
 }
 ```
+
+Note the `@IgnoreMapping` Annotation, to make sure that no static implementation for this mapper method is created.
+See **Static Mapping**
 
 Will generate the following Mapper.
 ```dart
