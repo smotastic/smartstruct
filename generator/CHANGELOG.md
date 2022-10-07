@@ -1,3 +1,9 @@
+# v1.3.0
+* Bump Analyzer to 4.0.0 (Thanks to @luissalgadofreire)
+
+## Bugfixes
+* Fix Static Functional Mapping (https://github.com/smotastic/smartstruct/issues/68)
+
 # v1.2.7
 
 ## Bugfixes
