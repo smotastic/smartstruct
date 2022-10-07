@@ -20,3 +20,19 @@ class Mapping {
   final bool ignore;
   const Mapping({required this.target, this.source, this.ignore = false});
 }
+
+/// Annotate static methods to indicate that you want a static mapper implementation to be generated for this method
+///
+/// Example
+/// ```dart
+/// @Mapper()
+/// abstract class UserMapper {
+///   static EnumTargetFoo mapFoo(UserSource source) => EnumTargetFoo.ONE; // no static method will be generated
+///   @StaticMapping // A static helper method _$fromSourceStatic will be generated
+///   static UserTarget fromSourceStatic(UserSource source) => _$fromSourceStatic(source);
+///   ...
+/// }
+/// ```
+class StaticMapping {
+  const StaticMapping();
+}

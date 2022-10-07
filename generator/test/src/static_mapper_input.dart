@@ -40,6 +40,7 @@ StaticMappingTarget _$fromSourceStatic(StaticMappingSource source) {
 abstract class StaticMappingMapper {
   static String someRandomMethodWhichShouldBeIgnored() => "ignore me";
   StaticMappingTarget fromSourceNormal(StaticMappingSource source);
+  @StaticMapping()
   static StaticMappingTarget fromSourceStatic(StaticMappingSource source) => _$fromSourceStatic(source);
 }
 
