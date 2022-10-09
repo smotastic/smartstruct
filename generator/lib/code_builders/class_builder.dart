@@ -33,9 +33,9 @@ List<Method> _generateStaticMethods(
       .where(
         (method) =>
             method.isStatic &&
-            shouldGenerateStaticMethod(method) &&
-            !_isPrimitive(method.returnType) &&
-            !isAbstractType(method.returnType),
+            _shouldGenerateStaticMethod(method) &&
+            !_shouldNotBeGenerated(method.returnType) &&
+            !_isAbstractType(method.returnType),
       )
       .map((method) =>
           buildStaticMapperImplementation(config, method, abstractClass))
@@ -43,11 +43,11 @@ List<Method> _generateStaticMethods(
   return staticMethods;
 }
 
-bool shouldGenerateStaticMethod(MethodElement method) {
+bool _shouldGenerateStaticMethod(MethodElement method) {
   return !MapperConfig.isIgnoreMapping(method);
 }
 
-bool isAbstractType(DartType type) {
+bool _isAbstractType(DartType type) {
   final element = type.element2;
   if (element is! ClassElement) {
     return false;
@@ -55,12 +55,16 @@ bool isAbstractType(DartType type) {
   return element.isAbstract;
 }
 
-bool _isPrimitive(DartType type) {
+bool _shouldNotBeGenerated(DartType type) {
   return type.isDartCoreBool ||
       type.isDartCoreDouble ||
       type.isDartCoreInt ||
       type.isDartCoreNum ||
-      type.isDartCoreString;
+      type.isDartCoreString ||
+      (type is InterfaceType && true == type.superclass?.isDartCoreEnum) ||
+      type.isDartCoreList ||
+      type.isDartCoreSet ||
+      type.isDartCoreMap;
 }
 
 Class _generateMapperImplementationClass(
