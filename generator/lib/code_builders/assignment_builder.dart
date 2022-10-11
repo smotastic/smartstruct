@@ -76,19 +76,6 @@ Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
       }
 
       if (sourceField.type.nullabilitySuffix == NullabilitySuffix.question) {
-        if (targetIsNullable) {
-          sourceFieldAssignment =
-              // source.{field}.map
-              sourceReference.property(sourceField.name).nullSafeProperty('map')
-                  // (expr)
-                  .call([expr]);
-        } else {
-          sourceFieldAssignment =
-              // source.{field}.map
-              sourceReference.property(sourceField.name).nullSafeProperty('map')
-                  // (expr)
-                  .call([expr]);
-        }
         sourceFieldAssignment =
             // source.{field}.map
             sourceReference.property(sourceField.name).nullSafeProperty('map')
