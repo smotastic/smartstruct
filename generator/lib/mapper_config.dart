@@ -30,8 +30,10 @@ class MapperConfig {
       final reader = ConstantReader(element);
       final sourceReader = reader.read('source');
       config[reader.read('target').stringValue] = MappingConfig(
-          sourceReader.isNull ? null : sourceReader.objectValue,
-          reader.read('ignore').boolValue);
+        sourceReader.isNull ? null : sourceReader.objectValue,
+        reader.read('ignore').boolValue,
+        reader.read('isStraight').boolValue,
+      );
     }
     return config;
   }
@@ -45,6 +47,7 @@ class MapperConfig {
 class MappingConfig {
   final DartObject? source;
   final bool ignore;
-
-  MappingConfig(this.source, this.ignore);
+  //you can use the attribute to judge whether need to fill target straightly
+  final bool isStraight;
+  MappingConfig(this.source, this.ignore, this.isStraight);
 }

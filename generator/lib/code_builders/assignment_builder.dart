@@ -17,124 +17,124 @@ import 'package:smartstruct_generator/models/source_assignment.dart';
 /// fromSub(model.sub);
 /// ```
 ///
-Expression generateSourceFieldAssignment(SourceAssignment sourceAssignment,
-    ClassElement abstractMapper, VariableElement targetField) {
+Expression generateSourceFieldAssignment(
+    SourceAssignment sourceAssignment, ClassElement abstractMapper, VariableElement targetField) {
   Expression sourceFieldAssignment;
 
   if (sourceAssignment.shouldUseFunction()) {
     final sourceFunction = sourceAssignment.function!;
-    final references = sourceAssignment.params!
-        .map((sourceParam) => refer(sourceParam.displayName));
+    final references =
+        sourceAssignment.params!.map((sourceParam) => refer(sourceParam.displayName));
     Expression expr = refer(sourceFunction.name);
     if (sourceFunction.isStatic &&
         sourceFunction.enclosingElement3.name != null) {
       expr = refer(sourceFunction.enclosingElement3.name!)
           .property(sourceFunction.name);
     }
-    sourceFieldAssignment = expr.call([...references], makeNamedArgumentForStaticFunction(sourceFunction));
+    sourceFieldAssignment =
+        expr.call([...references], makeNamedArgumentForStaticFunction(sourceFunction));
 
     // The return of the function may be needed a nested mapping.
     sourceFieldAssignment = invokeNestedMappingForStaticFunction(
-      sourceFunction, 
-      abstractMapper, 
-      targetField, 
-      sourceFieldAssignment);
+        sourceFunction, abstractMapper, targetField, sourceFieldAssignment);
   } else {
     // final sourceClass = sourceAssignment.sourceClass!;
     final sourceField = sourceAssignment.field!;
-    final sourceReference = refer(sourceAssignment.sourceName!);
-    sourceFieldAssignment = sourceReference.property(sourceField.name);
-    // list support
-    if (sourceAssignment.shouldAssignList(targetField.type)) {
-      final sourceListType = _getGenericTypes(sourceField.type).first;
-      final targetListType = _getGenericTypes(targetField.type).first;
-      final matchingMappingListMethods = _findMatchingMappingMethod(
-          abstractMapper, targetListType, sourceListType);
+    //if the sourceAssignment isn't straight
+    if (!sourceAssignment.isStraight) {
+      final sourceReference = refer(sourceAssignment.sourceName!);
+      sourceFieldAssignment = sourceReference.property(sourceField.name);
+      // list support
+      if (sourceAssignment.shouldAssignList(targetField.type)) {
+        final sourceListType = _getGenericTypes(sourceField.type).first;
+        final targetListType = _getGenericTypes(targetField.type).first;
+        final matchingMappingListMethods =
+            _findMatchingMappingMethod(abstractMapper, targetListType, sourceListType);
 
-      // mapping expression, default is just the identity,
-      // for example for primitive types or objects that do not have their own mapping method
-      var expr = refer('(e) => e');
-      var sourceIsNullable = sourceListType.nullabilitySuffix == NullabilitySuffix.question;
-      var targetIsNullable = targetListType.nullabilitySuffix == NullabilitySuffix.question; 
-      var needTargetFilter = sourceIsNullable && !targetIsNullable;
-      if (matchingMappingListMethods.isNotEmpty) {
-        final nestedMapping = matchingMappingListMethods.first;
-        // expr = refer(nestedMapping.name);
-        final invokeStr = invokeNestedMappingFunction(
-          nestedMapping, 
-          sourceIsNullable, 
-          refer("x"), 
-          refer("x"),
-        ).accept(DartEmitter()).toString();
-        expr = refer('''
+        // mapping expression, default is just the identity,
+        // for example for primitive types or objects that do not have their own mapping method
+        var expr = refer('(e) => e');
+        var sourceIsNullable = sourceListType.nullabilitySuffix == NullabilitySuffix.question;
+        var targetIsNullable = targetListType.nullabilitySuffix == NullabilitySuffix.question;
+        var needTargetFilter = sourceIsNullable && !targetIsNullable;
+        if (matchingMappingListMethods.isNotEmpty) {
+          final nestedMapping = matchingMappingListMethods.first;
+          // expr = refer(nestedMapping.name);
+          final invokeStr = invokeNestedMappingFunction(
+            nestedMapping,
+            sourceIsNullable,
+            refer("x"),
+            refer("x"),
+          ).accept(DartEmitter()).toString();
+          expr = refer('''
           (x) => $invokeStr
         ''');
-        final returnIsNullable = checkNestMappingReturnNullable(nestedMapping, sourceIsNullable);
-        needTargetFilter = !targetIsNullable && returnIsNullable; 
-      }
+          final returnIsNullable = checkNestMappingReturnNullable(nestedMapping, sourceIsNullable);
+          needTargetFilter = !targetIsNullable && returnIsNullable;
+        }
 
-      sourceFieldAssignment =
-          // source.{field}.map
-        sourceReference.property(sourceField.name)
-        .property('map')
-        // (expr)
-        .call([expr]);
+        sourceFieldAssignment =
+            // source.{field}.map
+            sourceReference.property(sourceField.name).property('map')
+                // (expr)
+                .call([expr]);
 
-      if(needTargetFilter) {
-        sourceFieldAssignment = sourceFieldAssignment.property("where").call([refer("(x) => x != null")]);
-      }
+        if (needTargetFilter) {
+          sourceFieldAssignment =
+              sourceFieldAssignment.property("where").call([refer("(x) => x != null")]);
+        }
 
-      if(sourceAssignment.needCollect(targetField.type)) {
-        sourceFieldAssignment = sourceFieldAssignment
-          //.toList() .toSet()
-          .property(sourceAssignment.collectInvoke(targetField.type))
-          // .property('toList')
-          // .call([])
-          ;
-      }
+        if (sourceAssignment.needCollect(targetField.type)) {
+          sourceFieldAssignment = sourceFieldAssignment
+                  //.toList() .toSet()
+                  .property(sourceAssignment.collectInvoke(targetField.type))
+              // .property('toList')
+              // .call([])
+              ;
+        }
 
-      if(needTargetFilter) {
-        sourceFieldAssignment = sourceFieldAssignment
-          .asA(refer(targetField.type.getDisplayString(withNullability: true)));
-      }
-    } else {
-      // found a mapping method in the class which will map the source to target
-      final matchingMappingMethods = _findMatchingMappingMethod(
-          abstractMapper, targetField.type, sourceField.type);
+        if (needTargetFilter) {
+          sourceFieldAssignment = sourceFieldAssignment
+              .asA(refer(targetField.type.getDisplayString(withNullability: true)));
+        }
+      } else {
+        // found a mapping method in the class which will map the source to target
+        final matchingMappingMethods =
+            _findMatchingMappingMethod(abstractMapper, targetField.type, sourceField.type);
 
-      // nested classes can be mapped with their own mapping methods
-      if (matchingMappingMethods.isNotEmpty) {
-        sourceFieldAssignment = invokeNestedMappingFunction(
-          matchingMappingMethods.first, 
-          sourceAssignment.refChain!.isNullable,
-          refer(sourceAssignment.refChain!.refWithQuestion),
-          refer(sourceAssignment.refChain!.ref),
-        );
+        // nested classes can be mapped with their own mapping methods
+        if (matchingMappingMethods.isNotEmpty) {
+          sourceFieldAssignment = invokeNestedMappingFunction(
+            matchingMappingMethods.first,
+            sourceAssignment.refChain!.isNullable,
+            refer(sourceAssignment.refChain!.refWithQuestion),
+            refer(sourceAssignment.refChain!.ref),
+          );
+        }
       }
+    }
+    //if the sourceAssignment is straight
+    else {
+      sourceFieldAssignment = refer(sourceAssignment.sourceName!);
     }
   }
   return sourceFieldAssignment;
 }
 
 Expression invokeNestedMappingFunction(
-  MethodElement method, 
+  MethodElement method,
   bool sourceNullable,
   Expression refWithQuestion,
   Expression ref,
 ) {
   Expression sourceFieldAssignment;
-  if(method.parameters.first.isOptional) {
+  if (method.parameters.first.isOptional) {
     // The parameter can be null.
-    sourceFieldAssignment = refer(method.name)
-        .call([refWithQuestion]);
+    sourceFieldAssignment = refer(method.name).call([refWithQuestion]);
   } else {
-    sourceFieldAssignment = refer(method.name)
-        .call([ref]);
-    sourceFieldAssignment = checkNullExpression(
-      sourceNullable,
-      refWithQuestion, 
-      sourceFieldAssignment
-    );
+    sourceFieldAssignment = refer(method.name).call([ref]);
+    sourceFieldAssignment =
+        checkNullExpression(sourceNullable, refWithQuestion, sourceFieldAssignment);
   }
   return sourceFieldAssignment;
 }
@@ -146,42 +146,37 @@ Expression invokeNestedMappingForStaticFunction(
   Expression sourceFieldAssignment,
 ) {
   final returnType = sourceFunction.returnType;
-  final matchingMappingMethods = _findMatchingMappingMethod(
-      abstractMapper, targetField.type, returnType);
-  if(matchingMappingMethods.isNotEmpty) {
+  final matchingMappingMethods =
+      _findMatchingMappingMethod(abstractMapper, targetField.type, returnType);
+  if (matchingMappingMethods.isNotEmpty) {
     final nestedMappingMethod = matchingMappingMethods.first;
 
-    if(
-      nestedMappingMethod.parameters.first.type.nullabilitySuffix != NullabilitySuffix.question &&
-      sourceFunction.returnType.nullabilitySuffix == NullabilitySuffix.question
-    ) {
+    if (nestedMappingMethod.parameters.first.type.nullabilitySuffix != NullabilitySuffix.question &&
+        sourceFunction.returnType.nullabilitySuffix == NullabilitySuffix.question) {
       final str = makeNullCheckCall(
-        sourceFieldAssignment.accept(
-          DartEmitter()
-        ).toString(),
+        sourceFieldAssignment.accept(DartEmitter()).toString(),
         nestedMappingMethod,
       );
       sourceFieldAssignment = refer(str);
     } else {
-      sourceFieldAssignment = refer(matchingMappingMethods.first.name)
-          .call([sourceFieldAssignment]);
+      sourceFieldAssignment =
+          refer(matchingMappingMethods.first.name).call([sourceFieldAssignment]);
     }
-
   }
   return sourceFieldAssignment;
 }
 
 /// Finds a matching Mapping Method in [classElement]
 /// which has the same return type as the given [targetReturnType] and same parametertype as the given [sourceParameterType]
-Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
-    DartType targetReturnType, DartType sourceParameterType) {
+Iterable<MethodElement> _findMatchingMappingMethod(
+    ClassElement classElement, DartType targetReturnType, DartType sourceParameterType) {
   final matchingMappingMethods = classElement.methods.where((met) {
     // Sometimes the user is troubled by the nullability of these types.
     // So ingore the nullability of all the type for the nested mapping function is more easy to be matched.
     // The process of nullability is one duty for this library.
 
-    if(met.parameters.isEmpty) {
-        return false;
+    if (met.parameters.isEmpty) {
+      return false;
     }
     final metReturnElement = met.returnType.element2;
     final metParameterElement = met.parameters.first.type.element2;
@@ -189,8 +184,7 @@ Iterable<MethodElement> _findMatchingMappingMethod(ClassElement classElement,
     final targetReturnElement = targetReturnType.element2;
     final srcParameterElement = sourceParameterType.element2;
 
-    return metReturnElement == targetReturnElement &&
-        (metParameterElement == srcParameterElement);
+    return metReturnElement == targetReturnElement && (metParameterElement == srcParameterElement);
 
     // return met.returnType == targetReturnType &&
     //     met.parameters.isNotEmpty && met.parameters.first.type == sourceParameterType;
@@ -204,19 +198,17 @@ Iterable<DartType> _getGenericTypes(DartType type) {
 
 // Sometimes we need to pass some variable to the static function just like "this pointer".
 // We can use the named parameters to implement the goal.
-Map<String, Expression> makeNamedArgumentForStaticFunction(ExecutableElement  element) {
+Map<String, Expression> makeNamedArgumentForStaticFunction(ExecutableElement element) {
+  final argumentMap = {
+    "mapper": "this",
+    "\$this": "this",
+  };
+  final namedParameterList =
+      element.parameters.where((p) => p.isNamed && argumentMap.containsKey(p.name)).toList();
 
-    final argumentMap = {
-      "mapper": "this",
-      "\$this": "this",
-    };
-    final namedParameterList = element.parameters.where((p) => p.isNamed && argumentMap.containsKey(p.name)).toList();
-
-    return namedParameterList
-      .asMap().map((key, value) => MapEntry(
-        value.name, 
-        refer(argumentMap[value.name]!)
-      ));
+  return namedParameterList
+      .asMap()
+      .map((key, value) => MapEntry(value.name, refer(argumentMap[value.name]!)));
 }
 
 Expression checkNullExpression(
@@ -224,11 +216,11 @@ Expression checkNullExpression(
   Expression sourceRef,
   Expression expression,
 ) {
-  if(needCheck) {
+  if (needCheck) {
     return sourceRef.equalTo(literalNull).conditional(
-      literalNull, 
-      expression,
-    );
+          literalNull,
+          expression,
+        );
   } else {
     return expression;
   }
@@ -238,7 +230,6 @@ makeNullCheckCall(
   String checkTarget,
   MethodElement method,
 ) {
-
   final methodInvoke = refer(method.name).call([refer("tmp")]).accept(DartEmitter()).toString();
   return '''
   (){
@@ -249,13 +240,8 @@ makeNullCheckCall(
 }
 
 checkNestMappingReturnNullable(MethodElement method, bool inputNullable) {
-  final returnIsNullable = 
-    (inputNullable && 
-      method.parameters.first.type.nullabilitySuffix != NullabilitySuffix.question
-    ) ||
-    (
-      inputNullable &&
-      method.returnType.nullabilitySuffix == NullabilitySuffix.question
-    );
-    return returnIsNullable;
+  final returnIsNullable = (inputNullable &&
+          method.parameters.first.type.nullabilitySuffix != NullabilitySuffix.question) ||
+      (inputNullable && method.returnType.nullabilitySuffix == NullabilitySuffix.question);
+  return returnIsNullable;
 }

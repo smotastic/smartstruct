@@ -12,7 +12,11 @@ class InheritanceMapperImpl extends InheritanceMapper {
   @override
   BarTarget fromFoo(FooSource source) {
     final bartarget = BarTarget(
-        source.subFoo, source.superFoo, source.mappable, source.superProp);
+      source.subFoo,
+      source.superFoo,
+      source.mappable,
+      source.superProp,
+    );
     return bartarget;
   }
 }

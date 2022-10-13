@@ -11,7 +11,10 @@ class MultiConMapperImpl extends MultiConMapper {
 
   @override
   MultiConTarget fromSource(MultiConSource source) {
-    final multicontarget = MultiConTarget.multi(source.text, source.number);
+    final multicontarget = MultiConTarget.multi(
+      source.text,
+      source.number,
+    );
     return multicontarget;
   }
 }
