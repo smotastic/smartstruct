@@ -25,14 +25,15 @@ class NullableListMapperImpl extends NullableListMapper {
   @override
   NullableListTarget fromNullableSource(NullableListSource source) {
     final nullablelisttarget = NullableListTarget(
-        (source.sourceNullableList
-            .map((x) => x == null ? null : fromSubSource(x))
-            .where((x) => x != null)
-            .toList() as List<ListSubTarget>),
-        source.targetNullableList.map((x) => fromSubSource(x)).toList(),
-        source.nullableList
-            .map((x) => x == null ? null : fromSubSource(x))
-            .toList());
+      (source.sourceNullableList
+          .map((x) => x == null ? null : fromSubSource(x))
+          .where((x) => x != null)
+          .toList() as List<ListSubTarget>),
+      source.targetNullableList.map((x) => fromSubSource(x)).toList(),
+      source.nullableList
+          .map((x) => x == null ? null : fromSubSource(x))
+          .toList(),
+    );
     return nullablelisttarget;
   }
 

@@ -21,7 +21,10 @@ class SimpleMapperImpl extends SimpleMapper {
 
   @override
   SimpleTarget fromSource(SimpleSource source) {
-    final simpletarget = SimpleTarget(source.text, source.number);
+    final simpletarget = SimpleTarget(
+      source.text,
+      source.number,
+    );
     return simpletarget;
   }
 }

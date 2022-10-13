@@ -23,10 +23,10 @@ https://pub.dev/packages/smartstruct
 
 ```yaml
 dependencies:
-  smartstruct: [version]
+  smartstruct: [ version ]
 
 dev_dependencies:
-  smartstruct_generator: [version]
+  smartstruct_generator: [ version ]
   # add build runner if not already added
   build_runner:
 ```
@@ -46,19 +46,21 @@ Create your beans.
 
 ```dart
 class Dog {
-    final String breed;
-    final int age;
-    final String name;
-    Dog(this.breed, this.age, this.name);
+  final String breed;
+  final int age;
+  final String name;
+
+  Dog(this.breed, this.age, this.name);
 }
 ```
 
 ```dart
 class DogModel {
-    final String breed;
-    final int age;
-    final String name;
-    DogModel(this.breed, this.age, this.name);
+  final String breed;
+  final int age;
+  final String name;
+
+  DogModel(this.breed, this.age, this.name);
 }
 ```
 
@@ -70,7 +72,7 @@ part 'dogmapper.mapper.g.dart';
 
 @Mapper()
 abstract class DogMapper {
-    Dog fromModel(DogModel model);
+  Dog fromModel(DogModel model);
 }
 ```
 
@@ -83,11 +85,11 @@ dart run build_runner build
 ```dart
 // dogmapper.mapper.g.dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.breed, model.age, model.name);
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.breed, model.age, model.name);
+    return dog;
+  }
 }
 ```
 
@@ -95,7 +97,7 @@ The Mapper supports positional arguments, named arguments and property access vi
 
 ## Case sensitivity
 
-By default mapper generator works in case insensitivity manner. 
+By default mapper generator works in case insensitivity manner.
 
 ```dart
 class Source {
@@ -115,7 +117,10 @@ abstract class ExampleMapper {
   Target fromSource(Source source);
 }
 ```
-As you can see, classes above got different field's names (case) for username. Because mappers are case insensitive by default, those classes are correctly mapped. 
+
+As you can see, classes above got different field's names (case) for username. Because mappers are case insensitive by
+default, those classes are correctly mapped.
+
 ```dart
 
 class ExampleMapperImpl extends ExampleMapper {
@@ -126,7 +131,10 @@ class ExampleMapperImpl extends ExampleMapper {
   }
 }
 ```
-To create case sensitive mapper, you can add param caseSensitiveFields to @Mapper annotation. Case sensitive mapper is checking field's names in case sensitive manner.
+
+To create case sensitive mapper, you can add param caseSensitiveFields to @Mapper annotation. Case sensitive mapper is
+checking field's names in case sensitive manner.
+
 ```dart
 
 @Mapper(caseSensitiveFields: true)
@@ -135,27 +143,30 @@ abstract class ExampleMapper {
 }
 ```
 
-
 ## Explicit Field Mapping
 
-If some fields do not match each other, you can add a Mapping Annotation on the method level, to change the behaviour of certain mappings.
+If some fields do not match each other, you can add a Mapping Annotation on the method level, to change the behaviour of
+certain mappings.
 
 ```dart
 class Dog {
-    final String name;
-    Dog(this.name);
+  final String name;
+
+  Dog(this.name);
 }
+
 class DogModel {
-    final String dogName;
-    DogModel(this.dogName);
+  final String dogName;
+
+  DogModel(this.dogName);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    @Mapping(source: 'dogName', target: 'name')
-    Dog fromModel(DogModel model);
+  @Mapping(source: 'dogName', target: 'name')
+  Dog fromModel(DogModel model);
 }
 ```
 
@@ -163,80 +174,93 @@ In this case, the field _dogName_ of _DogModel_ will be mapped to the field _nam
 
 ```dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.dogName);
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.dogName);
+    return dog;
+  }
 }
 ```
 
 ### Function Mapping
-The source attribute can also be a Function. This Function will then be called with the Source Parameter of the mapper method as a parameter.
+
+The source attribute can also be a Function. This Function will then be called with the Source Parameter of the mapper
+method as a parameter.
+
 ```dart
 class Dog {
-    final String name;
-    final String breed;
-    Dog(this.name, this.breed);
+  final String name;
+  final String breed;
+
+  Dog(this.name, this.breed);
 }
+
 class DogModel {
-    final String name;
-    DogModel(this.name);
+  final String name;
+
+  DogModel(this.name);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    static String randomBreed(DogModel model) => 'some random breed';
+  static String randomBreed(DogModel model) => 'some random breed';
 
-    @Mapping(source: randomBreed, target: 'breed')
-    Dog fromModel(DogModel model);
+  @Mapping(source: randomBreed, target: 'breed')
+  Dog fromModel(DogModel model);
 }
 ```
 
 Will generate the following Mapper.
+
 ```dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.dogName, DogMapper.randomBreed(model));
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.dogName, DogMapper.randomBreed(model));
+    return dog;
+  }
 }
 ```
+
 ### Ignore Fields
+
 Fields can be ignored, by specififying the `ignore` attribute on the Mapping `Annotation``
 
 ```dart
 class Dog {
-    final String name;
-    String? breed;
-    Dog(this.name);
+  final String name;
+  String? breed;
+
+  Dog(this.name);
 }
+
 class DogModel {
-    final String name;
-    final String breed;
-    DogModel(this.name, this.breed);
+  final String name;
+  final String breed;
+
+  DogModel(this.name, this.breed);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    @Mapping(target: 'breed', ignore: true)
-    Dog fromModel(DogModel model);
+  @Mapping(target: 'breed', ignore: true)
+  Dog fromModel(DogModel model);
 }
 ```
 
 Will generate the following Mapper.
+
 ```dart
 class DogMapperImpl extends DogMapper {
-    @override
-    Dog fromModel(DogModel model) {
-        Dog dog = Dog(model.name);
-        return dog;
-    }
+  @override
+  Dog fromModel(DogModel model) {
+    Dog dog = Dog(model.name);
+    return dog;
+  }
 }
 ```
 
@@ -248,20 +272,25 @@ Nested beans can be mapped, by defining an additional mapper method for the nest
 // nestedmapper.dart
 class NestedTarget {
   final SubNestedTarget subNested;
+
   NestedTarget(this.subNested);
 }
+
 class SubNestedTarget {
   final String myProperty;
+
   SubNestedTarget(this.myProperty);
 }
 
 class NestedSource {
   final SubNestedSource subNested;
+
   NestedSource(this.subNested);
 }
 
 class SubNestedSource {
   final String myProperty;
+
   SubNestedSource(this.myProperty);
 }
 
@@ -325,6 +354,7 @@ class StreetResponse {
   StreetResponse(this.streetNumber, this.streetName);
 }
 ```
+
 With this, you can define the mappings directly in the `Mapping` Annotation
 
 ```dart
@@ -337,6 +367,7 @@ abstract class UserMapper {
 ```
 
 Would generate the following mapper.
+
 ```dart
 class UserMapperImpl extends UserMapper {
   UserMapperImpl() : super();
@@ -351,7 +382,9 @@ class UserMapperImpl extends UserMapper {
 ```
 
 ## List Support
+
 Lists will be mapped as new instances of a list, with help of the map method.
+
 ```dart
 class Source {
   final List<int> intList;
@@ -382,9 +415,11 @@ class TargetEntry {
 @Mapper()
 abstract class ListMapper {
   Target fromSource(Source source);
+
   TargetEntry fromSourceEntry(SourceEntry source);
 }
 ```
+
 Will generate the Mapper
 
 ```dart
@@ -392,8 +427,8 @@ class ListMapperImpl extends ListMapper {
   @override
   Target fromSource(Source source) {
     final target = Target(
-      source.intList.map((e) => e).toList(),
-      source.entryList.map(fromSourceEntry).toList());
+        source.intList.map((e) => e).toList(),
+        source.entryList.map(fromSourceEntry).toList());
     return target;
   }
 
@@ -407,8 +442,9 @@ class ListMapperImpl extends ListMapper {
 
 ## Injectable
 
-The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper Interface.
-In this case you also need to add the injectable dependency, as described here. https://pub.dev/packages/injectable
+The Mapper can be made a lazy injectable singleton, by setting the argument _useInjection_ to true, in the Mapper
+Interface. In this case you also need to add the injectable dependency, as described
+here. https://pub.dev/packages/injectable
 
 Make sure, that in the Mapper File, you import the injectable dependency, before running the build_runner!
 
@@ -419,27 +455,33 @@ import 'package:injectable/injectable.dart';
 
 @Mapper(useInjectable = true)
 abstract class DogMapper {
-    Dog fromModel(DogModel model);
+  Dog fromModel(DogModel model);
 }
 ```
 
 ```dart
 // dogmapper.mapper.g.dart
 @LazySingleton(as: DogMapper)
-class DogMapperImpl extends DogMapper {...}
+class DogMapperImpl extends DogMapper {
+  ...
+}
 ```
 
 ## Freezed
+
 Generally you can use smartstruct with [freezed](https://pub.dev/packages/freezed).
 
-One problem you will have to manually workaround is ignoring the freezed generated `copyWith` method in the generated mapper.
-The copyWith field is a normal field in the model / entity, and smartstruct does not have a way of knowing on when to filter it out, and when not.
+One problem you will have to manually workaround is ignoring the freezed generated `copyWith` method in the generated
+mapper. The copyWith field is a normal field in the model / entity, and smartstruct does not have a way of knowing on
+when to filter it out, and when not.
 
 Imagine having the following freezed models.
+
 ```dart
 @freezed
 class Dog with _$Dog {
   Dog._();
+
   factory Dog(String name) = _Dog;
 }
 
@@ -452,6 +494,7 @@ class DogModel with _$DogModel {
 Freezed will generate a `copyWith` field for your `Dog` and `DogModel`.
 
 When generating the mapper, you explicitly have to ignore this field.
+
 ```dart
 @Mapper()
 abstract class DogMapper {
@@ -459,7 +502,9 @@ abstract class DogMapper {
   Dog fromModel(DogModel model);
 }
 ```
+
 Will generate the mapper, using the factory constructor.
+
 ```dart
 class DogMapperImpl extends DogMapper {
   DogMapperImpl() : super();
@@ -473,28 +518,32 @@ class DogMapperImpl extends DogMapper {
 ```
 
 ## Static Mapping
-Static Methods in a Mapper Class will automatically be mapped with a static pendant in the generated mapper file.
 
+Static Methods in a Mapper Class will automatically be mapped with a static pendant in the generated mapper file.
 
 ```dart
 class Dog {
-    final String name;
-    Dog(this.name);
+  final String name;
+
+  Dog(this.name);
 }
+
 class DogModel {
-    final String name;
-    DogModel(this.name);
+  final String name;
+
+  DogModel(this.name);
 }
 ```
 
 ```dart
 @Mapper()
 class DogMapper {
-    static Dog fromModel(DogModel model) => _$fromModel(model);
+  static Dog fromModel(DogModel model) => _$fromModel(model);
 }
 ```
 
 Will generate a mapper file providing the following static methods.
+
 ```dart
 Dog _$fromModel(DogModel model) {
   final dog = Dog(model.name);
@@ -502,27 +551,78 @@ Dog _$fromModel(DogModel model) {
 }
 ```
 
+### Ignoring certain static Mapping
+
+Smartstruct will generate a mapping method for every static method in the mapper class. This can and will get in
+conflict with the functional mapping, where we define certain functions for custom mapping.
+
+Most of these custom mappings will be ignored by default, if it is a primitive type, a list, set, or an enum. In other
+cases the method has to be explicitly ignored, so it will not generate a mapping method, where I do not want one.
+
+```dart
+
+class Breed {
+  final String name;
+  Breed(this.name);
+}
+
+class Dog {
+  final String name;
+  final Breed breed;
+
+  Dog(this.name, this.breed);
+}
+
+class DogModel {
+  final String name;
+
+  DogModel(this.name);
+}
+```
+
+```dart
+@Mapper()
+class DogMapper {
+  
+  @IgnoreMapping()
+  static Breed customBreed() => Breed('Chihuahua');
+  
+  @Mapping(target: 'breed', source: customBreed)  
+  static Dog fromModel(DogModel model) => _$fromModel(model);
+}
+```
+
+Smartstruct can not differentiate between if he should generate a mapping method for `customBreed` or not.
+So we have to tell him explicitly to not generate a mapping method by adding the Annotation `@IgnoreMapping`
+
 ## Static Mapping with a proxy
-Alternatively you can set ``generateStaticProxy`` to ``true``in the Mapping Annotation, to generate a Mapper Proxy implementation for your static methods.
+
+Alternatively you can set ``generateStaticProxy`` to ``true``in the Mapping Annotation, to generate a Mapper Proxy
+implementation for your static methods.
+
 ```dart
 class Dog {
-    final String name;
-    Dog(this.name);
+  final String name;
+
+  Dog(this.name);
 }
+
 class DogModel {
-    final String name;
-    DogModel(this.name);
+  final String name;
+
+  DogModel(this.name);
 }
 ```
 
 ```dart
 @Mapper(generateStaticProxy = true)
 class DogMapper {
-    Dog fromModel(DogModel model);
+  Dog fromModel(DogModel model);
 }
 ```
 
 Will generate the following mapper.
+
 ```dart
 class DogMapperImpl extends DogMapper {
   DogMapperImpl() : super();
@@ -544,7 +644,8 @@ class DogMapper$ {
 
 # Examples
 
-Please refer to the [example](https://github.com/smotastic/smartstruct/tree/master/example) package, for a list of examples and how to use the Mapper Annotation.
+Please refer to the [example](https://github.com/smotastic/smartstruct/tree/master/example) package, for a list of
+examples and how to use the Mapper Annotation.
 
 You can always run the examples by navigating to the examples package and executing the generator.
 

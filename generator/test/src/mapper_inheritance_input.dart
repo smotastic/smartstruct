@@ -41,7 +41,10 @@ class MapperInheritanceMapperImpl extends MapperInheritanceMapper {
       return null;
     }
     ;
-    final userlogincontract = UserLoginContract(entity.age, entity.id);
+    final userlogincontract = UserLoginContract(
+      entity.age,
+      entity.id,
+    );
     return userlogincontract;
   }
 }

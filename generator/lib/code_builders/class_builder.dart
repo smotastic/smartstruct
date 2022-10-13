@@ -5,6 +5,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/method_builder.dart';
 import 'package:smartstruct_generator/code_builders/static_proxy_builder.dart';
+import 'package:smartstruct_generator/mapper_config.dart';
 import 'parameter_copy.dart';
 
 Library buildMapperClass(
@@ -20,7 +21,7 @@ Library buildMapperClass(
 
 List<Class> _generateStaticProxy(
     ClassElement abstractClass, Map<String, dynamic> config) {
-  if(config['generateStaticProxy']) {
+  if (config['generateStaticProxy']) {
     return [generateStaticProxy(abstractClass)];
   }
   return [];
@@ -28,28 +29,42 @@ List<Class> _generateStaticProxy(
 
 List<Method> _generateStaticMethods(
     ClassElement abstractClass, Map<String, dynamic> config) {
-  // I have no idea why the static methods needed to be generated.
-  // But if the return type is abstract class like List, the _generateBody in "method_builder.dart" can not work.
-  // So we need to filter these function.
   var staticMethods = abstractClass.methods
-      .where((method) => method.isStatic 
-        && !_isPrimitive(method.returnType)
-        && !isAbstractType(method.returnType))
-      .map((method) => buildStaticMapperImplementation(config, method, abstractClass))
+      .where(
+        (method) =>
+            method.isStatic &&
+            _shouldGenerateStaticMethod(method) &&
+            !_shouldNotBeGenerated(method.returnType) &&
+            !_isAbstractType(method.returnType),
+      )
+      .map((method) =>
+          buildStaticMapperImplementation(config, method, abstractClass))
       .toList();
   return staticMethods;
 }
 
-bool isAbstractType(DartType type) {
-    final element = type.element;
-    if(element is! ClassElement) {
-        return false;
-    }
-    return element.isAbstract; 
+bool _shouldGenerateStaticMethod(MethodElement method) {
+  return !MapperConfig.isIgnoreMapping(method);
 }
 
-bool _isPrimitive(DartType type) {
-  return type.isDartCoreBool || type.isDartCoreDouble || type.isDartCoreInt || type.isDartCoreNum || type.isDartCoreString;
+bool _isAbstractType(DartType type) {
+  final element = type.element2;
+  if (element is! ClassElement) {
+    return false;
+  }
+  return element.isAbstract;
+}
+
+bool _shouldNotBeGenerated(DartType type) {
+  return type.isDartCoreBool ||
+      type.isDartCoreDouble ||
+      type.isDartCoreInt ||
+      type.isDartCoreNum ||
+      type.isDartCoreString ||
+      (type is InterfaceType && true == type.superclass?.isDartCoreEnum) ||
+      type.isDartCoreList ||
+      type.isDartCoreSet ||
+      type.isDartCoreMap;
 }
 
 Class _generateMapperImplementationClass(
@@ -69,16 +84,15 @@ Class _generateMapperImplementationClass(
 }
 
 List<MethodElement> _getAllMethods(InterfaceType interfaceType) {
-
-    final set = LinkedHashSet<MethodElement>(
-      equals: (p0, p1) => p0.name ==  p1.name,
-      hashCode: (p0) => p0.name.hashCode,
-    );
-    // The methods of subclass has the priority. 
-    // So it should be added before the methods of superclass.
-    set.addAll(interfaceType.methods);
-    set.addAll(interfaceType.allSupertypes.expand(_getAllMethods));
-    return set.toList();
+  final set = LinkedHashSet<MethodElement>(
+    equals: (p0, p1) => p0.name == p1.name,
+    hashCode: (p0) => p0.name.hashCode,
+  );
+  // The methods of subclass has the priority.
+  // So it should be added before the methods of superclass.
+  set.addAll(interfaceType.methods);
+  set.addAll(interfaceType.allSupertypes.expand(_getAllMethods));
+  return set.toList();
 }
 
 /// Generates a [Constructor] by copying the given [ConstructorElement] c

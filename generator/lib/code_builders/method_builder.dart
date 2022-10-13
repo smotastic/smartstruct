@@ -11,11 +11,13 @@ import 'package:source_gen/source_gen.dart';
 import 'assignment_builder.dart';
 
 /// Generates the implemented mapper method by the given abstract [MethodElement].
-Method buildMapperImplementation(
-    Map<String, dynamic> config, MethodElement method, ClassElement abstractMapper) {
-  if (method.returnType.element == null) {
-    throw InvalidGenerationSourceError('${method.returnType} is not a valid return type',
-        element: method, todo: 'Add valid return type to mapping method');
+Method buildMapperImplementation(Map<String, dynamic> config,
+    MethodElement method, ClassElement abstractMapper) {
+  if (method.returnType.element2 == null) {
+    throw InvalidGenerationSourceError(
+        '${method.returnType} is not a valid return type',
+        element: method,
+        todo: 'Add valid return type to mapping method');
   }
   return Method((b) => b
     ..annotations.add(CodeExpression(Code('override')))
@@ -44,7 +46,7 @@ Method buildStaticMapperImplementation(
 Code _generateBody(Map<String, dynamic> config, MethodElement method, ClassElement abstractMapper) {
   final blockBuilder = BlockBuilder();
 
-  final targetClass = method.returnType.element as ClassElement;
+  final targetClass = method.returnType.element2 as ClassElement;
 
   final sourceParams = method.parameters;
 
@@ -139,8 +141,12 @@ List<FieldElement> _findFields(ClassElement clazz) {
   return [...clazz.fields, ...allSuperFields];
 }
 
-List<HashMap<String, SourceAssignment>> _targetToSource(List<ParameterElement> sources,
-    ClassElement target, MethodElement method, Map<String, dynamic> config) {
+List<HashMap<String, SourceAssignment>> _targetToSource(
+    List<ParameterElement> sources,
+    ClassElement target,
+    MethodElement method,
+    Map<String, dynamic> config) {
+  final sourceMap = {for (var e in sources) e.type.element2 as ClassElement: e};
   final caseSensitiveFields = config['caseSensitiveFields'];
   final fieldMapper = caseSensitiveFields ? (a) => a : (a) => a.toUpperCase();
   final equalsHashCode = caseSensitiveFields ? (a) => a.hashCode : (a) => a.toUpperCase().hashCode;
@@ -448,8 +454,9 @@ FieldElement? _findMatchingField(List<String> sources, List<FieldElement> fields
     final foundField = potentielFinds.first;
     // foundField is not string
     if (_shouldSearchMoreFields(foundField)) {
-      final searchClazz = foundField.type.element as ClassElement;
-      return _findMatchingField(sources.skip(1).toList(), _findFields(searchClazz));
+      final searchClazz = foundField.type.element2 as ClassElement;
+      return _findMatchingField(
+          sources.skip(1).toList(), _findFields(searchClazz));
     } else {
       return foundField;
     }

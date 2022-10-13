@@ -26,8 +26,10 @@ Expression generateSourceFieldAssignment(
     final references =
         sourceAssignment.params!.map((sourceParam) => refer(sourceParam.displayName));
     Expression expr = refer(sourceFunction.name);
-    if (sourceFunction.isStatic && sourceFunction.enclosingElement.name != null) {
-      expr = refer(sourceFunction.enclosingElement.name!).property(sourceFunction.name);
+    if (sourceFunction.isStatic &&
+        sourceFunction.enclosingElement3.name != null) {
+      expr = refer(sourceFunction.enclosingElement3.name!)
+          .property(sourceFunction.name);
     }
     sourceFieldAssignment =
         expr.call([...references], makeNamedArgumentForStaticFunction(sourceFunction));
@@ -176,11 +178,11 @@ Iterable<MethodElement> _findMatchingMappingMethod(
     if (met.parameters.isEmpty) {
       return false;
     }
-    final metReturnElement = met.returnType.element;
-    final metParameterElement = met.parameters.first.type.element;
+    final metReturnElement = met.returnType.element2;
+    final metParameterElement = met.parameters.first.type.element2;
 
-    final targetReturnElement = targetReturnType.element;
-    final srcParameterElement = sourceParameterType.element;
+    final targetReturnElement = targetReturnType.element2;
+    final srcParameterElement = sourceParameterType.element2;
 
     return metReturnElement == targetReturnElement && (metParameterElement == srcParameterElement);
 
