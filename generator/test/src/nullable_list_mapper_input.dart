@@ -1,38 +1,29 @@
 part of 'mapper_test_input.dart';
 
 class NullableListSource {
-  final List<ListSubSource?> sourceNullableList;
-  final List<ListSubSource> targetNullableList;
-  final List<ListSubSource?> nullableList;
+  final List<ListSubSource>? list;
+  final List<ListSubSource>? list2;
 
-  NullableListSource(this.sourceNullableList, this.targetNullableList, this.nullableList);
+  NullableListSource(this.list, this.list2);
 }
 
 class NullableListTarget {
+  final List<ListSubTarget>? list;
+  final List<ListSubTarget> list2;
 
-  final List<ListSubTarget> sourceNullableList;
-  final List<ListSubTarget?> targetNullableList;
-  final List<ListSubTarget?> nullableList;
-
-  NullableListTarget(this.sourceNullableList, this.targetNullableList, this.nullableList);
+  NullableListTarget(this.list, this.list2);
 }
 
 @Mapper()
-@ShouldGenerate('''
+@ShouldGenerate(r'''
 class NullableListMapperImpl extends NullableListMapper {
   NullableListMapperImpl() : super();
 
   @override
-  NullableListTarget fromNullableSource(NullableListSource source) {
+  NullableListTarget fromSource(NullableListSource source) {
     final nullablelisttarget = NullableListTarget(
-      (source.sourceNullableList
-          .map((x) => x == null ? null : fromSubSource(x))
-          .where((x) => x != null)
-          .toList() as List<ListSubTarget>),
-      source.targetNullableList.map((x) => fromSubSource(x)).toList(),
-      source.nullableList
-          .map((x) => x == null ? null : fromSubSource(x))
-          .toList(),
+      source.list?.map((x) => fromSubSource(x)).toList(),
+      source.list2?.map((x) => fromSubSource(x)).toList() ?? [],
     );
     return nullablelisttarget;
   }
@@ -45,6 +36,6 @@ class NullableListMapperImpl extends NullableListMapper {
 }
 ''')
 abstract class NullableListMapper {
-  NullableListTarget fromNullableSource(NullableListSource source);
+  NullableListTarget fromSource(NullableListSource source);
   ListSubTarget fromSubSource(ListSubSource source);
 }
