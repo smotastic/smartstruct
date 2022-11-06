@@ -130,8 +130,8 @@ ConstructorElement _chooseConstructor(ClassElement outputClass) {
 
 List<FieldElement> _findFields(ClassElement clazz) {
   final allSuperclasses = clazz.allSupertypes
-      .map((e) => e.element)
       .where((element) => !element.isDartCoreObject)
+      .map((e) => e.element)
       .toList();
 
   final allAccessors = allSuperclasses.map((e) => e.accessors).expand((e) => e);
