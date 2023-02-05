@@ -1,3 +1,10 @@
+# v1.4.0
+* Extending default types to be ignored by static mapping
+  (https://github.com/smotastic/smartstruct/issues/74)
+* Nullable lists are not being mapped properly. (https://github.com/smotastic/smartstruct/issues/41)
+* Update to analyzer 5.0.0 (https://github.com/smotastic/smartstruct/issues/78)
+
+
 # v1.3.0
 * Bump Analyzer to 4.0.0 (Thanks to @luissalgadofreire)
 
@@ -46,12 +53,12 @@ Fixes:
 
 # v.1.2.1
 - Constructors in the abstract mapper will now also be implemented by the generated mapper class (https://github.com/smotastic/smartstruct/issues/22).
-This should fix an issue where you cannot inject dependencies via the constructor in your mapper class.
+  This should fix an issue where you cannot inject dependencies via the constructor in your mapper class.
 
 # v1.2.0
 - Fixed the useInjection attribute to properly work now (https://github.com/smotastic/smartstruct/issues/19)
-Note that all generated files are suffixed with *.mapper.g.dart* now instead of *.g.dart*
-So for migration purposes you'll have to just change the *part 'foomapper.g.dart'* in your mapper files to *part 'foomapper.mapper.g.dart*
+  Note that all generated files are suffixed with *.mapper.g.dart* now instead of *.g.dart*
+  So for migration purposes you'll have to just change the *part 'foomapper.g.dart'* in your mapper files to *part 'foomapper.mapper.g.dart*
 ```dart
 // before
 part 'foomapper.g.dart'

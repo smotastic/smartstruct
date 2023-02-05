@@ -1,3 +1,10 @@
+# v1.4.0
+* Extending default types to be ignored by static mapping
+  (https://github.com/smotastic/smartstruct/issues/74)
+* Nullable lists are not being mapped properly. (https://github.com/smotastic/smartstruct/issues/41)
+* Update to analyzer 5.0.0 (https://github.com/smotastic/smartstruct/issues/78)
+
+
 # v1.3.0
 * Bump Analyzer to 4.0.0 (Thanks to @luissalgadofreire)
 
