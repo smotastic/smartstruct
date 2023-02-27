@@ -11,8 +11,11 @@ class DogMapperImpl extends DogMapper {
 
   @override
   Dog fromDogModel(DogModel model) {
-    final dog =
-        Dog(fullNameWithAge(model), DogMapper.breedCustom(model), model.age);
+    final dog = Dog(
+      fullNameWithAge(model),
+      DogMapper.breedCustom(model),
+      model.age,
+    );
     dog.model = () {
       final tmp = toAgeHolderSource(model);
       return tmp == null ? null : fromAgeHolderSource(tmp);

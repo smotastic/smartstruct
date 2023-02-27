@@ -11,7 +11,10 @@ class FreezedMapperImpl extends FreezedMapper {
 
   @override
   FreezedTarget fromModel(FreezedSource model) {
-    final freezedtarget = FreezedTarget(model.name, model.age);
+    final freezedtarget = FreezedTarget(
+      model.name,
+      model.age,
+    );
     return freezedtarget;
   }
 }
@@ -21,8 +24,10 @@ class FreezedNamedMapperImpl extends FreezedNamedMapper {
 
   @override
   FreezedNamedTarget fromModel(FreezedNamedSource model) {
-    final freezednamedtarget =
-        FreezedNamedTarget(name: model.name, age: model.age);
+    final freezednamedtarget = FreezedNamedTarget(
+      name: model.name,
+      age: model.age,
+    );
     return freezednamedtarget;
   }
 }

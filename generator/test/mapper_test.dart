@@ -1,6 +1,6 @@
+import 'package:path/path.dart' as p;
 import 'package:smartstruct_generator/generators/mapper_generator.dart';
 import 'package:source_gen_test/source_gen_test.dart';
-import 'package:path/path.dart' as p;
 
 Future<void> main() async {
   initializeBuildLogTracking();
@@ -43,4 +43,5 @@ const _expectedAnnotatedTests = {
   'PassOnMapperFunctionMapper',
   'StaticProxyMapper',
   'MapperInheritanceMapper',
+  'ExplicitGetterMapper',
 };

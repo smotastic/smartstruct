@@ -11,8 +11,10 @@ class PassOnMapperFunctionMapperImpl extends PassOnMapperFunctionMapper {
 
   @override
   ComplexFunctionTarget fromSource(ComplexFunctionSource source) {
-    final complexfunctiontarget =
-        ComplexFunctionTarget(mapComplexSubSource(source, mapper: this));
+    final complexfunctiontarget = ComplexFunctionTarget(mapComplexSubSource(
+      source,
+      mapper: this,
+    ));
     return complexfunctiontarget;
   }
 

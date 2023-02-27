@@ -40,18 +40,8 @@ class FooSource extends SuperFooSource {
   final List<FooNestedSource> list;
   @override
   final String superGet;
-  FooSource(
-      this.number,
-      this.text,
-      this.truthy,
-      this.named,
-      this.setterNumber,
-      this.property,
-      this.propertyTwo,
-      this.namedTwo,
-      this.list,
-      this.superGet,
-      String superText)
+  FooSource(this.number, this.text, this.truthy, this.named, this.setterNumber, this.property, this.propertyTwo,
+      this.namedTwo, this.list, this.superGet, String superText)
       : super(superText);
 }
 
@@ -92,10 +82,7 @@ class BarTarget {
   }
 
   BarTarget(this.numberDiff, this.text, this.truthy, this.superText,
-      {required this.named,
-      required this.namedTwoDiff,
-      required this.list,
-      required this.secondTextOther});
+      {required this.named, required this.namedTwoDiff, required this.list, required this.secondTextOther});
 }
 
 class BarNestedTarget {

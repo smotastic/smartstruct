@@ -8,6 +8,7 @@ part 'collection_mapper_input.dart';
 part 'constructor_mapper_input.dart';
 part 'explicit_field_mapper_input.dart';
 part 'function_mapper_input.dart';
+part 'getter_field_mapper_input.dart';
 part 'ignore_field_mapper_input.dart';
 part 'inheritance_mapper_input.dart';
 part 'injectable_mapper_input.dart';
