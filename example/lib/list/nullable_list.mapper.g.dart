@@ -12,8 +12,9 @@ class NullableListMapperImpl extends NullableListMapper {
   @override
   NullableListTarget fromSource(NullableListSource source) {
     final nullablelisttarget = NullableListTarget(
-        source.list?.map(fromSubSource).toList(),
-        source.list2?.map(fromSubSource).toList() ?? []);
+      source.list?.map((x) => fromSubSource(x)).toList(),
+      source.list2?.map((x) => fromSubSource(x)).toList() ?? [],
+    );
     return nullablelisttarget;
   }
 

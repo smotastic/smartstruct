@@ -11,7 +11,10 @@ class StaticMappingMapperImpl extends StaticMappingMapper {
 
   @override
   StaticProxyTarget fromSourceNormal(StaticMappingSource source) {
-    final staticproxytarget = StaticProxyTarget(source.text, source.number);
+    final staticproxytarget = StaticProxyTarget(
+      source.text,
+      source.number,
+    );
     return staticproxytarget;
   }
 }

@@ -16,7 +16,10 @@ class UserLoginContractFromEntityMapperImpl
       return null;
     }
     ;
-    final userlogincontract = UserLoginContract(entity.age, entity.id);
+    final userlogincontract = UserLoginContract(
+      entity.age,
+      entity.id,
+    );
     return userlogincontract;
   }
 }
@@ -31,7 +34,10 @@ class UserLoginContractFromEntityMapper2Impl
       return null;
     }
     ;
-    final userlogincontract2 = UserLoginContract2(entity.age, entity.id);
+    final userlogincontract2 = UserLoginContract2(
+      entity.age,
+      entity.id,
+    );
     return userlogincontract2;
   }
 }

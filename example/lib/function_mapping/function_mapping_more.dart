@@ -1,5 +1,5 @@
 import 'package:smartstruct/smartstruct.dart';
-import 'package:smartstruct_example/function_mapping/function_utils.dart';
+
 part 'function_mapping_more.mapper.g.dart';
 
 // TARGET
@@ -33,14 +33,14 @@ class AgeHolderTarget {
 
 // This is a more complex example.
 // The toAgeHolderSource may return a "null" and the nested mapping "fromDogModel"
-// is not accept "null". 
+// is not accept "null".
 // So we need to invoke "toAgeHolderSource" and assign the
 // return the a variable "tmp". And determine whether use the "nested mapping" by
 // case that the value of "tmp" is null or not.
 @Mapper()
 abstract class DogMapper {
   static String breedCustom(DogModel model) => 'customBreed';
-  
+
   @Mapping(source: fullNameWithAge, target: 'name')
   @Mapping(source: breedCustom, target: 'breed')
   @Mapping(source: toAgeHolderSource, target: 'model')

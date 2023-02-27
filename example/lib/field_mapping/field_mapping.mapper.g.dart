@@ -12,7 +12,11 @@ class DogMapperImpl extends DogMapper {
   @override
   Dog fromDogModel(DogModel model) {
     final dog = Dog(
-        model.dogName, model.breed, model.dogAge, DogMapper._mapDogType(model));
+      model.dogName,
+      model.breed,
+      model.dogAge,
+      DogMapper._mapDogType(model),
+    );
     return dog;
   }
 }

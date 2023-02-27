@@ -3,55 +3,46 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/parameter_copy.dart';
+import 'package:smartstruct_generator/mapper_config.dart';
 import 'package:smartstruct_generator/models/RefChain.dart';
 import 'package:smartstruct_generator/models/source_assignment.dart';
-import 'package:smartstruct_generator/mapper_config.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'assignment_builder.dart';
 
 /// Generates the implemented mapper method by the given abstract [MethodElement].
-Method buildMapperImplementation(Map<String, dynamic> config,
-    MethodElement method, ClassElement abstractMapper) {
-  if (method.returnType.element2 == null) {
-    throw InvalidGenerationSourceError(
-        '${method.returnType} is not a valid return type',
-        element: method,
-        todo: 'Add valid return type to mapping method');
+Method buildMapperImplementation(Map<String, dynamic> config, MethodElement method, ClassElement abstractMapper) {
+  if (method.returnType.element == null) {
+    throw InvalidGenerationSourceError('${method.returnType} is not a valid return type',
+        element: method, todo: 'Add valid return type to mapping method');
   }
   return Method((b) => b
     ..annotations.add(CodeExpression(Code('override')))
     ..name = method.displayName
     ..requiredParameters.addAll(method.parameters.map((e) => copyParameter(e)))
     ..body = _generateBody(config, method, abstractMapper)
-    ..returns =
-        refer(method.returnType.getDisplayString(withNullability: true)));
+    ..returns = refer(method.returnType.getDisplayString(withNullability: true)));
 }
 
-
 /// Generates the implemented mapper method by the given abstract [MethodElement].
-Method buildStaticMapperImplementation(Map<String, dynamic> config,
-    MethodElement method, ClassElement abstractMapper) {
+Method buildStaticMapperImplementation(Map<String, dynamic> config, MethodElement method, ClassElement abstractMapper) {
   return Method(
-        (b) => b
+    (b) => b
       ..name = '_\$${method.name}'
       ..requiredParameters.addAll(method.parameters.map((e) => copyParameter(e)))
       ..body = _generateBody(config, method, abstractMapper)
-      ..returns =
-      refer(method.returnType.getDisplayString(withNullability: true)),
+      ..returns = refer(method.returnType.getDisplayString(withNullability: true)),
   );
 }
-
 
 /// Generates the body for the mapping method.
 ///
 /// Uses the default constructor of the target mapping class to populate optional and required named and positional parameters.
 /// If the target class has any properties which were not set in the constructor, and are mappable by the source, they will be also mapped after initializing the target instance.
-Code _generateBody(Map<String, dynamic> config, MethodElement method,
-    ClassElement abstractMapper) {
+Code _generateBody(Map<String, dynamic> config, MethodElement method, ClassElement abstractMapper) {
   final blockBuilder = BlockBuilder();
 
-  final targetClass = method.returnType.element2 as ClassElement;
+  final targetClass = method.returnType.element as ClassElement;
 
   final sourceParams = method.parameters;
 
@@ -69,8 +60,7 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
       .where((targetField) => targetToSource.containsKey(targetField.name))
       .forEach((targetField) {
     final sourceAssignment = targetToSource[targetField.name]!;
-    var sourceFieldAssignment = generateSourceFieldAssignment(
-        sourceAssignment, abstractMapper, targetField);
+    var sourceFieldAssignment = generateSourceFieldAssignment(sourceAssignment, abstractMapper, targetField);
 
     if (targetField.isNamed) {
       namedArgs.putIfAbsent(targetField.name, () => sourceFieldAssignment);
@@ -84,31 +74,23 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
 
   // source.isOptional does not work
   for (final sourceParam in sourceParams) {
-    if (sourceParam.type
-        .getDisplayString(withNullability: true)
-        .endsWith('?')) {
-      blockBuilder.addExpression(
-          refer('if (${sourceParam.displayName} == null) { return null; }'));
+    if (sourceParam.type.getDisplayString(withNullability: true).endsWith('?')) {
+      blockBuilder.addExpression(refer('if (${sourceParam.displayName} == null) { return null; }'));
     }
   }
   // final output = Output(positionalArgs, {namedArgs});
-  blockBuilder.addExpression(refer(targetConstructor.displayName)
-      .newInstance(positionalArgs, namedArgs)
-      .assignFinal(targetVarName));
+  blockBuilder.addExpression(
+      refer(targetConstructor.displayName).newInstance(positionalArgs, namedArgs).assignFinal(targetVarName));
 
   // non final properties (implicit and explicit setters)
   final fields = _findFields(targetClass);
   fields //
       .where((field) => !field.isFinal) //
-      .where(
-          (targetField) => targetToSource.containsKey(targetField.displayName))
+      .where((targetField) => targetToSource.containsKey(targetField.displayName))
       .map((targetField) {
     var sourceAssignment = targetToSource[targetField.displayName]!;
-    var sourceFieldAssignment = generateSourceFieldAssignment(
-        sourceAssignment, abstractMapper, targetField);
-    return refer(targetVarName)
-        .property(targetField.displayName)
-        .assign(sourceFieldAssignment);
+    var sourceFieldAssignment = generateSourceFieldAssignment(sourceAssignment, abstractMapper, targetField);
+    return refer(targetVarName).property(targetField.displayName).assign(sourceFieldAssignment);
   }).forEach((expr) => blockBuilder.addExpression(expr));
 
   blockBuilder.addExpression(refer(targetVarName).returned);
@@ -117,8 +99,7 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
 
 /// Chooses the constructor which will be used to instantiate the target class.
 ConstructorElement _chooseConstructor(ClassElement outputClass) {
-  ConstructorElement chosen =
-      outputClass.constructors.where((element) => !element.isFactory).first;
+  ConstructorElement chosen = outputClass.constructors.where((element) => !element.isFactory).first;
   for (var con in outputClass.constructors) {
     if (con.parameters.length >= chosen.parameters.length) {
       // choose the one with the most parameters
@@ -129,10 +110,8 @@ ConstructorElement _chooseConstructor(ClassElement outputClass) {
 }
 
 List<FieldElement> _findFields(ClassElement clazz) {
-  final allSuperclasses = clazz.allSupertypes
-      .where((element) => !element.isDartCoreObject)
-      .map((e) => e.element)
-      .toList();
+  final allSuperclasses =
+      clazz.allSupertypes.where((element) => !element.isDartCoreObject).map((e) => e.element).toList();
 
   final allAccessors = allSuperclasses.map((e) => e.accessors).expand((e) => e);
   final accessorMap = {for (var e in allAccessors) e.displayName: e};
@@ -148,25 +127,20 @@ List<FieldElement> _findFields(ClassElement clazz) {
     return !field.isStatic && !field.isConst && !isAbstract;
   };
 
-  final allSuperFields = allSuperclasses
-      .map((e) => e.fields)
-      .expand((e) => e)
-      .where(fieldFilter)
-      .toList();
-  return [...clazz.fields, ...allSuperFields];
+  final allSuperFields = allSuperclasses.map((e) => e.fields).expand((e) => e).where(fieldFilter).toList();
+  return [
+    ...clazz.fields.where((x) => !x.isSynthetic),
+    ...allSuperFields.where((x) => !x.isSynthetic || (x.getter != null)),
+  ];
 }
 
 List<HashMap<String, SourceAssignment>> _targetToSource(
-    List<ParameterElement> sources,
-    ClassElement target,
-    MethodElement method,
-    Map<String, dynamic> config) {
-  final sourceMap = {for (var e in sources) e.type.element2 as ClassElement: e};
+    List<ParameterElement> sources, ClassElement target, MethodElement method, Map<String, dynamic> config) {
+  final sourceMap = {for (var e in sources) e.type.element as ClassElement: e};
 
   final caseSensitiveFields = config['caseSensitiveFields'];
   final fieldMapper = caseSensitiveFields ? (a) => a : (a) => a.toUpperCase();
-  final equalsHashCode =
-      caseSensitiveFields ? (a) => a.hashCode : (a) => a.toUpperCase().hashCode;
+  final equalsHashCode = caseSensitiveFields ? (a) => a.hashCode : (a) => a.toUpperCase().hashCode;
   final mappingConfig = MapperConfig.readMappingConfig(method);
   // final customMappingConfig = MapperConfig.readCustomMappingConfig(method);
 
@@ -174,42 +148,33 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
   /// It is very usefull when you want to have caseInsensitive keys
   /// Contains data from @Mapping annotations
   var targetToSource = HashMap<String, SourceAssignment>(
-      equals: (a, b) => fieldMapper(a) == fieldMapper(b),
-      hashCode: (a) => equalsHashCode(a));
+      equals: (a, b) => fieldMapper(a) == fieldMapper(b), hashCode: (a) => equalsHashCode(a));
 
   /// Contains data from @CustomMapping annotations
   var customTargetToSource = HashMap<String, SourceAssignment>(
-      equals: (a, b) => fieldMapper(a) == fieldMapper(b),
-      hashCode: (a) => equalsHashCode(a));
+      equals: (a, b) => fieldMapper(a) == fieldMapper(b), hashCode: (a) => equalsHashCode(a));
 
   final mappingStringConfig = _extractStringMappingConfig(mappingConfig);
 
   for (final sourceEntry in sourceMap.entries) {
     Map<String, List<String>> matchedSourceClazzInSourceMapping =
-        _findMatchingSourceClazzInMappingMap(
-            mappingStringConfig, sourceEntry.value.displayName);
+        _findMatchingSourceClazzInMappingMap(mappingStringConfig, sourceEntry.value.displayName);
     for (var f in _findFields(sourceEntry.key)) {
       if (targetToSource.containsKey(f.name) && !caseSensitiveFields) {
-        final duplicatedKey = targetToSource.keys
-            .toList()
-            .firstWhere((k) => k.toUpperCase() == f.name.toUpperCase());
+        final duplicatedKey = targetToSource.keys.toList().firstWhere((k) => k.toUpperCase() == f.name.toUpperCase());
         throw InvalidGenerationSourceError(
             'Mapper got case insensitive fields and contains fields: ${f.name} and $duplicatedKey. If you use a case-sensitive mapper, make sure the fields are unique in a case insensitive way.',
             todo: "Use case sensitive mapper or change field's names");
       }
-      if (matchedSourceClazzInSourceMapping.isNotEmpty &&
-          _shouldSearchMoreFields(f)) {
+      if (matchedSourceClazzInSourceMapping.isNotEmpty && _shouldSearchMoreFields(f)) {
         for (var matchedTarget in matchedSourceClazzInSourceMapping.keys) {
-          final sourceValueList =
-              matchedSourceClazzInSourceMapping[matchedTarget]!;
-          final fieldClazz = f.type.element2 as ClassElement;
-          
+          final sourceValueList = matchedSourceClazzInSourceMapping[matchedTarget]!;
+
           final refChain = RefChain.byPropNames(sourceEntry.value, sourceValueList.sublist(1));
           targetToSource[matchedTarget] = SourceAssignment.fromRefChain(refChain);
         }
       } else {
-        targetToSource[f.name] =
-            SourceAssignment.fromRefChain(RefChain([sourceEntry.value, f]));
+        targetToSource[f.name] = SourceAssignment.fromRefChain(RefChain([sourceEntry.value, f]));
       }
     }
   }
@@ -220,15 +185,13 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
     final sourceField = mappingConfig.source;
     if (sourceField != null) {
       if (sourceField.toFunctionValue() != null) {
-        targetToSource[targetField] = SourceAssignment.fromFunction(
-            sourceField.toFunctionValue()!, [...sources]);
+        targetToSource[targetField] = SourceAssignment.fromFunction(sourceField.toFunctionValue()!, [...sources]);
       } else if (sourceField.toStringValue() != null) {
         final sourceFieldString = sourceField.toStringValue()!;
         // sourceField exists in any sourceParam
         if (targetToSource.containsKey(sourceFieldString)) {
           // replace mapping target with mapping
-          targetToSource.putIfAbsent(
-              targetField, () => targetToSource[sourceFieldString]!);
+          targetToSource.putIfAbsent(targetField, () => targetToSource[sourceFieldString]!);
           targetToSource.remove(sourceFieldString);
         }
       }
@@ -243,8 +206,7 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
 }
 
 /// Extracts all Mapping Config Entries in [mappingConfig] which contains source mappings of type string
-Map<String, MappingConfig> _extractStringMappingConfig(
-    Map<String, MappingConfig> mappingConfig) {
+Map<String, MappingConfig> _extractStringMappingConfig(Map<String, MappingConfig> mappingConfig) {
   final mappingStringConfig = <String, MappingConfig>{};
   mappingConfig.forEach((key, value) {
     if (value.source != null && value.source!.toStringValue() != null) {
@@ -254,27 +216,8 @@ Map<String, MappingConfig> _extractStringMappingConfig(
   return mappingStringConfig;
 }
 
-/// Searches for a matching class for every given [MappingConfig] in [mappingStringConfig], matched against the given [matchingSourceClazzName]
-/// For MappingConfigs including dot seperated clazz attributes, the first value before the first dot is matched against the given matchingSourceClazzName.
-/// Example: A MappingConfig containing "user.address.zipcode" would try to match against user
-List<List<String>> _findMatchingSourceClazzInMapping(
-    Map<String, MappingConfig> mappingStringConfig,
-    String matchingSourceClazzName) {
-  List<List<String>> matchedSourceClazzInSourceMapping = [];
-  mappingStringConfig.forEach((key, value) {
-    // clazz.attribute1.attribute1_1
-    final sourceValueList = value.source!.toStringValue()!.split(".");
-    final sourceClass = sourceValueList[0];
-    if (sourceClass == matchingSourceClazzName) {
-      matchedSourceClazzInSourceMapping.add(sourceValueList);
-    }
-  });
-  return matchedSourceClazzInSourceMapping;
-}
-
 Map<String, List<String>> _findMatchingSourceClazzInMappingMap(
-    Map<String, MappingConfig> mappingStringConfig,
-    String matchingSourceClazzName) {
+    Map<String, MappingConfig> mappingStringConfig, String matchingSourceClazzName) {
   Map<String, List<String>> ret = {};
   mappingStringConfig.forEach((key, value) {
     // clazz.attribute1.attribute1_1
@@ -285,30 +228,6 @@ Map<String, List<String>> _findMatchingSourceClazzInMappingMap(
     }
   });
   return ret;
-}
-
-/// Finds the matching field, matching the last source of [sources] to any field of [fields]
-/// If no field was found, null is returned
-///
-/// Example: [sources]="user,address,zipcode" with [fields]=address would identify address as a field, then continue searching in the address field for the zipcode field.
-/// If the address contains a field zipcode, the zipcode field is returned.
-FieldElement? _findMatchingField(
-    List<String> sources, List<FieldElement> fields) {
-  for (var source in sources) {
-    final potentielFinds = fields.where((element) => element.name == source);
-    if (potentielFinds.isEmpty) {
-      continue;
-    }
-    final foundField = potentielFinds.first;
-    // foundField is not string
-    if (_shouldSearchMoreFields(foundField)) {
-      final searchClazz = foundField.type.element2 as ClassElement;
-      return _findMatchingField(
-          sources.skip(1).toList(), _findFields(searchClazz));
-    } else {
-      return foundField;
-    }
-  }
 }
 
 /// A search for a potential underlying should only be continued, if the field is not a primitive type (string, int, double etc)

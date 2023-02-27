@@ -1,9 +1,7 @@
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 
 class NestMapping {
-
   final MethodElement method;
   final VariableElement input;
   late final bool returnNullable;
@@ -17,9 +15,8 @@ class NestMapping {
     inputNullable = input.type.nullabilitySuffix == NullabilitySuffix.question;
     methodParamterNullable = method.parameters.first.type.nullabilitySuffix == NullabilitySuffix.question;
 
-    returnNullable = 
-      (inputNullable && !methodParamterNullable) ||     // 'a == null ? null : call(a)'. So the output is nullable.
-      (inputNullable && methodReturnNullable);          // if input is not null, the method return is not
+    returnNullable =
+        (inputNullable && !methodParamterNullable) || // 'a == null ? null : call(a)'. So the output is nullable.
+            (inputNullable && methodReturnNullable); // if input is not null, the method return is not
   }
-
 }
