@@ -3,9 +3,9 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:smartstruct_generator/code_builders/parameter_copy.dart';
+import 'package:smartstruct_generator/mapper_config.dart';
 import 'package:smartstruct_generator/models/RefChain.dart';
 import 'package:smartstruct_generator/models/source_assignment.dart';
-import 'package:smartstruct_generator/mapper_config.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'assignment_builder.dart';
@@ -13,7 +13,7 @@ import 'assignment_builder.dart';
 /// Generates the implemented mapper method by the given abstract [MethodElement].
 Method buildMapperImplementation(Map<String, dynamic> config,
     MethodElement method, ClassElement abstractMapper) {
-  if (method.returnType.element2 == null) {
+  if (method.returnType.element == null) {
     throw InvalidGenerationSourceError(
         '${method.returnType} is not a valid return type',
         element: method,
@@ -28,20 +28,19 @@ Method buildMapperImplementation(Map<String, dynamic> config,
         refer(method.returnType.getDisplayString(withNullability: true)));
 }
 
-
 /// Generates the implemented mapper method by the given abstract [MethodElement].
 Method buildStaticMapperImplementation(Map<String, dynamic> config,
     MethodElement method, ClassElement abstractMapper) {
   return Method(
-        (b) => b
+    (b) => b
       ..name = '_\$${method.name}'
-      ..requiredParameters.addAll(method.parameters.map((e) => copyParameter(e)))
+      ..requiredParameters
+          .addAll(method.parameters.map((e) => copyParameter(e)))
       ..body = _generateBody(config, method, abstractMapper)
       ..returns =
-      refer(method.returnType.getDisplayString(withNullability: true)),
+          refer(method.returnType.getDisplayString(withNullability: true)),
   );
 }
-
 
 /// Generates the body for the mapping method.
 ///
@@ -51,7 +50,7 @@ Code _generateBody(Map<String, dynamic> config, MethodElement method,
     ClassElement abstractMapper) {
   final blockBuilder = BlockBuilder();
 
-  final targetClass = method.returnType.element2 as ClassElement;
+  final targetClass = method.returnType.element as ClassElement;
 
   final sourceParams = method.parameters;
 
@@ -161,7 +160,7 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
     ClassElement target,
     MethodElement method,
     Map<String, dynamic> config) {
-  final sourceMap = {for (var e in sources) e.type.element2 as ClassElement: e};
+  final sourceMap = {for (var e in sources) e.type.element as ClassElement: e};
 
   final caseSensitiveFields = config['caseSensitiveFields'];
   final fieldMapper = caseSensitiveFields ? (a) => a : (a) => a.toUpperCase();
@@ -202,10 +201,11 @@ List<HashMap<String, SourceAssignment>> _targetToSource(
         for (var matchedTarget in matchedSourceClazzInSourceMapping.keys) {
           final sourceValueList =
               matchedSourceClazzInSourceMapping[matchedTarget]!;
-          final fieldClazz = f.type.element2 as ClassElement;
-          
-          final refChain = RefChain.byPropNames(sourceEntry.value, sourceValueList.sublist(1));
-          targetToSource[matchedTarget] = SourceAssignment.fromRefChain(refChain);
+
+          final refChain = RefChain.byPropNames(
+              sourceEntry.value, sourceValueList.sublist(1));
+          targetToSource[matchedTarget] =
+              SourceAssignment.fromRefChain(refChain);
         }
       } else {
         targetToSource[f.name] =
@@ -302,13 +302,14 @@ FieldElement? _findMatchingField(
     final foundField = potentielFinds.first;
     // foundField is not string
     if (_shouldSearchMoreFields(foundField)) {
-      final searchClazz = foundField.type.element2 as ClassElement;
+      final searchClazz = foundField.type.element as ClassElement;
       return _findMatchingField(
           sources.skip(1).toList(), _findFields(searchClazz));
     } else {
       return foundField;
     }
   }
+  return null;
 }
 
 /// A search for a potential underlying should only be continued, if the field is not a primitive type (string, int, double etc)

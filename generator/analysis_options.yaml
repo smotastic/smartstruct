@@ -1,5 +1,4 @@
 include: package:lints/recommended.yaml
-
 # For lint rules and documentation, see http://dart-lang.github.io/linter/lints.
 
 # Uncomment to specify additional rules.
@@ -10,6 +9,3 @@ include: package:lints/recommended.yaml
 # analyzer:
 #   exclude:
 #     - path/to/excluded/files/**
-analyzer:
-  enable-experiment:
-    - non-nullable

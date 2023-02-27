@@ -5,8 +5,14 @@ class Mapper {
   final bool useInjection;
   final bool caseSensitiveFields;
   final bool generateStaticProxy;
+  final bool useStaticMapping;
 
-  const Mapper({this.useInjection = false, this.caseSensitiveFields = false, this.generateStaticProxy = false});
+  const Mapper({
+    this.useInjection = false,
+    this.caseSensitiveFields = false,
+    this.generateStaticProxy = false,
+    this.useStaticMapping = true,
+  });
 }
 
 const mapper = Mapper();

@@ -30,6 +30,8 @@ List<Class> _generateStaticProxy(
 
 List<Method> _generateStaticMethods(
     ClassElement abstractClass, Map<String, dynamic> config) {
+  if (config['useStaticMapping'] == false) return [];
+
   var staticMethods = abstractClass.methods
       .where(
         (method) =>
@@ -49,7 +51,7 @@ bool _shouldGenerateStaticMethod(MethodElement method) {
 }
 
 bool _isAbstractType(DartType type) {
-  final element = type.element2;
+  final element = type.element;
   if (element is! ClassElement) {
     return false;
   }
